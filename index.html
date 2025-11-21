@@ -3,20 +3,18 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>GrapesJS + Page Manager (Responsive Layout)</title>
+    <title>GrapesJS + Page Manager + Working Drag & Drop</title>
 
     <!-- GrapesJS core + plugins -->
     <link href="https://unpkg.com/grapesjs/dist/css/grapes.min.css" rel="stylesheet" />
     <link href="https://unpkg.com/grapesjs-project-manager/dist/grapesjs-project-manager.min.css" rel="stylesheet" />
-
     <script src="https://unpkg.com/grapesjs"></script>
     <script src="https://unpkg.com/grapesjs-blocks-basic"></script>
     <script src="https://unpkg.com/grapesjs-tailwind"></script>
     <script src="https://unpkg.com/grapesjs-project-manager"></script>
 
     <style>
-      html,
-      body {
+      html, body {
         height: 100%;
         margin: 0;
         padding: 0;
@@ -30,7 +28,6 @@
         flex-direction: row;
         height: 100vh;
         width: 100vw;
-        max-width: 100%;
         overflow: hidden;
       }
 
@@ -39,7 +36,6 @@
         background: #f3f4f6;
         border-right: 1px solid #ddd;
         overflow-y: auto;
-        transition: all 0.3s ease;
       }
 
       #gjs {
@@ -47,7 +43,6 @@
         overflow: hidden;
       }
 
-      /* Hide blocks panel on small screens */
       @media (max-width: 768px) {
         #blocks {
           position: fixed;
@@ -58,7 +53,6 @@
         }
         #blocks.active {
           left: 0;
-          background: #f3f4f6;
         }
         .toggle-blocks {
           position: fixed;
@@ -69,32 +63,14 @@
           border: none;
           border-radius: 6px;
           padding: 8px 10px;
-          font-size: 14px;
           z-index: 2100;
         }
-      }
-
-      .gjs-pn-panels {
-        z-index: 1500;
-      }
-
-      /* Ensure the canvas scales properly */
-      .gjs-cv-canvas {
-        width: 100% !important;
-        height: 100% !important;
-      }
-
-      /* Page manager modal improvements */
-      .gjs-mdl-dialog {
-        max-width: 95vw !important;
-        max-height: 95vh !important;
-        overflow: auto;
       }
     </style>
   </head>
 
   <body>
-    <button class="toggle-blocks" onclick="toggleBlocks()">☰ Blocks</button>
+    <button class="toggle-blocks" onclick="document.getElementById('blocks').classList.toggle('active')">☰ Blocks</button>
 
     <div class="editor-wrapper">
       <div id="blocks"></div>
@@ -102,107 +78,119 @@
     </div>
 
     <script>
-      function toggleBlocks() {
-        document.getElementById("blocks").classList.toggle("active");
+      async function loadBlocks() {
+        try {
+          const res = await fetch('./blocks/blocks.json');
+          if (!res.ok) throw new Error('Failed to load blocks.json');
+          const data = await res.json();
+          return data;
+        } catch (err) {
+          console.warn('⚠️ No external blocks.json found, using defaults.');
+          // fallback default blocks
+          return {
+            Header: [
+              {
+                label: 'Header 1',
+                category: 'Header',
+                content: "<header style='background:#333; color:#fff; padding:10px;'><h1>Header</h1></header>"
+              }
+            ],
+            Hero: [
+              {
+                label: 'Hero 1',
+                category: 'Hero Section',
+                content: "<section style='background:#eee; padding:50px; text-align:center;'><h2>Hero Area</h2><p>Welcome here!</p></section>"
+              }
+            ]
+          };
+        }
       }
 
-      document.addEventListener("DOMContentLoaded", function () {
+      document.addEventListener('DOMContentLoaded', async () => {
+        const blocksData = await loadBlocks();
+
         const editor = grapesjs.init({
-          container: "#gjs",
-          height: "100vh",
-          width: "auto",
-          fromElement: false,
+          container: '#gjs',
+          height: '100vh',
           storageManager: false,
+          blockManager: { appendTo: '#blocks' },
           pageManager: true,
-          blockManager: { appendTo: "#blocks" },
-          plugins: ["grapesjs-blocks-basic", "grapesjs-tailwind", "grapesjs-project-manager"],
+          plugins: ['grapesjs-blocks-basic', 'grapesjs-tailwind', 'grapesjs-project-manager'],
           pluginsOpts: {
-            "grapesjs-blocks-basic": { flexGrid: true },
+            'grapesjs-blocks-basic': { flexGrid: true },
           },
         });
 
-        // Re-enable drag/drop after page manager loads
-        editor.on("load", () => {
-          setTimeout(() => {
-            editor.BlockManager.render();
-            editor.Canvas.refresh();
-          }, 300);
+        // ✅ Add JSON blocks synchronously
+        Object.keys(blocksData).forEach(category => {
+          blocksData[category].forEach(block => {
+            editor.BlockManager.add(block.label.toLowerCase().replace(/\s+/g, '-'), {
+              label: block.label,
+              category: block.category,
+              content: block.content,
+            });
+          });
         });
 
-        // === Custom Blocks ===
-        editor.BlockManager.add("section", {
-          label: "Section",
-          category: "Basic",
-          content: "<section style='padding:50px; background:#eee;'>Section</section>",
-        });
-
-        editor.BlockManager.add("text", {
-          label: "Text",
-          category: "Basic",
-          content: "<div style='padding:10px;'>Editable text block</div>",
-        });
-
-        editor.BlockManager.add("image", {
-          label: "Image",
-          category: "Basic",
-          content: '<img src="https://via.placeholder.com/350x150" style="width:100%"/>',
-        });
-
-        // === Toolbar Buttons (top navigation) ===
+        // === PAGE MANAGER BUTTONS ===
         const pn = editor.Panels;
-        pn.addButton("options", {
-          id: "open-templates",
-          className: "fa fa-folder-o",
-          attributes: { title: "Open Projects / Templates" },
-          command: "open-templates",
+        pn.addButton('options', {
+          id: 'open-templates',
+          className: 'fa fa-folder-o',
+          attributes: { title: 'Open Projects / Templates' },
+          command: 'open-templates',
         });
-        pn.addButton("views", {
-          id: "open-pages",
-          className: "fa fa-file-o",
-          attributes: { title: "Manage Pages" },
-          command: "open-pages",
+        pn.addButton('views', {
+          id: 'open-pages',
+          className: 'fa fa-file-o',
+          attributes: { title: 'Manage Pages' },
+          command: 'open-pages',
           togglable: false,
         });
-        pn.addButton("options", {
-          id: "new-page",
-          className: "fa fa-plus",
-          attributes: { title: "Create New Page" },
-          command: "create-new-page",
+        pn.addButton('options', {
+          id: 'new-page',
+          className: 'fa fa-plus',
+          attributes: { title: 'Create New Page' },
+          command: 'create-new-page',
         });
 
-        // === Add custom "create new page" command ===
-        editor.Commands.add("create-new-page", {
+        editor.Commands.add('create-new-page', {
           run() {
-            const pageName = prompt("Enter a name for the new page:");
-            if (!pageName) return;
-            const id = pageName.toLowerCase().replace(/\s+/g, "-");
-            const newPage = editor.Pages.add({
+            const name = prompt('Enter page name:');
+            if (!name) return;
+            const id = name.toLowerCase().replace(/\s+/g, '-');
+            editor.Pages.add({
               id,
-              name: pageName,
-              component: `<h1>${pageName}</h1><p>Start editing this page content.</p>`,
+              name,
+              component: `<h1>${name}</h1><p>Edit your content here.</p>`
             });
             editor.Pages.select(id);
           },
         });
 
-        // === Add default sample pages ===
-        const pages = editor.Pages;
-        if (pages.getAll().length === 0) {
-          pages.add({
-            id: "home",
-            name: "Home Page",
-            component: "<h1>🏠 Home Page</h1><p>Edit this section to start building.</p>",
+        // === Add default pages ===
+        if (editor.Pages.getAll().length === 0) {
+          editor.Pages.add({
+            id: 'home',
+            name: 'Home Page',
+            component: '<h1>🏠 Home Page</h1><p>Start editing here.</p>'
           });
-          pages.add({
-            id: "about",
-            name: "About Page",
-            component: "<h1>ℹ️ About Page</h1><p>Describe your project or team here.</p>",
-          });
-          pages.select("home");
+          editor.Pages.select('home');
         }
 
-        // === Default Content ===
-        editor.setComponents("<h1>✅ Responsive GrapesJS + Page Manager</h1>");
+        // ✅ Full reinitialization of drag-drop AFTER load
+        editor.on('load', () => {
+          setTimeout(() => {
+            const bm = editor.BlockManager;
+            bm.render();
+            editor.refresh();
+            editor.Canvas.getBody().dispatchEvent(new Event('mouseup'));
+            editor.Canvas.render();
+            console.log('✅ Drag & Drop fully reinitialized.');
+          }, 500);
+        });
+
+        editor.setComponents('<h1>✅ GrapesJS Drag & Drop Fixed with JSON Blocks</h1>');
       });
     </script>
   </body>

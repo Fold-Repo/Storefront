@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GrapesJS Full Working Example</title>
+
+  <!-- GrapesJS CSS -->
+  <link href="https://unpkg.com/grapesjs/dist/css/grapes.min.css" rel="stylesheet"/>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    /* LEFT BLOCK PANEL */
+    .my-blocks {
+      width: 250px;
+      background: #f5f5f5;
+      border-right: 1px solid #ccc;
+      padding: 10px;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      overflow-y: auto;
+      z-index: 9999;
+    }
+
+    /* EDITOR AREA (Canvas) */
+    #gjs {
+      height: 100vh;
+      margin-left: 260px;
+      border-left: 1px solid #ddd;
+    }
+
+    .texts {
+        color: #fff;
+        text-align: center;
+        margin-top: 20%;
+    }
+  </style>
+
+</head>
+<body>
+
+  <!-- LEFT BLOCK SIDEBAR -->
+  <div class="my-blocks"></div>
+
+  <!-- EDITOR CANVAS -->
+  <div id="gjs">
+    <h1 class="texts">Welcome to Your Page Builder</h1>
+    <p class="texts">Drag blocks from the left into this area.</p>
+  </div>
+
+  <!-- Load GrapesJS -->
+  <script src="https://unpkg.com/grapesjs"></script>
+
+  <script>
+    // =========================
+    // INITIALIZE EDITOR
+    // =========================
+    const editor = grapesjs.init({
+      container: '#gjs',
+      height: '100vh',
+      fromElement: true,
+
+      blockManager: {
+        appendTo: '.my-blocks',
+      },
+
+      storageManager: false, // disables save warnings
+    });
+
+    // =========================
+    // ADD BLOCKS (Drag & Drop)
+    // =========================
+
+    // SIMPLE TEXT BLOCK
+    editor.BlockManager.add('text-block', {
+      label: 'Text',
+      content: `<p style="padding:10px;">This is a text block.</p>`,
+      category: 'Basic',
+    });
+
+    // IMAGE BLOCK
+    editor.BlockManager.add('image-block', {
+      label: 'Image',
+      content: `<img src="https://via.placeholder.com/350x150" style="width:100%;">`,
+      category: 'Basic',
+    });
+
+    // BUTTON BLOCK
+    editor.BlockManager.add('button-block', {
+      label: 'Button',
+      content: `<button style="padding:10px 20px; background:#007bff; color:white; border:none;">Click Me</button>`,
+      category: 'Basic',
+    });
+
+    // SECTION BLOCK
+    editor.BlockManager.add('section-block', {
+      label: 'Section',
+      content: `
+        <section style="padding:30px; background:#eee;">
+          <h2>Section Title</h2>
+          <p>Your section content goes here.</p>
+        </section>
+      `,
+      category: 'Layout',
+    });
+
+
+    // =========================
+    // ADD CUSTOM TOP PANEL BUTTONS
+    // =========================
+    editor.Panels.addPanel({
+      id: 'top-panel',
+      el: '.gjs-pn-views-container'
+    });
+
+    // Preview Button
+    editor.Panels.addButton('options', {
+      id: 'preview-btn',
+      label: '👁 Preview',
+      command: 'preview-cmd',
+      attributes: { title: 'Preview Mode' }
+    });
+
+    // Clear Canvas Button
+    editor.Panels.addButton('options', {
+      id: 'clear-btn',
+      label: '🗑 Clear',
+      command: 'clear-canvas',
+      attributes: { title: 'Clear Canvas' }
+    });
+
+    // =========================
+    // CUSTOM COMMANDS
+    // =========================
+
+    // Preview Command
+    editor.Commands.add('preview-cmd', {
+      run(editor) {
+        editor.runCommand('preview');
+      },
+      stop(editor) {
+        editor.stopCommand('preview');
+      }
+    });
+
+    // Clear Canvas Command
+    editor.Commands.add('clear-canvas', {
+      run(editor) {
+        const yes = confirm("Clear the entire canvas?");
+        if (yes) editor.DomComponents.clear();
+      }
+    });
+
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "Header": [
+    {
+      "label": "Header 1",
+      "category": "Header",
+      "content": "<header style='background:#333; color:#fff; padding:10px;'><h1>My Header</h1></header>"
+    }
+  ],
+  "Hero": [
+    {
+      "label": "Hero 1",
+      "category": "Hero Section",
+      "content": "<section style='background:#eee; padding:50px; text-align:center;'><h2>Hero Area</h2><p>Welcome here!</p></section>"
+    }
+  ]
+}
