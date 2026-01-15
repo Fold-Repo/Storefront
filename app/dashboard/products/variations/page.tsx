@@ -85,6 +85,7 @@ export default function VariationsPage() {
                         <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Template Name</label>
                             <Input
+                                name="variationName"
                                 placeholder="e.g. Color, Size"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
@@ -97,6 +98,7 @@ export default function VariationsPage() {
                             {values.map((val, idx) => (
                                 <div key={idx} className="flex gap-2">
                                     <Input
+                                        name={`value-${idx}`}
                                         placeholder="e.g. Red, XL"
                                         value={val}
                                         onChange={(e) => updateValue(idx, e.target.value)}

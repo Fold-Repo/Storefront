@@ -8,13 +8,13 @@
  * Limits are stored in Firebase and checked before creation
  */
 
-import { 
-  doc, 
-  setDoc, 
-  getDoc, 
-  collection, 
-  query, 
-  where, 
+import {
+  doc,
+  setDoc,
+  getDoc,
+  collection,
+  query,
+  where,
   getDocs,
   updateDoc
 } from "firebase/firestore";
@@ -100,7 +100,7 @@ export async function initializeDefaultPlans(): Promise<void> {
     for (const plan of DEFAULT_PLANS) {
       const planRef = doc(db, PLANS_COLLECTION, plan.planId);
       const planDoc = await getDoc(planRef);
-      
+
       if (!planDoc.exists()) {
         await setDoc(planRef, plan);
       }
@@ -138,7 +138,7 @@ export async function getUserPlan(userId: string): Promise<UserPlan | null> {
   try {
     // Use API route instead of direct Firestore access
     const response = await fetch(`/api/user/plan?userId=${encodeURIComponent(userId)}`);
-    
+
     if (!response.ok) {
       throw new Error(`Failed to get user plan: ${response.statusText}`);
     }
@@ -200,7 +200,7 @@ export async function updateUserPlan(
     };
 
     const userPlanRef = doc(db, USER_PLANS_COLLECTION, userId);
-    await updateDoc(userPlanRef, updatedPlan);
+    await updateDoc(userPlanRef, updatedPlan as any);
 
     return updatedPlan;
   } catch (error) {

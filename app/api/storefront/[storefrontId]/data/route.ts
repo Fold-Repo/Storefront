@@ -12,9 +12,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     storefrontId: string;
-  };
+  }>;
 }
 
 /**
@@ -26,7 +26,7 @@ export async function GET(
   { params }: RouteParams
 ) {
   try {
-    const { storefrontId } = params;
+    const { storefrontId } = await params;
     const { searchParams } = new URL(request.url);
     const dataType = searchParams.get('type'); // products, categories, menu, footer, settings
 

@@ -21,7 +21,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { NAV_CONSTANT } from "@/constants";
 import { UserProfileDropdown } from "@/components/nav/UserProfileDropdown";
-import { addCustomDomainToVercel, verifyCustomDomainStatus, removeCustomDomainFromVercel } from "@/services/vercel";
+import { addCustomDomainToNetlify, verifyNetlifyDomainStatus, removeCustomDomainFromNetlify } from "@/services/netlify";
 
 export const DomainsPage = () => {
     const router = useRouter();
@@ -69,7 +69,7 @@ export const DomainsPage = () => {
     const checkStatus = async (domain: string) => {
         try {
             setVerifying(true);
-            const status = await verifyCustomDomainStatus(domain);
+            const status = await verifyNetlifyDomainStatus(domain);
             setVerificationData(status);
 
             // Update Firebase if verified status changed
@@ -104,8 +104,8 @@ export const DomainsPage = () => {
         try {
             setSaving(true);
 
-            // 1. Add to Vercel
-            await addCustomDomainToVercel(domainInput);
+            // 1. Add to Netlify
+            await addCustomDomainToNetlify(domainInput);
 
             // 2. Save to Firebase
             const updatedSite: GeneratedSite = {
@@ -138,7 +138,7 @@ export const DomainsPage = () => {
 
         try {
             setSaving(true);
-            await removeCustomDomainFromVercel(siteData.customDomain);
+            await removeCustomDomainFromNetlify(siteData.customDomain);
 
             const updatedSite = {
                 ...siteData,
@@ -268,37 +268,39 @@ export const DomainsPage = () => {
                             </div>
                         </div>
 
-                        {/* DNS Instructions */}
-                        {!isVerified && (
-                            <div className="p-8 md:p-10 space-y-6">
-                                <div className="flex items-start gap-4 p-5 bg-blue-50 rounded-2xl border border-blue-100">
-                                    <InformationCircleIcon className="w-6 h-6 text-blue-600 shrink-0 mt-0.5" />
-                                    <div className="space-y-1">
-                                        <h3 className="font-bold text-blue-900">Configuration Required</h3>
-                                        <p className="text-sm text-blue-700 leading-relaxed">
-                                            To connect your domain, sign in to your domain provider (like GoDaddy or Namecheap) and add the following records to your DNS settings.
-                                        </p>
+                        {/* Persistent DNS Configuration Card */}
+                        <div className="p-8 md:p-10 border-b border-neutral-100 bg-white">
+                            <div className="flex items-start gap-4 mb-6">
+                                <div className="p-3 bg-blue-50 rounded-xl text-blue-600">
+                                    <GlobeAltIcon className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-neutral-900 text-lg">DNS Configuration</h3>
+                                    <p className="text-sm text-neutral-500 max-w-lg">
+                                        Use these settings to point the domain to your store. These records are required for the connection to work.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div className="space-y-3">
+                                    <h4 className="text-xs font-black text-neutral-400 uppercase tracking-widest">CNAME Record (Root/@)</h4>
+                                    <div className="p-4 bg-neutral-900 rounded-2xl text-white font-mono text-sm flex items-center justify-between group cursor-pointer" onClick={() => navigator.clipboard.writeText("storefronte.netlify.app")}>
+                                        <span>storefronte.netlify.app</span>
+                                        <span className="text-neutral-500 text-xs group-hover:text-white transition-colors">Copy</span>
                                     </div>
                                 </div>
-
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div className="space-y-3">
-                                        <h4 className="text-xs font-black text-neutral-400 uppercase tracking-widest">A Record (Root Domain)</h4>
-                                        <div className="p-4 bg-neutral-900 rounded-2xl text-white font-mono text-sm flex items-center justify-between group cursor-pointer" onClick={() => navigator.clipboard.writeText("76.76.21.21")}>
-                                            <span>76.76.21.21</span>
-                                            <span className="text-neutral-500 text-xs group-hover:text-white transition-colors">Copy</span>
-                                        </div>
-                                    </div>
-                                    <div className="space-y-3">
-                                        <h4 className="text-xs font-black text-neutral-400 uppercase tracking-widest">CNAME Record (www)</h4>
-                                        <div className="p-4 bg-neutral-900 rounded-2xl text-white font-mono text-sm flex items-center justify-between group cursor-pointer" onClick={() => navigator.clipboard.writeText("cname.vercel-dns.com")}>
-                                            <span>cname.vercel-dns.com</span>
-                                            <span className="text-neutral-500 text-xs group-hover:text-white transition-colors">Copy</span>
-                                        </div>
+                                <div className="space-y-3">
+                                    <h4 className="text-xs font-black text-neutral-400 uppercase tracking-widest">CNAME Record (www)</h4>
+                                    <div className="p-4 bg-neutral-900 rounded-2xl text-white font-mono text-sm flex items-center justify-between group cursor-pointer" onClick={() => navigator.clipboard.writeText("storefronte.netlify.app")}>
+                                        <span>storefronte.netlify.app</span>
+                                        <span className="text-neutral-500 text-xs group-hover:text-white transition-colors">Copy</span>
                                     </div>
                                 </div>
                             </div>
-                        )}
+                        </div>
+
+                        {/* DNS Instructions (Legacy block removed as it is replaced by persistent block above) */}
 
                         {/* Verified Success State */}
                         {isVerified && (

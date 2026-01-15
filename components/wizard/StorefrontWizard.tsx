@@ -9,14 +9,14 @@ import Image from "next/image";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "@/lib/firebaseConfig";
 import { useRouter } from "next/navigation";
-import { 
-  saveWizardToFirebase, 
-  loadWizardFromFirebase, 
-  saveWizardLocally, 
-  loadWizardLocally, 
-  clearWizardLocally, 
+import {
+  saveWizardToFirebase,
+  loadWizardFromFirebase,
+  saveWizardLocally,
+  loadWizardLocally,
+  clearWizardLocally,
   hasLocalWizardData,
-  WizardData 
+  WizardData
 } from "@/services/firebase";
 import { useToast } from "@/hooks/useToast";
 
@@ -80,7 +80,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
   const { showSuccess, showError } = useToast();
   const [aiGenerating, setAiGenerating] = useState(false);
   const [showLocalDataPrompt, setShowLocalDataPrompt] = useState(false);
-  
+
   // Interactive AI Description Generator State
   const [showAIDescriptionModal, setShowAIDescriptionModal] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState<string>("");
@@ -98,7 +98,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
     if (typeof window === "undefined") {
       return getDefaultData();
     }
-    
+
     // First check if user is authenticated and load from Firebase
     if (user) {
       try {
@@ -118,7 +118,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
         console.error("Error loading from Firebase:", error);
       }
     }
-    
+
     // Check for local data
     if (hasLocalWizardData()) {
       const localData = loadWizardLocally();
@@ -136,7 +136,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
         };
       }
     }
-    
+
     // Try localStorage as fallback
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -152,7 +152,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
     } catch (error) {
       console.error("Error loading saved form data:", error);
     }
-    
+
     return getDefaultData();
   };
 
@@ -324,7 +324,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
 
   const validateStep = (step: number): boolean => {
     const newErrors: Record<string, string> = {};
-    
+
     switch (step) {
       case 1:
         if (!formData.ideaScope) {
@@ -367,7 +367,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
         }
         break;
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -382,9 +382,9 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
     try {
       // Simulate AI generation - replace with actual API call
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       const aiDescription = `Based on your ${formData.ideaScope} storefront for ${formData.companyName}, we recommend a ${formData.theme?.designFeel || 'modern'} design approach. The storefront should feature a clean, professional layout with ${formData.theme?.primaryColor || 'blue'} as the primary accent color. Use ${formData.theme?.fontFamily || 'Inter'} font family for a contemporary feel. Focus on showcasing your products with high-quality imagery and clear call-to-action buttons. The design should emphasize ${formData.description.substring(0, 50)}...`;
-      
+
       setFormData(prev => ({
         ...prev,
         theme: {
@@ -392,7 +392,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
           aiDescription,
         }
       }));
-      
+
       showSuccess("AI design recommendations generated!");
     } catch (error) {
       showError("Failed to generate AI recommendations. Please try again.");
@@ -600,11 +600,10 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
                       localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
                     }
                   }}
-                  className={`p-4 rounded-lg border-2 transition-all text-left ${
-                    formData.ideaScope === scope.value
+                  className={`p-4 rounded-lg border-2 transition-all text-left ${formData.ideaScope === scope.value
                       ? "border-blue-600 bg-blue-50"
                       : "border-neutral-200 hover:border-blue-300"
-                  }`}
+                    }`}
                 >
                   <span className="text-sm font-medium text-neutral-800">
                     {scope.label}
@@ -899,11 +898,10 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
                         setErrors(prev => ({ ...prev, designFeel: "" }));
                       }
                     }}
-                    className={`p-4 rounded-lg border-2 text-left transition-all ${
-                      formData.theme?.designFeel === feel.value
+                    className={`p-4 rounded-lg border-2 text-left transition-all ${formData.theme?.designFeel === feel.value
                         ? "border-blue-600 bg-blue-50"
                         : "border-neutral-200 hover:border-blue-300"
-                    }`}
+                      }`}
                   >
                     <div className="font-semibold text-neutral-800">{feel.label}</div>
                     <div className="text-xs text-neutral-600 mt-1">{feel.desc}</div>
@@ -978,319 +976,316 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
 
   return (
     <>
-    <PopupModal
-      isOpen={isOpen}
-      onClose={handleClose}
-      size="2xl"
-      placement="center"
-      showCloseButton={false}
-      className="max-w-3xl"
-    >
-      <div className="p-6 relative">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-bold text-neutral-800">
-              Create Your Storefront
-            </h2>
-            <p className="text-sm text-neutral-600 mt-1">
-              Step {currentStep} of {STEPS.length}
-            </p>
+      <PopupModal
+        isOpen={isOpen}
+        onClose={handleClose}
+        size="2xl"
+        placement="center"
+        showCloseButton={false}
+        className="max-w-3xl"
+      >
+        <div className="p-6 relative">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-neutral-800">
+                Create Your Storefront
+              </h2>
+              <p className="text-sm text-neutral-600 mt-1">
+                Step {currentStep} of {STEPS.length}
+              </p>
+            </div>
+            <button
+              onClick={handleClose}
+              className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
+            >
+              <XMarkIcon className="w-5 h-5 text-neutral-600" />
+            </button>
           </div>
-          <button
-            onClick={handleClose}
-            className="p-2 hover:bg-neutral-100 rounded-full transition-colors"
-          >
-            <XMarkIcon className="w-5 h-5 text-neutral-600" />
-          </button>
+
+          {/* Progress Bar */}
+          <div className="mb-8">
+            <div className="flex items-start justify-between mb-2 w-full">
+              {STEPS.map((step, index) => (
+                <div key={step.id} className="flex items-start flex-1 relative">
+                  <div className="flex flex-col items-center flex-1 z-10">
+                    <div
+                      className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors shrink-0 ${currentStep > step.id
+                          ? "bg-blue-600 border-blue-600 text-white"
+                          : currentStep === step.id
+                            ? "border-blue-600 bg-white text-blue-600"
+                            : "border-neutral-300 bg-white text-neutral-400"
+                        }`}
+                    >
+                      {currentStep > step.id ? (
+                        <CheckCircleIcon className="w-6 h-6" />
+                      ) : (
+                        <span className="text-sm font-semibold">{step.id}</span>
+                      )}
+                    </div>
+                    <p
+                      className={`text-xs mt-2 text-center max-w-[100px] ${currentStep >= step.id
+                          ? "text-neutral-800 font-medium"
+                          : "text-neutral-400"
+                        }`}
+                    >
+                      {step.title}
+                    </p>
+                  </div>
+                  {index < STEPS.length - 1 && (
+                    <div
+                      className={`absolute top-5 left-[calc(50%+20px)] right-0 h-0.5 transition-colors ${currentStep > step.id ? "bg-blue-600" : "bg-neutral-200"
+                        }`}
+                      style={{ width: 'calc(100% - 40px)' }}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Step Content */}
+          <div className="min-h-[400px] mb-6 relative">{renderStepContent()}</div>
+
+          {/* Footer */}
+          <div className="flex items-center justify-between pt-6 border-t border-neutral-200">
+            <Button
+              type="button"
+              variant="light"
+              onClick={handlePrevious}
+              isDisabled={currentStep === 1}
+              startContent={<ArrowLeftIcon className="w-4 h-4" />}
+              className="disabled:opacity-50"
+            >
+              Previous
+            </Button>
+            <div className="flex gap-2">
+              {currentStep < STEPS.length ? (
+                <Button
+                  type="button"
+                  onClick={handleNext}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-md hover:shadow-lg transition-all"
+                  endContent={<ArrowRightIcon className="w-4 h-4" />}
+                >
+                  Next
+                </Button>
+              ) : (
+                <>
+                  {!user && (
+                    <div className="flex items-center gap-2 text-sm text-neutral-600 mb-2">
+                      <LockClosedIcon className="w-4 h-4" />
+                      <span>Sign in required to create storefront</span>
+                    </div>
+                  )}
+                  <Button
+                    type="button"
+                    onClick={handleSubmit}
+                    loading={loading}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-md hover:shadow-lg transition-all"
+                    endContent={<CheckCircleIcon className="w-4 h-4" />}
+                  >
+                    Create Storefront
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="mb-8">
-          <div className="flex items-start justify-between mb-2 w-full">
-            {STEPS.map((step, index) => (
-              <div key={step.id} className="flex items-start flex-1 relative">
-                <div className="flex flex-col items-center flex-1 z-10">
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors shrink-0 ${
-                      currentStep > step.id
-                        ? "bg-blue-600 border-blue-600 text-white"
-                        : currentStep === step.id
-                        ? "border-blue-600 bg-white text-blue-600"
-                        : "border-neutral-300 bg-white text-neutral-400"
-                    }`}
-                  >
-                    {currentStep > step.id ? (
-                      <CheckCircleIcon className="w-6 h-6" />
-                    ) : (
-                      <span className="text-sm font-semibold">{step.id}</span>
-                    )}
-                  </div>
-                  <p
-                    className={`text-xs mt-2 text-center max-w-[100px] ${
-                      currentStep >= step.id
-                        ? "text-neutral-800 font-medium"
-                        : "text-neutral-400"
-                    }`}
-                  >
-                    {step.title}
-                  </p>
+        {/* Local Data Prompt Modal */}
+        <PopupModal
+          isOpen={showLocalDataPrompt}
+          onClose={() => setShowLocalDataPrompt(false)}
+          title="Found Saved Progress"
+          size="md"
+        >
+          <div className="space-y-4">
+            <p className="text-neutral-600">
+              We found saved progress from a previous session. Would you like to continue from where you left off?
+            </p>
+            <div className="flex gap-3">
+              <Button
+                onPress={() => {
+                  setShowLocalDataPrompt(false);
+                  showSuccess("Continuing with saved progress");
+                }}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Continue
+              </Button>
+              <Button
+                onPress={() => {
+                  clearWizardLocally();
+                  setFormData(getDefaultData());
+                  setShowLocalDataPrompt(false);
+                  showSuccess("Starting fresh");
+                }}
+                variant="bordered"
+                className="flex-1"
+              >
+                Start Fresh
+              </Button>
+            </div>
+          </div>
+        </PopupModal>
+
+
+        {/* Authentication Prompt Overlay */}
+        {!authChecked ? (
+          <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+              <p className="text-sm text-neutral-600">Checking authentication...</p>
+            </div>
+          </div>
+        ) : !user && currentStep === STEPS.length ? (
+          <div className="absolute inset-0 bg-white/95 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
+            <div className="text-center p-6 max-w-md">
+              <LockClosedIcon className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-neutral-800 mb-2">
+                Sign In Required
+              </h3>
+              <p className="text-sm text-neutral-600 mb-6">
+                Please sign in or create an account to create your storefront. Your progress has been saved and will be restored when you return.
+              </p>
+              <div className="flex gap-3 justify-center">
+                <Button
+                  onClick={() => {
+                    onClose();
+                    router.push("/signup");
+                  }}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  Sign Up
+                </Button>
+                <Button
+                  onClick={() => {
+                    const currentPath = window.location.pathname;
+                    router.push(`/signin?callbackUrl=${encodeURIComponent(currentPath)}`);
+                  }}
+                  variant="bordered"
+                  className="border-neutral-300"
+                >
+                  Sign In
+                </Button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </PopupModal>
+
+      {/* AI Description Generator Modal */}
+      <PopupModal
+        isOpen={showAIDescriptionModal}
+        onClose={() => {
+          setShowAIDescriptionModal(false);
+          setQuestionAnswers({});
+          setCurrentQuestion('');
+          setCurrentAnswer('');
+          setQuestionNumber(0);
+        }}
+        title="AI Description Generator"
+        size="md"
+      >
+        <div className="space-y-6">
+          {generatingDescription ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-neutral-600">Generating your business description...</p>
+            </div>
+          ) : generatingQuestion ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-neutral-600">Generating question...</p>
+            </div>
+          ) : currentQuestion ? (
+            <>
+              <div className="bg-blue-50 rounded-lg p-4 mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-blue-600">
+                    Question {questionNumber} of {totalQuestions}
+                  </span>
+                  <span className="text-xs text-blue-500">
+                    {Math.round((questionNumber / totalQuestions) * 100)}% complete
+                  </span>
                 </div>
-                {index < STEPS.length - 1 && (
+                <div className="w-full bg-blue-200 rounded-full h-2">
                   <div
-                    className={`absolute top-5 left-[calc(50%+20px)] right-0 h-0.5 transition-colors ${
-                      currentStep > step.id ? "bg-blue-600" : "bg-neutral-200"
-                    }`}
-                    style={{ width: 'calc(100% - 40px)' }}
+                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${(questionNumber / totalQuestions) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
+                  {currentQuestion}
+                </label>
+                {hint && (
+                  <p className="text-xs text-neutral-500 mb-2">{hint}</p>
+                )}
+                {inputType === 'textarea' ? (
+                  <TextArea
+                    value={currentAnswer}
+                    onChange={(e) => setCurrentAnswer(e.target.value)}
+                    placeholder="Type your answer here..."
+                    className="w-full min-h-[120px]"
+                    name="aiAnswer"
+                  />
+                ) : (
+                  <Input
+                    value={currentAnswer}
+                    onChange={(e) => setCurrentAnswer(e.target.value)}
+                    placeholder="Type your answer here..."
+                    className="w-full"
+                    name="aiAnswer"
+                    type="text"
                   />
                 )}
               </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Step Content */}
-        <div className="min-h-[400px] mb-6 relative">{renderStepContent()}</div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between pt-6 border-t border-neutral-200">
-          <Button
-            type="button"
-            variant="light"
-            onClick={handlePrevious}
-            isDisabled={currentStep === 1}
-            startContent={<ArrowLeftIcon className="w-4 h-4" />}
-            className="disabled:opacity-50"
-          >
-            Previous
-          </Button>
-          <div className="flex gap-2">
-            {currentStep < STEPS.length ? (
-              <Button
-                type="button"
-                onClick={handleNext}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-md hover:shadow-lg transition-all"
-                endContent={<ArrowRightIcon className="w-4 h-4" />}
-              >
-                Next
-              </Button>
-            ) : (
-              <>
-                {!user && (
-                  <div className="flex items-center gap-2 text-sm text-neutral-600 mb-2">
-                    <LockClosedIcon className="w-4 h-4" />
-                    <span>Sign in required to create storefront</span>
-                  </div>
-                )}
+              <div className="flex gap-3">
                 <Button
-                  type="button"
-                  onClick={handleSubmit}
-                  loading={loading}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow-md hover:shadow-lg transition-all"
-                  endContent={<CheckCircleIcon className="w-4 h-4" />}
+                  onClick={handleAnswerSubmit}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                  isDisabled={!currentAnswer.trim()}
                 >
-                  Create Storefront
+                  {questionNumber < totalQuestions ? 'Next Question' : 'Generate Description'}
                 </Button>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Local Data Prompt Modal */}
-      <PopupModal
-        isOpen={showLocalDataPrompt}
-        onClose={() => setShowLocalDataPrompt(false)}
-        title="Found Saved Progress"
-        size="md"
-      >
-        <div className="space-y-4">
-          <p className="text-neutral-600">
-            We found saved progress from a previous session. Would you like to continue from where you left off?
-          </p>
-          <div className="flex gap-3">
-            <Button
-              onPress={() => {
-                setShowLocalDataPrompt(false);
-                showSuccess("Continuing with saved progress");
-              }}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              Continue
-            </Button>
-            <Button
-              onPress={() => {
-                clearWizardLocally();
-                setFormData(getDefaultData());
-                setShowLocalDataPrompt(false);
-                showSuccess("Starting fresh");
-              }}
-              variant="bordered"
-              className="flex-1"
-            >
-              Start Fresh
-            </Button>
-          </div>
+                <Button
+                  onClick={() => {
+                    setShowAIDescriptionModal(false);
+                    setQuestionAnswers({});
+                    setCurrentQuestion('');
+                    setCurrentAnswer('');
+                  }}
+                  variant="light"
+                  className="px-4"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-8">
+              <SparklesIcon className="w-16 h-16 text-blue-600 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-neutral-800 mb-2">
+                Let AI Help Create Your Description
+              </h3>
+              <p className="text-sm text-neutral-600 mb-6">
+                We'll ask you a few questions about your business to generate a compelling description.
+              </p>
+              <Button
+                onClick={generateNextQuestion}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+                isDisabled={generatingQuestion}
+              >
+                {generatingQuestion ? 'Starting...' : 'Start'}
+              </Button>
+            </div>
+          )}
         </div>
       </PopupModal>
-
-
-      {/* Authentication Prompt Overlay */}
-      {!authChecked ? (
-        <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-            <p className="text-sm text-neutral-600">Checking authentication...</p>
-          </div>
-        </div>
-      ) : !user && currentStep === STEPS.length ? (
-        <div className="absolute inset-0 bg-white/95 backdrop-blur-sm flex items-center justify-center z-10 rounded-lg">
-          <div className="text-center p-6 max-w-md">
-            <LockClosedIcon className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-neutral-800 mb-2">
-              Sign In Required
-            </h3>
-            <p className="text-sm text-neutral-600 mb-6">
-              Please sign in or create an account to create your storefront. Your progress has been saved and will be restored when you return.
-            </p>
-            <div className="flex gap-3 justify-center">
-              <Button
-                onClick={() => {
-                  onClose();
-                  router.push("/signup");
-                }}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                Sign Up
-              </Button>
-              <Button
-                onClick={() => {
-                  const currentPath = window.location.pathname;
-                  router.push(`/signin?callbackUrl=${encodeURIComponent(currentPath)}`);
-                }}
-                variant="bordered"
-                className="border-neutral-300"
-              >
-                Sign In
-              </Button>
-            </div>
-          </div>
-        </div>
-      ) : null}
-    </PopupModal>
-
-    {/* AI Description Generator Modal */}
-    <PopupModal
-      isOpen={showAIDescriptionModal}
-      onClose={() => {
-        setShowAIDescriptionModal(false);
-        setQuestionAnswers({});
-        setCurrentQuestion('');
-        setCurrentAnswer('');
-        setQuestionNumber(0);
-      }}
-      title="AI Description Generator"
-      size="md"
-    >
-      <div className="space-y-6">
-        {generatingDescription ? (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-neutral-600">Generating your business description...</p>
-          </div>
-        ) : generatingQuestion ? (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-neutral-600">Generating question...</p>
-          </div>
-        ) : currentQuestion ? (
-          <>
-            <div className="bg-blue-50 rounded-lg p-4 mb-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold text-blue-600">
-                  Question {questionNumber} of {totalQuestions}
-                </span>
-                <span className="text-xs text-blue-500">
-                  {Math.round((questionNumber / totalQuestions) * 100)}% complete
-                </span>
-              </div>
-              <div className="w-full bg-blue-200 rounded-full h-2">
-                <div
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${(questionNumber / totalQuestions) * 100}%` }}
-                ></div>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                {currentQuestion}
-              </label>
-              {hint && (
-                <p className="text-xs text-neutral-500 mb-2">{hint}</p>
-              )}
-              {inputType === 'textarea' ? (
-                <TextArea
-                  value={currentAnswer}
-                  onChange={(e) => setCurrentAnswer(e.target.value)}
-                  placeholder="Type your answer here..."
-                  className="w-full min-h-[120px]"
-                  name="aiAnswer"
-                />
-              ) : (
-                <Input
-                  value={currentAnswer}
-                  onChange={(e) => setCurrentAnswer(e.target.value)}
-                  placeholder="Type your answer here..."
-                  className="w-full"
-                  name="aiAnswer"
-                  type="text"
-                />
-              )}
-            </div>
-
-            <div className="flex gap-3">
-              <Button
-                onClick={handleAnswerSubmit}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-                disabled={!currentAnswer.trim()}
-              >
-                {questionNumber < totalQuestions ? 'Next Question' : 'Generate Description'}
-              </Button>
-              <Button
-                onClick={() => {
-                  setShowAIDescriptionModal(false);
-                  setQuestionAnswers({});
-                  setCurrentQuestion('');
-                  setCurrentAnswer('');
-                }}
-                variant="light"
-                className="px-4"
-              >
-                Cancel
-              </Button>
-            </div>
-          </>
-        ) : (
-          <div className="text-center py-8">
-            <SparklesIcon className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-neutral-800 mb-2">
-              Let AI Help Create Your Description
-            </h3>
-            <p className="text-sm text-neutral-600 mb-6">
-              We'll ask you a few questions about your business to generate a compelling description.
-            </p>
-            <Button
-              onClick={generateNextQuestion}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-              disabled={generatingQuestion}
-            >
-              {generatingQuestion ? 'Starting...' : 'Start'}
-            </Button>
-          </div>
-        )}
-      </div>
-    </PopupModal>
     </>
   );
 };

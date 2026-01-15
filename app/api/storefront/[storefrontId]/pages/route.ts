@@ -24,9 +24,9 @@ import {
 } from '@/services/planLimits';
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     storefrontId: string;
-  };
+  }>;
 }
 
 /**
@@ -38,7 +38,7 @@ export async function GET(
   { params }: RouteParams
 ) {
   try {
-    const { storefrontId } = params;
+    const { storefrontId } = await params;
 
     if (!storefrontId) {
       return NextResponse.json(
@@ -68,7 +68,7 @@ export async function POST(
   { params }: RouteParams
 ) {
   try {
-    const { storefrontId } = params;
+    const { storefrontId } = await params;
     const body = await request.json();
 
     if (!storefrontId) {
@@ -133,6 +133,8 @@ export async function POST(
         showInMenu: false,
         showInFooter: false,
       },
+      parentId: null,
+      order: 0,
     });
 
     // Increment page count
@@ -165,7 +167,7 @@ export async function PATCH(
   { params }: RouteParams
 ) {
   try {
-    const { storefrontId } = params;
+    const { storefrontId } = await params;
     const { searchParams } = new URL(request.url);
     const pageType = searchParams.get('pageType');
     const body = await request.json();
@@ -210,7 +212,7 @@ export async function DELETE(
   { params }: RouteParams
 ) {
   try {
-    const { storefrontId } = params;
+    const { storefrontId } = await params;
     const { searchParams } = new URL(request.url);
     const pageType = searchParams.get('pageType');
     const userId = searchParams.get('userId');

@@ -1,5 +1,10 @@
 import { LoginPage } from "@/views/auth/LoginPage";
+import { Suspense } from "react";
 
 export default function SignInPage() {
-  return <LoginPage />;
+  return (
+    <Suspense fallback={null}>
+      <LoginPage />
+    </Suspense>
+  );
 }

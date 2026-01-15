@@ -76,6 +76,7 @@ export default function UnitsPage() {
                         <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Unit Name</label>
                             <Input
+                                name="unitName"
                                 placeholder="e.g. Kilograms, Pieces"
                                 value={actualName}
                                 onChange={(e) => setActualName(e.target.value)}
@@ -85,6 +86,7 @@ export default function UnitsPage() {
                         <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Short Name</label>
                             <Input
+                                name="shortName"
                                 placeholder="e.g. Kg, Pcs"
                                 value={shortName}
                                 onChange={(e) => setShortName(e.target.value)}

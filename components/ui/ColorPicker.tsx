@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "./button";
+
 
 interface ColorPickerProps {
   value: string;
@@ -36,7 +36,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
       <label className="block text-sm font-medium text-neutral-700">
         {label}
       </label>
-      
+
       <div className="flex items-center gap-3">
         {/* Color Preview */}
         <div className="relative">
@@ -59,17 +59,16 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
                       onChange(color.value);
                       setShowPicker(false);
                     }}
-                    className={`w-10 h-10 rounded-lg border-2 transition-all ${
-                      value === color.value
+                    className={`w-10 h-10 rounded-lg border-2 transition-all ${value === color.value
                         ? "border-neutral-900 scale-110"
                         : "border-neutral-300 hover:border-neutral-500"
-                    }`}
+                      }`}
                     style={{ backgroundColor: color.value }}
                     title={color.name}
                   />
                 ))}
               </div>
-              
+
               {/* Custom Color Input */}
               <div className="flex items-center gap-2">
                 <input
@@ -93,7 +92,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
             </div>
           )}
         </div>
-        
+
         {/* Color Value Display */}
         <div className="flex-1">
           <input
@@ -109,7 +108,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({
           />
         </div>
       </div>
-      
+
       {/* Click outside to close */}
       {showPicker && (
         <div

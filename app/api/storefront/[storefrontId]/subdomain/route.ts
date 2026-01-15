@@ -16,9 +16,9 @@ import {
 } from '@/services/cloudflare';
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     storefrontId: string;
-  };
+  }>;
 }
 
 /**
@@ -30,7 +30,7 @@ export async function GET(
   { params }: RouteParams
 ) {
   try {
-    const { storefrontId } = params;
+    const { storefrontId } = await params;
     const { searchParams } = new URL(request.url);
     const subdomain = searchParams.get('subdomain') || storefrontId;
 
@@ -53,11 +53,11 @@ export async function GET(
         : null,
       record: record
         ? {
-            id: record.id,
-            type: record.type,
-            proxied: record.proxied,
-            ttl: record.ttl,
-          }
+          id: record.id,
+          type: record.type,
+          proxied: record.proxied,
+          ttl: record.ttl,
+        }
         : null,
     });
   } catch (error: any) {
@@ -78,7 +78,7 @@ export async function POST(
   { params }: RouteParams
 ) {
   try {
-    const { storefrontId } = params;
+    const { storefrontId } = await params;
     const body = await request.json();
     const { subdomain, serverIp } = body;
 
@@ -142,7 +142,7 @@ export async function DELETE(
   { params }: RouteParams
 ) {
   try {
-    const { storefrontId } = params;
+    const { storefrontId } = await params;
     const { searchParams } = new URL(request.url);
     const subdomain = searchParams.get('subdomain') || storefrontId;
 

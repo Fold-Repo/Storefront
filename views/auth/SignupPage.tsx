@@ -4,9 +4,9 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Input, TextArea, PhoneInput, Select } from "@/components/ui/form";
 import { Button } from "@/components/ui";
-import { 
-  ArrowRightIcon, 
-  ArrowLeftIcon, 
+import {
+  ArrowRightIcon,
+  ArrowLeftIcon,
   CheckCircleIcon,
   XMarkIcon,
   EnvelopeIcon
@@ -86,7 +86,7 @@ export const SignupPage = () => {
         postcode: "",
       };
     }
-    
+
     try {
       const saved = localStorage.getItem(SIGNUP_STORAGE_KEY);
       if (saved) {
@@ -100,7 +100,7 @@ export const SignupPage = () => {
     } catch (error) {
       console.error("Error loading saved signup data:", error);
     }
-    
+
     return {
       businessname: "",
       businesstype: "",
@@ -167,7 +167,7 @@ export const SignupPage = () => {
         // User is authenticated (likely from Google signup)
         const savedData = loadSavedData();
         const hasSavedData = savedData.email || savedData.firstname || savedData.businessname;
-        
+
         setFormData((prev) => {
           const updated = {
             ...prev,
@@ -179,9 +179,9 @@ export const SignupPage = () => {
           };
           return updated;
         });
-        
+
         setSignupMethod("google");
-        
+
         // Check if there's incomplete signup data
         if (hasSavedData) {
           setHasIncompleteSignup(true);
@@ -201,7 +201,7 @@ export const SignupPage = () => {
             setCurrentStep(2); // Skip account type selection
           }
         }
-        
+
         // Check if user came from Google signup URL
         if (typeof window !== "undefined") {
           const urlParams = new URLSearchParams(window.location.search);
@@ -460,7 +460,7 @@ export const SignupPage = () => {
     // For Google signups, password will be auto-generated in handleSubmit
     if (!formData.phone) newErrors.phone = "Phone is required";
     if (!formData.position) newErrors.position = "Position is required";
-    
+
     if (!formData.businessname) newErrors.businessname = "Business name is required";
     if (!formData.businesstype) newErrors.businesstype = "Business type is required";
     if (!formData.tin) newErrors.tin = "TIN is required";
@@ -472,14 +472,14 @@ export const SignupPage = () => {
     if (!formData.business_registration_number) {
       newErrors.business_registration_number = "Business registration number is required";
     }
-    
+
     if (!formData.product_service) newErrors.product_service = "Product/service is required";
     if (!formData.product_description) {
       newErrors.product_description = "Product description is required";
     } else if (formData.product_description.length < 50) {
       newErrors.product_description = "Description must be at least 50 characters";
     }
-    
+
     if (!formData.addressline1) newErrors.addressline1 = "Address line 1 is required";
     if (!formData.city) newErrors.city = "City is required";
     if (!formData.postcode) {
@@ -487,7 +487,7 @@ export const SignupPage = () => {
     } else if (!/^[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}$/i.test(formData.postcode)) {
       newErrors.postcode = "Invalid UK postcode format";
     }
-    
+
     if (formData.terms_condition !== "yes") {
       newErrors.terms_condition = "You must accept the terms and conditions";
     }
@@ -496,7 +496,7 @@ export const SignupPage = () => {
     }
 
     setErrors(newErrors);
-    
+
     // If there are errors, scroll to the first error field
     if (Object.keys(newErrors).length > 0) {
       const firstErrorField = Object.keys(newErrors)[0];
@@ -517,7 +517,7 @@ export const SignupPage = () => {
         setCurrentStep(6);
       }
     }
-    
+
     return Object.keys(newErrors).length === 0;
   };
 
@@ -560,9 +560,9 @@ export const SignupPage = () => {
         };
 
         const signupResponse = await googleSignup(googleSignupPayload);
-        
+
         showSuccess("Account created successfully! Redirecting to dashboard...");
-        
+
         // Store auth token and user data
         if (typeof window !== "undefined") {
           // Store auth token if provided
@@ -576,7 +576,7 @@ export const SignupPage = () => {
             const { AUTH_TOKEN_KEY } = await import("@/types");
             setCookie(AUTH_TOKEN_KEY, token, 7);
           }
-          
+
           // Store user data if provided
           if (signupResponse?.user || signupResponse?.data?.user) {
             const userData = signupResponse?.user || signupResponse?.data?.user;
@@ -585,14 +585,14 @@ export const SignupPage = () => {
             localStorage.setItem("user_data", JSON.stringify(userData));
           }
         }
-        
+
         // Clear saved signup data after successful submission
         if (typeof window !== "undefined") {
           localStorage.removeItem(SIGNUP_STORAGE_KEY);
           localStorage.removeItem(`${SIGNUP_STORAGE_KEY}_step`);
           setGoogleIdToken(null); // Clear stored token
         }
-        
+
         // Google signup redirects directly to dashboard (no email verification needed)
         router.push("/dashboard");
         return;
@@ -601,9 +601,9 @@ export const SignupPage = () => {
       // Regular email/password signup flow
       // Upload file first if it exists
       let brochureUrl: string | null = null;
-      if (formData.product_brochure && formData.product_brochure instanceof File) {
+      if (formData.product_brochure && (formData.product_brochure as any) instanceof File) {
         try {
-          brochureUrl = await uploadFile(formData.product_brochure);
+          brochureUrl = await uploadFile(formData.product_brochure as File);
           showSuccess("File uploaded successfully");
         } catch (error: any) {
           showError(error.message || "Failed to upload file");
@@ -643,11 +643,11 @@ export const SignupPage = () => {
 
       const signupResponse = await signup(payload);
       showSuccess("Account created successfully! Please verify your email.");
-      
+
       // Store email for verification page
       if (typeof window !== "undefined") {
         localStorage.setItem("signup_email", formData.email!);
-        
+
         // Store auth token if provided
         if (signupResponse?.token || signupResponse?.data?.token) {
           const token = signupResponse?.token || signupResponse?.data?.token;
@@ -657,22 +657,22 @@ export const SignupPage = () => {
           const { AUTH_TOKEN_KEY } = await import("@/types");
           setCookie(AUTH_TOKEN_KEY, token, 7);
         }
-        
+
         // Don't clear signup data yet - keep it until verification is complete
         // This allows user to continue wizard after verification
       }
-      
+
       // Clear saved signup data after successful submission
       if (typeof window !== "undefined") {
         localStorage.removeItem(SIGNUP_STORAGE_KEY);
         localStorage.removeItem(`${SIGNUP_STORAGE_KEY}_step`);
       }
-      
+
       // Redirect to verification page
       router.push(`/verify?email=${encodeURIComponent(formData.email!)}`);
     } catch (error: any) {
       console.error("Signup error:", error);
-      
+
       // If error contains field-specific errors, show them
       if (error.message) {
         try {
@@ -698,16 +698,16 @@ export const SignupPage = () => {
               city: "city",
               postcode: "postcode",
             };
-            
+
             const mappedErrors: Record<string, string> = {};
             Object.keys(errorData.fields).forEach((key) => {
               const formField = fieldMapping[key] || key;
               mappedErrors[formField] = errorData.fields[key];
             });
-            
+
             setErrors(mappedErrors);
             showError("Please fix the validation errors below.");
-            
+
             // Navigate to the step with the first error
             const firstErrorField = Object.keys(mappedErrors)[0];
             if (firstErrorField === "firstname" || firstErrorField === "lastname" || firstErrorField === "email" || firstErrorField === "phone" || firstErrorField === "position" || firstErrorField === "password") {
@@ -1005,9 +1005,9 @@ export const SignupPage = () => {
                 onChange={handleFileChange}
                 className="form-control"
               />
-              {formData.product_brochure && formData.product_brochure instanceof File && (
+              {(formData.product_brochure as any) instanceof File && (
                 <p className="text-sm text-neutral-600 mt-2">
-                  Selected: {formData.product_brochure.name}
+                  Selected: {(formData.product_brochure as any).name}
                 </p>
               )}
             </div>
@@ -1265,13 +1265,12 @@ export const SignupPage = () => {
               <div key={step.id} className="flex items-center flex-1">
                 <div className="flex flex-col items-center flex-1">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${
-                      currentStep > step.id
-                        ? "bg-primary-500 border-primary-500 text-white"
-                        : currentStep === step.id
+                    className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${currentStep > step.id
+                      ? "bg-primary-500 border-primary-500 text-white"
+                      : currentStep === step.id
                         ? "border-primary-500 bg-white text-primary-500"
                         : "border-neutral-300 bg-white text-neutral-400"
-                    }`}
+                      }`}
                   >
                     {currentStep > step.id ? (
                       <CheckCircleIcon className="w-6 h-6" />
@@ -1280,20 +1279,18 @@ export const SignupPage = () => {
                     )}
                   </div>
                   <p
-                    className={`text-xs mt-2 text-center max-w-[80px] ${
-                      currentStep >= step.id
-                        ? "text-neutral-800 font-medium"
-                        : "text-neutral-400"
-                    }`}
+                    className={`text-xs mt-2 text-center max-w-[80px] ${currentStep >= step.id
+                      ? "text-neutral-800 font-medium"
+                      : "text-neutral-400"
+                      }`}
                   >
                     {step.title}
                   </p>
                 </div>
                 {index < STEPS.length - 1 && (
                   <div
-                    className={`h-0.5 flex-1 mx-2 transition-colors ${
-                      currentStep > step.id ? "bg-primary-500" : "bg-neutral-200"
-                    }`}
+                    className={`h-0.5 flex-1 mx-2 transition-colors ${currentStep > step.id ? "bg-primary-500" : "bg-neutral-200"
+                      }`}
                   />
                 )}
               </div>

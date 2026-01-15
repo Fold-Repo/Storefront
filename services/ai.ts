@@ -1,3 +1,4 @@
+import { GeneratedPage } from "./firebase";
 /**
  * AI Service for generating e-commerce site pages
  * 
@@ -20,15 +21,6 @@ export interface GeneratePageParams {
   logoUrl?: string;
 }
 
-export interface GeneratedPage {
-  html: string;
-  css: string;
-  js?: string;
-  metadata?: {
-    title: string;
-    description: string;
-  };
-}
 
 export interface GenerateSiteParams {
   wizardData: {
@@ -57,9 +49,9 @@ export interface GenerateSiteParams {
 export const generatePage = async (params: GeneratePageParams): Promise<GeneratedPage> => {
   // TODO: Implement actual AI generation
   // For now, return a placeholder structure
-  
+
   const { pageType, businessNiche, companyName, theme, templateHtml } = params;
-  
+
   // Example: If you have existing HTML, you can customize it
   if (templateHtml) {
     // Customize template with theme and business info
@@ -69,7 +61,7 @@ export const generatePage = async (params: GeneratePageParams): Promise<Generate
       companyName,
       businessNiche,
     });
-    
+
     return {
       html: customizedHtml,
       css: generateThemeCSS(theme),
@@ -79,7 +71,7 @@ export const generatePage = async (params: GeneratePageParams): Promise<Generate
       },
     };
   }
-  
+
   // Otherwise, generate from scratch using AI
   // This would call OpenAI/Claude API
   return await generatePageWithAI(params);
@@ -90,7 +82,7 @@ export const generatePage = async (params: GeneratePageParams): Promise<Generate
  */
 export const generateCompleteSite = async (params: GenerateSiteParams): Promise<Record<string, GeneratedPage>> => {
   const { wizardData } = params;
-  
+
   // Start with essential pages only to reduce generation time
   // Additional pages can be generated on-demand later
   const essentialPages: Array<GeneratePageParams['pageType']> = [
@@ -100,7 +92,7 @@ export const generateCompleteSite = async (params: GenerateSiteParams): Promise<
     'cart',
     'checkout',
   ];
-  
+
   // Optional pages (can be generated later)
   const optionalPages: Array<GeneratePageParams['pageType']> = [
     'categories',
@@ -110,24 +102,24 @@ export const generateCompleteSite = async (params: GenerateSiteParams): Promise<
     'about',
     'contact',
   ];
-  
+
   console.log('🚀 Starting complete site generation for:', wizardData.companyName);
   console.log(`📋 Will generate ${essentialPages.length} essential pages first`);
-  
+
   const generatedPages: Record<string, GeneratedPage> = {};
   const theme = wizardData.theme || {
     primaryColor: '#3B82F6',
     fontFamily: 'Inter',
     designFeel: 'modern',
   };
-  
+
   // Generate essential pages first
   for (let i = 0; i < essentialPages.length; i++) {
     const pageType = essentialPages[i];
     try {
       console.log(`📄 Generating essential page ${i + 1}/${essentialPages.length}: ${pageType}`);
       const startTime = Date.now();
-      
+
       const page = await generatePage({
         pageType,
         businessNiche: wizardData.ideaScope,
@@ -136,7 +128,7 @@ export const generateCompleteSite = async (params: GenerateSiteParams): Promise<
         theme,
         logoUrl: wizardData.logoPreview || undefined,
       });
-      
+
       const duration = ((Date.now() - startTime) / 1000).toFixed(1);
       generatedPages[pageType] = page;
       console.log(`✅ Successfully generated ${pageType} in ${duration}s`);
@@ -160,7 +152,7 @@ export const generateCompleteSite = async (params: GenerateSiteParams): Promise<
       console.log(`⚠️ Using fallback template for ${pageType}`);
     }
   }
-  
+
   // Generate optional pages with basic templates (faster)
   for (const pageType of optionalPages) {
     console.log(`📄 Creating basic template for optional page: ${pageType}`);
@@ -179,7 +171,7 @@ export const generateCompleteSite = async (params: GenerateSiteParams): Promise<
       },
     };
   }
-  
+
   console.log('🎉 Complete site generation finished. Generated pages:', Object.keys(generatedPages).length);
   return generatedPages;
 };
@@ -192,14 +184,14 @@ export const generateCompleteSite = async (params: GenerateSiteParams): Promise<
 async function generatePageWithAI(params: GeneratePageParams): Promise<GeneratedPage> {
   try {
     console.log('🔄 Generating page with AI:', params.pageType);
-    
+
     // Create AbortController for timeout
     const controller = new AbortController();
     const timeoutId = setTimeout(() => {
       console.warn('⏱️ Request timeout for:', params.pageType);
       controller.abort();
     }, 120000); // 2 minute timeout
-    
+
     try {
       // Call our server-side API route
       const response = await fetch('/api/ai/generate', {
@@ -234,7 +226,7 @@ async function generatePageWithAI(params: GeneratePageParams): Promise<Generated
 
       const data = await response.json();
       console.log('✅ API response received:', { success: data.success, hasPage: !!data.page });
-      
+
       if (!data.success || !data.page) {
         console.error('❌ Invalid response structure:', data);
         throw new Error('Invalid response from AI service');
@@ -254,7 +246,7 @@ async function generatePageWithAI(params: GeneratePageParams): Promise<Generated
       message: error.message,
       stack: error.stack,
     });
-    
+
     // Fallback to basic template if AI generation fails
     console.warn('⚠️ Falling back to basic template for:', params.pageType);
     return {
@@ -278,15 +270,15 @@ function customizeTemplate(html: string, customizations: {
   businessNiche: string;
 }): string {
   let customized = html;
-  
+
   // Replace CSS variables
   customized = customized.replace(/--primary-color:\s*[^;]+/g, `--primary-color: ${customizations.primaryColor}`);
   customized = customized.replace(/font-family:\s*[^;]+/g, `font-family: ${customizations.fontFamily}, sans-serif`);
-  
+
   // Replace company name placeholders
   customized = customized.replace(/\{\{companyName\}\}/g, customizations.companyName);
   customized = customized.replace(/\{\{businessNiche\}\}/g, customizations.businessNiche);
-  
+
   return customized;
 }
 
@@ -321,7 +313,7 @@ function generateThemeCSS(theme: GeneratePageParams['theme']): string {
  */
 function generateBasicHTML(params: GeneratePageParams): string {
   const { pageType, companyName, businessNiche } = params;
-  
+
   // Basic HTML structure - this would be enhanced with AI
   return `
     <!DOCTYPE html>
@@ -366,8 +358,9 @@ function getPageTitle(pageType: GeneratePageParams['pageType']): string {
     'search': 'Search Results',
     'about': 'About Us',
     'contact': 'Contact Us',
+    'testimonial': 'Testimonials',
   };
-  
+
   return titles[pageType] || 'Page';
 }
 
@@ -376,7 +369,7 @@ function getPageTitle(pageType: GeneratePageParams['pageType']): string {
  */
 function createPromptForPage(params: GeneratePageParams): string {
   const { pageType, businessNiche, companyName, description, theme } = params;
-  
+
   return `
 Generate a complete, modern, responsive e-commerce ${pageType} page with the following requirements:
 

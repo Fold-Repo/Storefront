@@ -76,6 +76,7 @@ export default function BrandsPage() {
                         <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Brand Name</label>
                             <Input
+                                name="brandName"
                                 placeholder="e.g. Nike, Apple"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}

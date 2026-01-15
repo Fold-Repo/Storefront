@@ -330,7 +330,7 @@ export const PageEditor: React.FC<PageEditorProps> = ({ subdomain, initialPage =
               gjsBlocksBasic.default,
             ],
             pluginsOpts: {
-              [gjsPresetWebpage.default]: {
+              [(gjsPresetWebpage as any).default]: {
                 modalImportTitle: "Import Template",
                 modalImportLabel: "<div style='margin-bottom: 10px; font-size: 13px;'>Paste here your HTML/CSS and click Import</div>",
                 modalImportContent: (editor: any) => {

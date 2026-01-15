@@ -33,7 +33,7 @@ const HomePage = () => {
         window.history.replaceState({}, "", "/");
       }
     }
-    
+
     // Handle scroll to sections if URL has hash
     if (typeof window !== "undefined" && window.location.hash) {
       setTimeout(() => {
@@ -57,12 +57,12 @@ const HomePage = () => {
       setGenerating(true);
 
       // Check storefront limit before creating
-      const userId = String(user.user_id || user.id || user.uid);
+      const userId = String(user.user_id);
       const limitCheck = await canCreateStorefront(userId);
-      
+
       if (!limitCheck.allowed) {
         showError(
-          limitCheck.message || 
+          limitCheck.message ||
           `You have reached your plan limit of ${limitCheck.max} storefront${limitCheck.max > 1 ? 's' : ''}. Please upgrade your plan to create more storefronts.`
         );
         setGenerating(false);
@@ -121,7 +121,7 @@ const HomePage = () => {
       }
 
       showSuccess("Storefront created successfully! Redirecting to dashboard...");
-      
+
       setTimeout(() => {
         router.push("/dashboard");
       }, 1500);
@@ -137,7 +137,7 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-50 to-white">
       <Navbar />
-      
+
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 lg:py-24">
         <div className="max-w-4xl mx-auto text-center">
@@ -147,15 +147,15 @@ const HomePage = () => {
               AI-Powered Storefront Builder
             </span>
           </div>
-          
+
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-neutral-900 mb-6 leading-tight">
             Create Your E-commerce Storefront
             <br />
             <span className="text-blue-600">In Minutes, Not Months</span>
           </h1>
-          
+
           <p className="text-lg md:text-xl text-neutral-600 mb-8 max-w-2xl mx-auto">
-            Build a beautiful, fully-functional online store with our AI-powered wizard. 
+            Build a beautiful, fully-functional online store with our AI-powered wizard.
             No coding required. Just answer a few questions and watch your storefront come to life.
           </p>
 
@@ -344,7 +344,7 @@ const HomePage = () => {
                       Answer Simple Questions
                     </h3>
                     <p className="text-lg text-neutral-600 leading-relaxed">
-                      Tell us about your business idea, company name, and what you want to sell. 
+                      Tell us about your business idea, company name, and what you want to sell.
                       Our AI wizard makes it easy.
                     </p>
                   </div>
@@ -362,7 +362,7 @@ const HomePage = () => {
                       Customize Your Store
                     </h3>
                     <p className="text-lg text-neutral-600 leading-relaxed">
-                      Choose your subdomain, upload your logo, and add a description. 
+                      Choose your subdomain, upload your logo, and add a description.
                       Make it uniquely yours.
                     </p>
                   </div>
@@ -380,7 +380,7 @@ const HomePage = () => {
                       Launch & Start Selling
                     </h3>
                     <p className="text-lg text-neutral-600 leading-relaxed">
-                      Your storefront goes live instantly. Start adding products and 
+                      Your storefront goes live instantly. Start adding products and
                       accepting orders right away.
                     </p>
                   </div>
@@ -401,7 +401,7 @@ const HomePage = () => {
             Ready to Build Your Storefront?
           </h2>
           <p className="text-lg md:text-xl text-white/95 mb-8 max-w-2xl mx-auto font-medium">
-            Join thousands of entrepreneurs who've launched their online stores with us. 
+            Join thousands of entrepreneurs who've launched their online stores with us.
             Get started in minutes, not months.
           </p>
           <div className="flex justify-center">

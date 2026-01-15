@@ -76,6 +76,7 @@ export default function CategoriesPage() {
                         <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Name</label>
                             <Input
+                                name="categoryName"
                                 placeholder="e.g. Electronics"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
