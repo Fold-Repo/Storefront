@@ -63,8 +63,11 @@ export async function proxy(request: NextRequest) {
     const isLocalhost = hostWithoutPort === 'localhost' || hostWithoutPort === '127.0.0.1';
 
     // Also treat .netlify.app technical domains as the main domain to avoid misrouting
+    // We also check a hardcoded fallback if MAIN_DOMAIN is missing
     const isMainDomain = hostWithoutPort === MAIN_DOMAIN ||
         hostWithoutPort === `www.${MAIN_DOMAIN}` ||
+        hostWithoutPort === 'dfoldlab.co.uk' ||
+        hostWithoutPort === 'www.dfoldlab.co.uk' ||
         hostWithoutPort.endsWith('.netlify.app');
 
     // Log for debugging
