@@ -1,0 +1,18 @@
+.section {
+  background-image: url("/img/HomePage/image7.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.overlay {
+  /* optional overlay if you want better contrast */
+  background-color: rgba(255, 255, 255, 0);
+}
+
+.gradientText {
+  background: linear-gradient(to right, #3327de, #6e07ff, #090cd4, #ff8b07);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

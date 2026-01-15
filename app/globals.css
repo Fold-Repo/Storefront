@@ -1,0 +1,274 @@
+@import "tailwindcss";
+
+/* Form Controls - Input Styling */
+input.form-control,
+textarea.form-control,
+select.form-control {
+  width: 100%;
+  padding: 0.625rem 1rem;
+  border: 1px solid #d4d4d4;
+  border-radius: 0.5rem;
+  background-color: white;
+  color: #171717;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+input.form-control::placeholder,
+textarea.form-control::placeholder {
+  color: #a3a3a3;
+}
+
+input.form-control:focus,
+textarea.form-control:focus,
+select.form-control:focus {
+  outline: none;
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+input.form-control:disabled,
+textarea.form-control:disabled,
+select.form-control:disabled {
+  background-color: #fafafa;
+  color: #737373;
+  cursor: not-allowed;
+}
+
+input.form-control.is-invalid,
+textarea.form-control.is-invalid,
+select.form-control.is-invalid {
+  border-color: #ef4444;
+}
+
+input.form-control.is-invalid:focus,
+textarea.form-control.is-invalid:focus,
+select.form-control.is-invalid:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+/* GrapesJS Editor Styles */
+.gjs-editor {
+  height: 100%;
+}
+
+.gjs-cv-canvas {
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.gjs-block {
+  width: auto;
+  height: auto;
+  min-height: auto;
+  padding: 10px;
+  margin: 0;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gjs-block-label {
+  font-size: 13px;
+  color: #333;
+}
+
+/* Tailwind blocks styling */
+.gjs-block.gjs-block-tailwind {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+}
+
+/* Layers panel */
+.gjs-sm-sector {
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+.gjs-sm-sector:first-child {
+  border-top: none;
+}
+
+/* Style manager */
+.gjs-sm-property {
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+/* Device manager */
+.gjs-pn-devices-c {
+  display: flex;
+  gap: 5px;
+}
+
+.gjs-pn-devices button {
+  padding: 8px 12px;
+  border: 1px solid rgba(0,0,0,0.1);
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.gjs-pn-devices button.gjs-pn-active {
+  background: #3B82F6;
+  color: white;
+  border-color: #3B82F6;
+}
+
+/* Toast Notification Styles - Compact & Modern */
+[data-slot="toast"] {
+  max-width: 320px !important;
+  min-width: 280px !important;
+  width: auto !important;
+}
+
+[data-slot="toast"] [data-slot="base"] {
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  padding: 0.75rem 1rem !important;
+  border-radius: 0.75rem !important;
+}
+
+[data-slot="toast"] [data-slot="title"] {
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  line-height: 1.25rem !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+[data-slot="toast"] [data-slot="description"] {
+  font-size: 0.75rem !important;
+  line-height: 1.2rem !important;
+  margin-top: 0.25rem !important;
+  opacity: 0.85;
+}
+
+/* Success toast - Green */
+[data-slot="toast"][data-color="success"] [data-slot="base"] {
+  background: rgba(240, 253, 244, 0.98) !important;
+  border-color: rgba(34, 197, 94, 0.3) !important;
+  border-left: 4px solid #22c55e !important;
+}
+
+[data-slot="toast"][data-color="success"] [data-slot="title"] {
+  color: #16a34a !important;
+}
+
+[data-slot="toast"][data-color="success"] [data-slot="close-button"] {
+  color: #16a34a !important;
+}
+
+[data-slot="toast"][data-color="success"] [data-slot="close-button"]:hover {
+  color: #15803d !important;
+  background-color: rgba(34, 197, 94, 0.1) !important;
+}
+
+/* Error toast - Red */
+[data-slot="toast"][data-color="danger"] [data-slot="base"] {
+  background: rgba(254, 242, 242, 0.98) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  border-left: 4px solid #ef4444 !important;
+}
+
+[data-slot="toast"][data-color="danger"] [data-slot="title"] {
+  color: #dc2626 !important;
+}
+
+[data-slot="toast"][data-color="danger"] [data-slot="close-button"] {
+  color: #dc2626 !important;
+}
+
+[data-slot="toast"][data-color="danger"] [data-slot="close-button"]:hover {
+  color: #b91c1c !important;
+  background-color: rgba(239, 68, 68, 0.1) !important;
+}
+
+/* Warning toast - Amber */
+[data-slot="toast"][data-color="warning"] [data-slot="base"] {
+  background: rgba(255, 251, 235, 0.98) !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+  border-left: 4px solid #f59e0b !important;
+}
+
+[data-slot="toast"][data-color="warning"] [data-slot="title"] {
+  color: #d97706 !important;
+}
+
+[data-slot="toast"][data-color="warning"] [data-slot="close-button"] {
+  color: #d97706 !important;
+}
+
+[data-slot="toast"][data-color="warning"] [data-slot="close-button"]:hover {
+  color: #b45309 !important;
+  background-color: rgba(245, 158, 11, 0.1) !important;
+}
+
+/* Primary/Info toast - Blue */
+[data-slot="toast"][data-color="primary"] [data-slot="base"] {
+  background: rgba(239, 246, 255, 0.98) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+  border-left: 4px solid #3b82f6 !important;
+}
+
+[data-slot="toast"][data-color="primary"] [data-slot="title"] {
+  color: #2563eb !important;
+}
+
+[data-slot="toast"][data-color="primary"] [data-slot="close-button"] {
+  color: #2563eb !important;
+}
+
+[data-slot="toast"][data-color="primary"] [data-slot="close-button"]:hover {
+  color: #1d4ed8 !important;
+  background-color: rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Ensure toast can be dismissed and respects timeout */
+[data-slot="toast"] {
+  animation-duration: 0.3s !important;
+}
+
+[data-slot="toast"][data-visible="false"] {
+  animation: fadeOut 0.3s ease-out forwards !important;
+}
+
+/* Close button styling - ensure it's visible and clickable */
+[data-slot="toast"] [data-slot="close-button"] {
+  opacity: 1 !important;
+  visibility: visible !important;
+  cursor: pointer !important;
+  color: #737373 !important;
+  transition: color 0.2s ease !important;
+  padding: 0.25rem !important;
+  border-radius: 0.25rem !important;
+}
+
+[data-slot="toast"] [data-slot="close-button"]:hover {
+  color: #171717 !important;
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-slot="toast"] [data-slot="close-button"]:active {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
