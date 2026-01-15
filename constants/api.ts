@@ -1,12 +1,6 @@
-const BASE_URL = {
-    development: "https://monitor.itexpay.com:4433/api/v1",
-    production: "https://monitor.itexpay.com:4433/api/v1",
-} as const;
+const DEFAULT_API_URL = "https://shorp-epos-backend.onrender.com/api/v1";
 
-type Env = keyof typeof BASE_URL;
-const currentEnv: Env = (process.env.NODE_ENV as Env) || "development";
-
-export const API_BASE_URL = BASE_URL[currentEnv];
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_URL;
 
 export const ENDPOINT = {
     AUTH: {
