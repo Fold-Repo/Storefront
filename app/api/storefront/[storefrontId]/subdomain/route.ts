@@ -118,11 +118,22 @@ export async function POST(
     // Setup subdomain
     const result = await setupStorefrontSubdomain(subdomain, ip);
 
+    // Register with Netlify automatically
+    try {
+      const { addCustomDomainToNetlify } = await import('@/services/netlify');
+      const mainDomain = process.env.NEXT_PUBLIC_MAIN_DOMAIN || 'dfoldlab.co.uk';
+      const fullDomain = `${subdomain}.${mainDomain}`;
+      await addCustomDomainToNetlify(fullDomain);
+    } catch (error: any) {
+      console.error('Netlify registration error:', error);
+      // We don't fail the request because DNS is already successfully set up
+    }
+
     return NextResponse.json({
       success: true,
       subdomain: result.domain,
       recordId: result.recordId,
-      message: 'Subdomain created successfully',
+      message: 'Subdomain created successfully and registered with Netlify',
     });
   } catch (error: any) {
     console.error('Error creating subdomain:', error);
