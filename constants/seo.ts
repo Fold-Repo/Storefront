@@ -1,42 +1,40 @@
-export const SITE_URL = 'https://test-tube.com';
+export const SITE_URL = 'https://dfoldlab.co.uk';
 
-export const SEO_TITLE = 'Test Tube — Exam Prep & Learning';
+export const SEO_TITLE = 'StoreFront — Build Your Dream Online Store';
 
 export const SEO_DESCRIPTION =
-    'Test Tube is an educational platform for learning and exam preparation across JAMB, WAEC, and other tests. Practice questions, study resources, and guided prep to help learners succeed.';
+    'StoreFront is the ultimate platform for creating stunning, professional online stores in minutes. Launch your business with powerful tools, custom themes, and AI-driven design recommendations.';
 
 export const APP_KEYWORDS = [
-    'Test Tube',
-    'exam prep',
-    'learning platform',
-    'practice questions',
-    'JAMB',
-    'WAEC',
-    'NECO',
-    'study resources',
-    'education',
-    'test preparation',
-    'mock exams',
-    'revision',
+    'StoreFront',
+    'ecommerce builder',
+    'online store',
+    'website builder',
+    'sell online',
+    'shop builder',
+    'business',
+    'ecommerce platform',
+    'startup',
+    'entrepreneur',
 ];
 
-export const APP_AUTHORS = [{ name: 'Test Tube' }];
+export const APP_AUTHORS = [{ name: 'StoreFront' }];
 
 export const APP_OPEN_GRAPH = {
-    title: 'Test Tube — Exam Prep & Learning',
+    title: 'StoreFront — Build Your Dream Online Store',
     description:
-        'Test Tube is an educational platform for learning and exam preparation across JAMB, WAEC, NECO, and other tests. Practice questions, study resources, and guided prep to help learners succeed.',
+        'StoreFront is the ultimate platform for creating stunning, professional online stores in minutes. Launch your business with powerful tools, custom themes, and AI-driven design recommendations.',
     url: SITE_URL,
-    siteName: 'Test Tube',
+    siteName: 'StoreFront',
     locale: 'en_US',
     type: 'website',
 };
 
 export const APP_TWITTER = {
     card: 'summary_large_image',
-    title: 'Test Tube — Exam Prep & Learning',
+    title: 'StoreFront — Build Your Dream Online Store',
     description:
-        'Test Tube helps students prepare for JAMB, WAEC, NECO and other exams with practice questions, study resources, and guided prep.',
+        'Create stunning, professional online stores in minutes with StoreFront. Launch your business with powerful tools and AI-driven design.',
 };
 
 export const APP_ROBOTS = { index: true, follow: true };
@@ -45,6 +43,3 @@ export const APP_THEME_COLOR = [
     { media: '(prefers-color-scheme: light)', color: '#ffffff' },
     { media: '(prefers-color-scheme: dark)', color: '#030712' },
 ];
-
-
-

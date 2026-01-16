@@ -2,6 +2,7 @@
 
 import { useCallback } from "react";
 import { addToast, closeToast, Button } from "@heroui/react";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 export const useToast = () => {
     const showToast = useCallback((message: string, color: 'success' | 'danger' | 'warning' | 'primary' = 'primary', description?: string) => {
@@ -32,28 +33,29 @@ export const useToast = () => {
         const selectedColors = colorClasses[color];
         let toastId: any;
 
-        // Create toast options with 10-second auto-dismiss
+        // Create toast options with 5-second auto-dismiss
         const toastOptions: any = {
             title: message,
             description,
             color,
             variant: "flat",
-            timeout: 10000, // 10 seconds in milliseconds
+            timeout: 5000,
             radius: "lg",
             action: (
                 <Button
+                    isIconOnly
                     size="sm"
                     variant="light"
-                    className="font-bold uppercase tracking-widest text-[10px]"
                     onPress={() => {
                         if (toastId) closeToast(toastId);
                     }}
+                    className="min-w-8 w-8 h-8 rounded-full hover:bg-black/5"
                 >
-                    Cancel
+                    <XMarkIcon className="w-4 h-4 text-neutral-500" />
                 </Button>
             ),
             classNames: {
-                base: `max-w-sm w-full shadow-lg backdrop-blur-sm ${selectedColors.base}`,
+                base: `max-w-sm w-full shadow-lg backdrop-blur-sm ${selectedColors.base} pr-2`,
                 title: `text-sm font-semibold ${selectedColors.title}`,
                 description: `text-xs ${selectedColors.description}`,
                 wrapper: "px-3 py-2",

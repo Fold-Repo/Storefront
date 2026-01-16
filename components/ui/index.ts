@@ -7,3 +7,4 @@ export * from './table'
 export { PopupModal, MenuDropdown, Button }
 export { Drawer } from './Drawer'
 export { ColorPicker } from './ColorPicker'
+export { CaptivatingLoader } from './CaptivatingLoader'

@@ -188,29 +188,38 @@ export const saveGeneratedSiteToFirebase = async (
     const userId = user?.uid || (user as any)?.id || (user as any)?.user_id;
 
     if (!userId) {
+      console.error("Firebase Service: User ID missing", { user });
       throw new Error("User ID is missing from user object");
     }
 
     // Convert userId to string if it's a number (for user_id from UserData)
     const userIdString = String(userId);
+    console.log(`Firebase Service: Saving site for userId: ${userIdString}`);
 
     const siteRef = doc(db, "storefront_sites", userIdString);
 
     const siteData: GeneratedSite = {
       ...site,
+      userId: userIdString, // Ensure userId in data matches doc ID
       updatedAt: new Date(),
     };
 
     const siteDoc = await getDoc(siteRef);
 
     if (siteDoc.exists()) {
+      console.log("Firebase Service: Updating existing site document");
       await updateDoc(siteRef, siteData as any);
     } else {
+      console.log("Firebase Service: Creating new site document");
       siteData.generatedAt = new Date();
       await setDoc(siteRef, siteData);
     }
-  } catch (error) {
-    console.error("Error saving generated site to Firebase:", error);
+    console.log("Firebase Service: Site saved successfully");
+  } catch (error: any) {
+    console.error("Firebase Service: Error saving generated site to Firebase:", error);
+    if (error.code === 'permission-denied') {
+      throw new Error("Permission denied. Please checking your login status.");
+    }
     throw error;
   }
 };

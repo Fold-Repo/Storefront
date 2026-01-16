@@ -370,9 +370,12 @@ export const DashboardPage = () => {
         onClose={() => setWizardOpen(false)}
         onComplete={async (data: StorefrontData) => {
           if (!user) {
+            console.error("Dashboard: No user found during wizard completion");
             showError("Please log in to create a storefront");
             return;
           }
+
+          console.log("Dashboard: Wizard completed, starting site generation for user:", user);
 
           try {
             setLoading(true);
@@ -380,6 +383,7 @@ export const DashboardPage = () => {
 
             // Check storefront limit before creating
             const userId = String(user.user_id || (user as any).uid || (user as any).id);
+            console.log("Dashboard: Check permissions for userId:", userId);
             const limitCheck = await canCreateStorefront(userId);
 
             if (!limitCheck.allowed) {
@@ -428,7 +432,9 @@ export const DashboardPage = () => {
             };
 
             // Save to Firebase
+            console.log("Dashboard: Saving generated site to Firebase...", site);
             await saveGeneratedSiteToFirebase(site, user);
+            console.log("Dashboard: Site saved successfully to Firebase");
 
             // Increment storefront count
             await incrementStorefrontCount(userId);
@@ -449,6 +455,7 @@ export const DashboardPage = () => {
             showSuccess("Storefront created successfully!");
           } catch (error: any) {
             console.error("Error creating storefront:", error);
+            console.error("Dashboard: Full error detail:", JSON.stringify(error, null, 2));
             const errorMessage = error.message || "Failed to create storefront. Please try again.";
             showError(errorMessage);
           } finally {

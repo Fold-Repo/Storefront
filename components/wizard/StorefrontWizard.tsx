@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { PopupModal } from "@/components/ui";
 import { Input, TextArea, Select } from "@/components/ui/form";
-import { Button, ColorPicker } from "@/components/ui";
+import { Button, ColorPicker, CaptivatingLoader } from "@/components/ui";
 import { XMarkIcon, SparklesIcon, ArrowRightIcon, ArrowLeftIcon, CheckCircleIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { onAuthStateChanged, User } from "firebase/auth";
@@ -951,19 +951,34 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
               </div>
             ) : (
               <div className="text-center py-12">
-                <p className="text-neutral-600 mb-6">
-                  Click the button below to generate AI-powered design recommendations for your storefront
-                </p>
-                <Button
-                  type="button"
-                  onPress={generateAIDescription}
-                  loading={aiGenerating}
-                  color="primary"
-                  className="text-white"
-                  startContent={<SparklesIcon className="w-5 h-5" />}
-                >
-                  {aiGenerating ? "Generating..." : "Generate Design Recommendations"}
-                </Button>
+                {aiGenerating ? (
+                  <CaptivatingLoader
+                    loadingTexts={[
+                      "Analyzing your business details...",
+                      "Generating color palette options...",
+                      "Selecting typography combinations...",
+                      "Crafting layout recommendations...",
+                      "Finalizing your design..."
+                    ]}
+                    subText="Our AI is creating a custom design just for you"
+                  />
+                ) : (
+                  <>
+                    <p className="text-neutral-600 mb-6">
+                      Click the button below to generate AI-powered design recommendations for your storefront
+                    </p>
+                    <Button
+                      type="button"
+                      onPress={generateAIDescription}
+                      loading={aiGenerating}
+                      color="primary"
+                      className="text-white"
+                      startContent={<SparklesIcon className="w-5 h-5" />}
+                    >
+                      Generate Design Recommendations
+                    </Button>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -1187,10 +1202,16 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
       >
         <div className="space-y-6">
           {generatingDescription ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-neutral-600">Generating your business description...</p>
-            </div>
+            <CaptivatingLoader
+              loadingTexts={[
+                "Synthesizing your answers...",
+                "Drafting compelling copy...",
+                "Optimizing for SEO...",
+                "Polishing the tone...",
+                "Almost ready..."
+              ]}
+              subText="Creating your unique business description"
+            />
           ) : generatingQuestion ? (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>

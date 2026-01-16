@@ -1,0 +1,8 @@
+<svg width="200" height="50" viewBox="0 0 200 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Square background for 'S' -->
+  <rect width="50" height="50" rx="8" fill="#0066FF"/>
+  <!-- White 'S' in the center of the square -->
+  <text x="25" y="34" fill="white" font-family="Arial, sans-serif" font-size="28" font-weight="bold" text-anchor="middle">S</text>
+  <!-- 'StoreFront' text beside the square -->
+  <text x="65" y="34" fill="currentColor" font-family="Arial, sans-serif" font-size="24" font-weight="bold">StoreFront</text>
+</svg>
