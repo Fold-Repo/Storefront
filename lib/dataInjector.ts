@@ -208,18 +208,24 @@ function generateProductsHTML(products: any[]): string {
     return '<div class="no-products py-20 text-center border-2 border-dashed border-gray-100 rounded-3xl"><p class="text-gray-400 font-medium italic">No live products found in this category.</p></div>';
   }
 
-  const items = products.map(product => `
+  const items = products.map(product => {
+    const productUrl = `/products/${product.slug || product.id}`;
+    return `
     <div class="group bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-blue-500/5 transition-all duration-500 flex flex-col h-full" data-product-id="${product.id}">
       <div class="aspect-square bg-gray-50 relative overflow-hidden p-8">
-        ${product.image ? `<img src="${product.image}" alt="${product.name}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700" />` : ''}
-        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500"></div>
+        <a href="${productUrl}" class="block h-full">
+          ${product.image ? `<img src="${product.image}" alt="${product.name}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700" />` : ''}
+          <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500"></div>
+        </a>
         <button class="absolute bottom-6 left-6 right-6 translate-y-32 group-hover:translate-y-0 bg-gray-900 text-white py-4 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-2lx transition-all duration-500 hover:bg-blue-600 add-to-cart" data-product-id="${product.id}">
           Add to Cart
         </button>
       </div>
       <div class="p-6 flex-1 flex flex-col justify-between">
         <div>
-          <h3 class="font-black text-gray-900 text-base mb-2 group-hover:text-blue-600 transition-colors line-clamp-2 leading-tight uppercase tracking-tight">${product.name}</h3>
+          <a href="${productUrl}" class="block group/title">
+            <h3 class="font-black text-gray-900 text-base mb-2 group-hover/title:text-blue-600 transition-colors line-clamp-2 leading-tight uppercase tracking-tight">${product.name}</h3>
+          </a>
           <p class="text-[12px] font-medium text-gray-400 mb-4 line-clamp-2 leading-relaxed">${product.description || ''}</p>
         </div>
         <div class="flex items-center justify-between mt-auto pt-5 border-t border-gray-50">
@@ -233,7 +239,8 @@ function generateProductsHTML(products: any[]): string {
         </div>
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 
   return `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 products-grid mb-10">${items}</div>`;
 }

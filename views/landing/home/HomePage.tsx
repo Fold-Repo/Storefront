@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { generateCompleteSite } from "@/services/ai";
 import { saveGeneratedSiteToFirebase, GeneratedSite } from "@/services/firebase";
 import { canCreateStorefront, incrementStorefrontCount, incrementPageCount } from "@/services/planLimits";
+import { createDefaultPageSettings } from "@/services/pageSettings";
 
 const HomePage = () => {
   const router = useRouter();
@@ -110,6 +111,9 @@ const HomePage = () => {
 
       // Save to Firebase
       await saveGeneratedSiteToFirebase(site, user);
+
+      // Initialize default page settings (about, contact, etc.)
+      await createDefaultPageSettings(data.subdomain, userId);
 
       // Increment storefront count
       await incrementStorefrontCount(userId);

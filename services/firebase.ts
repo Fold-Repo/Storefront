@@ -69,7 +69,7 @@ const COLLECTION_NAME = "storefront_wizards";
  */
 export const saveWizardToFirebase = async (
   data: WizardData,
-  user: User | { email: string; uid: string } | null
+  user: User | { email: string; uid: string } | any
 ): Promise<void> => {
   try {
     if (!user) {
@@ -108,7 +108,7 @@ export const saveWizardToFirebase = async (
  * Load wizard data from Firebase
  */
 export const loadWizardFromFirebase = async (
-  user: User | { email: string; uid: string }
+  user: User | { email: string; uid: string } | any
 ): Promise<WizardData | null> => {
   try {
     const userId = user.uid || (user as any).id;

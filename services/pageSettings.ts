@@ -54,7 +54,7 @@ export async function savePageSetting(
   setting: Omit<PageSetting, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<string> {
   try {
-    const id = `${setting.storefrontId}_${setting.pageType}`;
+    const id = `${setting.userId}_${setting.storefrontId}_${setting.pageType}`;
     const pageSettingRef = doc(db, COLLECTION_NAME, id);
 
     const pageSetting: PageSetting = {
@@ -77,15 +77,29 @@ export async function savePageSetting(
  */
 export async function getPageSetting(
   storefrontId: string,
-  pageType: string
+  pageType: string,
+  userId?: string
 ): Promise<PageSetting | null> {
   try {
-    const id = `${storefrontId}_${pageType}`;
-    const pageSettingRef = doc(db, COLLECTION_NAME, id);
-    const pageSettingDoc = await getDoc(pageSettingRef);
+    // If userId is provided, use the new ID format. Otherwise, fallback to the old one or query.
+    if (userId) {
+      const id = `${userId}_${storefrontId}_${pageType}`;
+      const pageSettingRef = doc(db, COLLECTION_NAME, id);
+      const pageSettingDoc = await getDoc(pageSettingRef);
+      if (pageSettingDoc.exists()) {
+        return pageSettingDoc.data() as PageSetting;
+      }
+    }
 
-    if (pageSettingDoc.exists()) {
-      return pageSettingDoc.data() as PageSetting;
+    // Fallback search by storefrontId and pageType if userId is not known or for backward compatibility
+    const q = query(
+      collection(db, COLLECTION_NAME),
+      where("storefrontId", "==", storefrontId),
+      where("pageType", "==", pageType)
+    );
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      return querySnapshot.docs[0].data() as PageSetting;
     }
 
     return null;
@@ -100,22 +114,22 @@ export async function getPageSetting(
  */
 export async function getPageSettingsByStorefront(
   storefrontId: string,
-  onlyEnabled: boolean = true
+  onlyEnabled: boolean = true,
+  userId?: string
 ): Promise<PageSetting[]> {
   try {
     let q;
-    if (onlyEnabled) {
-      q = query(
-        collection(db, COLLECTION_NAME),
-        where("storefrontId", "==", storefrontId),
-        where("settings.enabled", "==", true)
-      );
-    } else {
-      q = query(
-        collection(db, COLLECTION_NAME),
-        where("storefrontId", "==", storefrontId)
-      );
+    const conditions = [where("storefrontId", "==", storefrontId)];
+
+    if (userId) {
+      conditions.push(where("userId", "==", userId));
     }
+
+    if (onlyEnabled) {
+      conditions.push(where("settings.enabled", "==", true));
+    }
+
+    q = query(collection(db, COLLECTION_NAME), ...conditions);
 
     const querySnapshot = await getDocs(q);
     const settings: PageSetting[] = [];
@@ -137,24 +151,25 @@ export async function getPageSettingsByStorefront(
 export async function getPageSettingByRoute(
   storefrontId: string,
   route: string,
-  onlyEnabled: boolean = true
+  onlyEnabled: boolean = true,
+  userId?: string
 ): Promise<PageSetting | null> {
   try {
     let q;
-    if (onlyEnabled) {
-      q = query(
-        collection(db, COLLECTION_NAME),
-        where("storefrontId", "==", storefrontId),
-        where("route", "==", route),
-        where("settings.enabled", "==", true)
-      );
-    } else {
-      q = query(
-        collection(db, COLLECTION_NAME),
-        where("storefrontId", "==", storefrontId),
-        where("route", "==", route)
-      );
+    const conditions = [
+      where("storefrontId", "==", storefrontId),
+      where("route", "==", route)
+    ];
+
+    if (userId) {
+      conditions.push(where("userId", "==", userId));
     }
+
+    if (onlyEnabled) {
+      conditions.push(where("settings.enabled", "==", true));
+    }
+
+    q = query(collection(db, COLLECTION_NAME), ...conditions);
 
     const querySnapshot = await getDocs(q);
 

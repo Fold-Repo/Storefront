@@ -6,8 +6,7 @@ import { Input, TextArea, Select } from "@/components/ui/form";
 import { Button, ColorPicker, CaptivatingLoader } from "@/components/ui";
 import { XMarkIcon, SparklesIcon, ArrowRightIcon, ArrowLeftIcon, CheckCircleIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
-import { onAuthStateChanged, User } from "firebase/auth";
-import { auth } from "@/lib/firebaseConfig";
+import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import {
   saveWizardToFirebase,
@@ -73,8 +72,8 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
   onComplete,
 }) => {
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
-  const [user, setUser] = useState<User | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
 
   const { showSuccess, showError } = useToast();
@@ -191,11 +190,13 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
 
   // Check authentication state
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
+    if (!authLoading) {
       setAuthChecked(true);
-      // If user just logged in, try to load their data
-      if (user && isOpen) {
+    }
+
+    // If user just logged in, try to load their data
+    const loadUserData = async () => {
+      if (user && isOpen && authChecked) {
         try {
           const firebaseData = await loadWizardFromFirebase(user);
           if (firebaseData) {
@@ -214,12 +215,10 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
           console.error("Error loading Firebase data:", error);
         }
       }
-      // If user just logged in and we're on the last step, they can proceed
-      // (No modal to close anymore)
-    });
+    };
 
-    return () => unsubscribe();
-  }, [currentStep, isOpen]);
+    loadUserData();
+  }, [user, isOpen, authLoading, authChecked]);
 
   // Save form data to Firebase or localStorage whenever it changes
   useEffect(() => {
@@ -383,7 +382,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
       // Simulate AI generation - replace with actual API call
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      const aiDescription = `Based on your ${formData.ideaScope} storefront for ${formData.companyName}, we recommend a ${formData.theme?.designFeel || 'modern'} design approach. The storefront should feature a clean, professional layout with ${formData.theme?.primaryColor || 'blue'} as the primary accent color. Use ${formData.theme?.fontFamily || 'Inter'} font family for a contemporary feel. Focus on showcasing your products with high-quality imagery and clear call-to-action buttons. The design should emphasize ${formData.description.substring(0, 50)}...`;
+      const aiDescription = `Based on your ${formData.ideaScope} storefront for ${formData.companyName}, we recommend a ${formData.theme?.designFeel || 'modern'} design approach. The storefront should feature a clean, professional layout with ${formData.theme?.primaryColor || 'blue'} as the primary accent color. Use ${formData.theme?.fontFamily || 'Inter'} font family for a contemporary feel. Focus on showcasing your products with high-quality imagery and clear call-to-action buttons. The design should emphasize ${formData.description}`;
 
       setFormData(prev => ({
         ...prev,
@@ -1064,11 +1063,11 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
           <div className="flex items-center justify-between pt-6 border-t border-neutral-200">
             <Button
               type="button"
-              variant="light"
+              variant="bordered"
               onClick={handlePrevious}
               isDisabled={currentStep === 1}
               startContent={<ArrowLeftIcon className="w-4 h-4" />}
-              className="disabled:opacity-50"
+              className={`border-neutral-300 text-neutral-600 hover:bg-neutral-50 ${currentStep === 1 ? 'invisible' : 'visible'}`}
             >
               Previous
             </Button>

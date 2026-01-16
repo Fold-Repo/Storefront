@@ -66,7 +66,7 @@ export default async function StorefrontPage({ params }: StorefrontPageProps) {
   }
 
   // Check if this is a custom page (testimonial, about, contact, etc.)
-  const pageSetting = await getPageSettingByRoute(storefrontId, pagePath);
+  const pageSetting = await getPageSettingByRoute(storefrontId, pagePath, true, config.userId);
 
   let pageType: string;
   let pageData;

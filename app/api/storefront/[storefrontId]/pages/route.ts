@@ -39,6 +39,8 @@ export async function GET(
 ) {
   try {
     const { storefrontId } = await params;
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId') || undefined;
 
     if (!storefrontId) {
       return NextResponse.json(
@@ -47,7 +49,7 @@ export async function GET(
       );
     }
 
-    const pages = await getPageSettingsByStorefront(storefrontId);
+    const pages = await getPageSettingsByStorefront(storefrontId, true, userId);
 
     return NextResponse.json({ pages });
   } catch (error: any) {
@@ -171,6 +173,7 @@ export async function PATCH(
     const { searchParams } = new URL(request.url);
     const pageType = searchParams.get('pageType');
     const body = await request.json();
+    const userId = body.userId || searchParams.get('userId') || undefined;
 
     if (!storefrontId || !pageType) {
       return NextResponse.json(
@@ -179,7 +182,7 @@ export async function PATCH(
       );
     }
 
-    const pageSetting = await getPageSetting(storefrontId, pageType);
+    const pageSetting = await getPageSetting(storefrontId, pageType, userId);
 
     if (!pageSetting) {
       return NextResponse.json(
@@ -224,7 +227,7 @@ export async function DELETE(
       );
     }
 
-    const pageSetting = await getPageSetting(storefrontId, pageType);
+    const pageSetting = await getPageSetting(storefrontId, pageType, userId || undefined);
 
     if (!pageSetting) {
       return NextResponse.json(
