@@ -601,8 +601,8 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
                     }
                   }}
                   className={`p-4 rounded-lg border-2 transition-all text-left ${formData.ideaScope === scope.value
-                      ? "border-blue-600 bg-blue-50"
-                      : "border-neutral-200 hover:border-blue-300"
+                    ? "border-blue-600 bg-blue-50"
+                    : "border-neutral-200 hover:border-blue-300"
                     }`}
                 >
                   <span className="text-sm font-medium text-neutral-800">
@@ -899,8 +899,8 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
                       }
                     }}
                     className={`p-4 rounded-lg border-2 text-left transition-all ${formData.theme?.designFeel === feel.value
-                        ? "border-blue-600 bg-blue-50"
-                        : "border-neutral-200 hover:border-blue-300"
+                      ? "border-blue-600 bg-blue-50"
+                      : "border-neutral-200 hover:border-blue-300"
                       }`}
                   >
                     <div className="font-semibold text-neutral-800">{feel.label}</div>
@@ -1010,11 +1010,9 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
                 <div key={step.id} className="flex items-start flex-1 relative">
                   <div className="flex flex-col items-center flex-1 z-10">
                     <div
-                      className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors shrink-0 ${currentStep > step.id
-                          ? "bg-blue-600 border-blue-600 text-white"
-                          : currentStep === step.id
-                            ? "border-blue-600 bg-white text-blue-600"
-                            : "border-neutral-300 bg-white text-neutral-400"
+                      className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors shrink-0 ${currentStep >= step.id
+                        ? "bg-blue-600 border-blue-600 text-white"
+                        : "border-neutral-300 bg-white text-neutral-400"
                         }`}
                     >
                       {currentStep > step.id ? (
@@ -1025,8 +1023,8 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
                     </div>
                     <p
                       className={`text-xs mt-2 text-center max-w-[100px] ${currentStep >= step.id
-                          ? "text-neutral-800 font-medium"
-                          : "text-neutral-400"
+                        ? "text-neutral-800 font-medium"
+                        : "text-neutral-400"
                         }`}
                     >
                       {step.title}

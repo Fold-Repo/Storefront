@@ -19,19 +19,16 @@ export const metadata: Metadata = {
   openGraph: APP_OPEN_GRAPH,
   twitter: APP_TWITTER,
   robots: APP_ROBOTS,
-  manifest: "/favicon_io/site.webmanifest",
+  manifest: "/favicon.svg", // Using svg as manifest placeholder or remove if not needed
   icons: {
     icon: [
-      { url: "/favicon_io/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon_io/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon_io/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
-      { url: "/favicon_io/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
     ],
     apple: [
-      { url: "/favicon_io/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
     ],
     shortcut: [
-      { url: "/favicon_io/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
     ],
   },
 };
@@ -53,7 +50,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body 
+      <body
         className="font-sans debug-screens"
         suppressHydrationWarning
       >

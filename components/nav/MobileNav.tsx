@@ -64,11 +64,10 @@ const MobileNav: React.FC<Props> = ({ open, setOpen, onLoginClick }) => {
     <>
       {/* Backdrop */}
       <div
-        className={`fixed inset-0 bg-black transition-opacity duration-300 z-40 ${
-          open
+        className={`fixed inset-0 bg-black transition-opacity duration-300 z-40 ${open
             ? "opacity-50 pointer-events-auto"
             : "opacity-0 pointer-events-none"
-        }`}
+          }`}
         onClick={() => setOpen(false)}
         aria-hidden={!open}
       />
@@ -76,9 +75,8 @@ const MobileNav: React.FC<Props> = ({ open, setOpen, onLoginClick }) => {
       <aside
         role="dialog"
         aria-modal={open}
-        className={`fixed top-0 right-0 h-screen w-full sm:w-80 bg-white z-50 transform transition-transform duration-300 ease-in-out ${
-          open ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed top-0 right-0 h-screen w-full sm:w-80 bg-white z-50 transform transition-transform duration-300 ease-in-out ${open ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <div className="flex items-center justify-between px-4 py-4 border-b">
           <Link href="/" onClick={() => setOpen(false)}>
@@ -123,7 +121,7 @@ const MobileNav: React.FC<Props> = ({ open, setOpen, onLoginClick }) => {
                   }
                 }
               };
-              
+
               return (
                 <Link
                   key={item.href}
@@ -156,7 +154,7 @@ const MobileNav: React.FC<Props> = ({ open, setOpen, onLoginClick }) => {
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="block text-center px-4 py-2 rounded-md bg-error hover:bg-error/90 text-white font-medium"
+                  className="block text-center px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white font-medium"
                 >
                   Logout
                 </button>

@@ -141,8 +141,8 @@ function extractSubdomain(hostname: string, mainDomain: string): string | null {
     // Check if it's a subdomain
     if (host.endsWith(`.${mainDomain}`)) {
         const subdomain = host.replace(`.${mainDomain}`, '');
-        // Exclude www
-        if (subdomain && subdomain !== 'www') {
+        // Exclude www and common utility subdomains
+        if (subdomain && subdomain !== 'www' && subdomain !== 'app' && subdomain !== 'api') {
             return subdomain;
         }
     }

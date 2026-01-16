@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Input, TextArea, PhoneInput, Select } from "@/components/ui/form";
+import { Input, TextArea, PhoneInput, Select, PasswordInput } from "@/components/ui/form";
 import { Button } from "@/components/ui";
 import {
   ArrowRightIcon,
@@ -39,6 +39,14 @@ const BUSINESS_TYPES = [
   "Other",
 ];
 
+const POSITION_TYPES = [
+  "Owner",
+  "Director",
+  "Manager",
+  "Staff",
+  "Other",
+];
+
 const SIGNUP_STORAGE_KEY = "signup_form_data";
 
 export const SignupPage = () => {
@@ -58,7 +66,7 @@ export const SignupPage = () => {
   const [googleIdToken, setGoogleIdToken] = useState<string | null>(null); // Store Firebase ID token for Google signup
 
   // Load saved form data from localStorage
-  const loadSavedData = (): Partial<SignupPayload> => {
+  const loadSavedData = (): Partial<SignupPayload & { password_confirmation?: string }> => {
     if (typeof window === "undefined") {
       return {
         businessname: "",
@@ -70,6 +78,7 @@ export const SignupPage = () => {
         lastname: "",
         email: "",
         password: "",
+        password_confirmation: "",
         phone: "",
         altphone: "",
         product_service: "",
@@ -92,9 +101,15 @@ export const SignupPage = () => {
       if (saved) {
         const parsed = JSON.parse(saved);
         // Note: File objects can't be serialized, so product_brochure will be null
+        // Note: We explicitly exclude email and phone from restoration to prevent
+        // auto-population for non-Google signups, as requested.
+        const { email, phone, altphone, ...rest } = parsed;
         return {
-          ...parsed,
+          ...rest,
           product_brochure: null,
+          email: "",
+          phone: "",
+          altphone: "",
         };
       }
     } catch (error) {
@@ -130,7 +145,7 @@ export const SignupPage = () => {
 
   // Initialize form data with saved data or defaults
   // Extend SignupPayload to allow File for product_brochure during form filling
-  const [formData, setFormData] = useState<Partial<SignupPayload & { product_brochure: File | string | null }>>(() => {
+  const [formData, setFormData] = useState<Partial<SignupPayload & { product_brochure: File | string | null; password_confirmation?: string }>>(() => {
     const saved = loadSavedData();
     return {
       businessname: "",
@@ -370,6 +385,15 @@ export const SignupPage = () => {
         } else if (signupMethod === "email" && formData.password && formData.password.length < 8) {
           newErrors.password = "Password must be at least 8 characters";
         }
+
+        if (signupMethod === "email") {
+          if (!formData.password_confirmation) {
+            newErrors.password_confirmation = "Please confirm your password";
+          } else if (formData.password !== formData.password_confirmation) {
+            newErrors.password_confirmation = "Passwords do not match";
+          }
+        }
+
         if (!formData.phone) newErrors.phone = "Phone is required";
         if (!formData.position) newErrors.position = "Position is required";
         break;
@@ -457,6 +481,15 @@ export const SignupPage = () => {
         newErrors.password = "Password must be at least 8 characters";
       }
     }
+
+    if (signupMethod === "email") {
+      if (!formData.password_confirmation) {
+        newErrors.password_confirmation = "Please confirm your password";
+      } else if (formData.password !== formData.password_confirmation) {
+        newErrors.password_confirmation = "Passwords do not match";
+      }
+    }
+
     // For Google signups, password will be auto-generated in handleSubmit
     if (!formData.phone) newErrors.phone = "Phone is required";
     if (!formData.position) newErrors.position = "Position is required";
@@ -846,10 +879,9 @@ export const SignupPage = () => {
               className="w-full"
               disabled={signupMethod === "google"}
             />
-            <Input
+            <PasswordInput
               label="Password"
               name="password"
-              type="password"
               value={formData.password}
               onChange={handleChange}
               error={errors.password}
@@ -862,6 +894,16 @@ export const SignupPage = () => {
                 A secure password will be automatically generated for your account
               </p>
             )}
+            <PasswordInput
+              label="Confirm Password"
+              name="password_confirmation"
+              value={formData.password_confirmation || ""}
+              onChange={handleChange}
+              error={errors.password_confirmation}
+              placeholder="Confirm your password"
+              className="w-full"
+              disabled={signupMethod === "google"}
+            />
             <PhoneInput
               label="Phone Number"
               name="phone"
@@ -880,16 +922,21 @@ export const SignupPage = () => {
               placeholder="Enter alternate phone number"
               country="GB"
             />
-            <Input
+            <Select
               label="Position"
               name="position"
-              type="text"
               value={formData.position}
               onChange={handleChange}
               error={errors.position}
-              placeholder="e.g., Owner, Manager, Director"
               className="w-full"
-            />
+            >
+              <option value="">Select your position</option>
+              {POSITION_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </Select>
           </div>
         );
 
@@ -1167,15 +1214,15 @@ export const SignupPage = () => {
                       terms_condition: e.target.checked ? "yes" : "no",
                     }))
                   }
-                  className="mt-1 mr-3 w-4 h-4 text-primary-500 rounded border-neutral-300 focus:ring-primary-500"
+                  className="mt-1 mr-3 w-4 h-4 text-blue-600 rounded border-neutral-300 focus:ring-blue-600"
                 />
                 <span className="text-sm text-neutral-600">
                   I agree to the{" "}
-                  <a href="#" className="text-primary-600 hover:text-primary-700">
+                  <a href="#" className="text-blue-600 hover:text-blue-700">
                     Terms of Service
                   </a>{" "}
                   and{" "}
-                  <a href="#" className="text-primary-600 hover:text-primary-700">
+                  <a href="#" className="text-blue-600 hover:text-blue-700">
                     Privacy Policy
                   </a>
                 </span>
@@ -1193,7 +1240,7 @@ export const SignupPage = () => {
                       certify_correct_data: e.target.checked ? "yes" : "no",
                     }))
                   }
-                  className="mt-1 mr-3 w-4 h-4 text-primary-500 rounded border-neutral-300 focus:ring-primary-500"
+                  className="mt-1 mr-3 w-4 h-4 text-blue-600 rounded border-neutral-300 focus:ring-blue-600"
                 />
                 <span className="text-sm text-neutral-600">
                   I certify that all the information provided is correct
@@ -1234,7 +1281,7 @@ export const SignupPage = () => {
           <div className="container mx-auto px-4 py-3">
             <div className="flex items-center justify-between max-w-4xl mx-auto">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                   <CheckCircleIcon className="w-5 h-5 text-white" />
                 </div>
                 <div>
@@ -1248,7 +1295,7 @@ export const SignupPage = () => {
               </div>
               <button
                 onClick={() => setHasIncompleteSignup(false)}
-                className="text-primary-600 hover:text-primary-700"
+                className="text-blue-600 hover:text-blue-700"
               >
                 <XMarkIcon className="w-5 h-5" />
               </button>
@@ -1265,11 +1312,9 @@ export const SignupPage = () => {
               <div key={step.id} className="flex items-center flex-1">
                 <div className="flex flex-col items-center flex-1">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${currentStep > step.id
-                      ? "bg-primary-500 border-primary-500 text-white"
-                      : currentStep === step.id
-                        ? "border-primary-500 bg-white text-primary-500"
-                        : "border-neutral-300 bg-white text-neutral-400"
+                    className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${currentStep >= step.id
+                      ? "bg-blue-600 border-blue-600 text-white"
+                      : "border-neutral-300 bg-white text-neutral-400"
                       }`}
                   >
                     {currentStep > step.id ? (
@@ -1289,7 +1334,7 @@ export const SignupPage = () => {
                 </div>
                 {index < STEPS.length - 1 && (
                   <div
-                    className={`h-0.5 flex-1 mx-2 transition-colors ${currentStep > step.id ? "bg-primary-500" : "bg-neutral-200"
+                    className={`h-0.5 flex-1 mx-2 transition-colors ${currentStep > step.id ? "bg-blue-600" : "bg-neutral-200"
                       }`}
                   />
                 )}

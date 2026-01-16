@@ -1,9 +1,7 @@
 @import "tailwindcss";
 
 /* Form Controls - Input Styling */
-input.form-control,
-textarea.form-control,
-select.form-control {
+.form-control {
   width: 100%;
   padding: 0.625rem 1rem;
   border: 1px solid #d4d4d4;
@@ -19,33 +17,43 @@ textarea.form-control::placeholder {
   color: #a3a3a3;
 }
 
-input.form-control:focus,
-textarea.form-control:focus,
-select.form-control:focus {
+.form-control:focus,
+.form-control:focus-within {
   outline: none;
   border-color: #3B82F6;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
-input.form-control:disabled,
-textarea.form-control:disabled,
-select.form-control:disabled {
+.form-control:disabled,
+.form-control[disabled] {
   background-color: #fafafa;
   color: #737373;
   cursor: not-allowed;
 }
 
-input.form-control.is-invalid,
-textarea.form-control.is-invalid,
-select.form-control.is-invalid {
+.form-control.is-invalid {
   border-color: #ef4444;
 }
 
-input.form-control.is-invalid:focus,
-textarea.form-control.is-invalid:focus,
-select.form-control.is-invalid:focus {
+.form-control.is-invalid:focus,
+.form-control.is-invalid:focus-within {
   border-color: #ef4444;
   box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+/* PhoneInput specific internal adjustments */
+.PhoneInputInput {
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  font-size: inherit !important;
+  color: inherit !important;
+  width: 100% !important;
+}
+
+.PhoneInputCountry {
+  margin-right: 0.5rem;
 }
 
 .form-group {
@@ -69,7 +77,7 @@ select.form-control.is-invalid:focus {
   min-height: auto;
   padding: 10px;
   margin: 0;
-  border: 1px solid rgba(0,0,0,0.2);
+  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 3px;
   display: flex;
   align-items: center;
@@ -90,7 +98,7 @@ select.form-control.is-invalid:focus {
 
 /* Layers panel */
 .gjs-sm-sector {
-  border-top: 1px solid rgba(0,0,0,0.1);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .gjs-sm-sector:first-child {
@@ -99,7 +107,7 @@ select.form-control.is-invalid:focus {
 
 /* Style manager */
 .gjs-sm-property {
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 /* Device manager */
@@ -110,7 +118,7 @@ select.form-control.is-invalid:focus {
 
 .gjs-pn-devices button {
   padding: 8px 12px;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   background: white;
   border-radius: 4px;
   cursor: pointer;
@@ -267,6 +275,7 @@ select.form-control.is-invalid:focus {
     opacity: 1;
     transform: translateX(0);
   }
+
   to {
     opacity: 0;
     transform: translateX(100%);

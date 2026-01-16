@@ -233,7 +233,7 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-primary-50 flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-blue-50 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -374,7 +374,7 @@ export const LoginPage = () => {
             Don't have an account?{" "}
             <Link
               href="/signup"
-              className="text-primary-600 hover:text-primary-700 font-semibold"
+              className="text-blue-600 hover:text-blue-700 font-semibold"
             >
               Sign up
             </Link>

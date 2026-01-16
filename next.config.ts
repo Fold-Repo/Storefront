@@ -23,7 +23,7 @@ const nextConfig: NextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: https: blob:",
               // Allow connections to Firebase services, Google Sign-In, and backend API
-              "connect-src 'self' https://shorp-epos-backend.onrender.com https://api.anthropic.com https://*.firebaseio.com https://*.googleapis.com wss://*.firebaseio.com wss://*.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://accounts.google.com",
+              "connect-src 'self' https://shorp-epos-backend.onrender.com https://api.dfoldlab.co.uk https://api.anthropic.com https://*.firebaseio.com https://*.googleapis.com wss://*.firebaseio.com wss://*.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://accounts.google.com",
               // Allow Google Sign-In and Firebase iframes
               "frame-src 'self' https://accounts.google.com https://*.googleapis.com https://*.firebaseapp.com",
               "object-src 'none'",

@@ -1,6 +1,6 @@
 export const LOGO = {
     black: '/img/logo/logo.svg',
-    white: '/img/logo/1.svg',
-    mini: '/img/logo/2.svg',
-    alt: 'Test tube',
+    white: '/img/logo/logo.svg',
+    mini: '/favicon.svg', // Keeping mini as the square 'S' alone
+    alt: 'StoreFront',
 };

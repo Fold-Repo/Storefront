@@ -51,28 +51,28 @@ export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ user }
 
   const getInitials = () => {
     if (!user) return "U";
-    
+
     const first = user.firstname?.charAt(0)?.toUpperCase() || "";
     const last = user.lastname?.charAt(0)?.toUpperCase() || "";
-    
+
     // If we have both first and last name, return both initials
     if (first && last) {
       return `${first}${last}`;
     }
-    
+
     // If we only have first name, use first two letters or first letter
     if (first && !last) {
-      return user.firstname.length > 1 
+      return user.firstname.length > 1
         ? `${first}${user.firstname.charAt(1).toUpperCase()}`
         : first;
     }
-    
+
     // If we only have email, use first two letters of email
     if (user.email && !first && !last) {
       const emailInitials = user.email.substring(0, 2).toUpperCase();
       return emailInitials;
     }
-    
+
     // Fallback
     return "U";
   };
@@ -128,7 +128,7 @@ export const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ user }
 
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-4 py-2 text-sm text-error hover:bg-error/10 transition-colors cursor-pointer"
+              className="w-full flex items-center gap-3 px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 transition-colors cursor-pointer rounded-md mx-2 mb-1"
             >
               <ArrowRightOnRectangleIcon className="w-5 h-5" />
               <span>Logout</span>
