@@ -56,14 +56,14 @@ export async function proxy(request: NextRequest) {
     }
 
     // Extract subdomain or check if it's a custom domain
-    const subdomain = extractSubdomain(hostname, MAIN_DOMAIN);
-
-    // Check if it's localhost (development) or the main domain
     const hostWithoutPort = hostname.split(':')[0];
     const isLocalhost = hostWithoutPort === 'localhost' || hostWithoutPort === '127.0.0.1';
 
+    // Improved subdomain extraction: handle localhost and production domains
+    const subdomain = isLocalhost ? null : extractSubdomain(hostname, MAIN_DOMAIN);
+
     // Also treat .netlify.app technical domains as the main domain to avoid misrouting
-    // We also check a hardcoded fallback if MAIN_DOMAIN is missing
+    // We also check a hardcoded fallback if MAIN_DOMAIN is missing or set to localhost
     const isMainDomain = hostWithoutPort === MAIN_DOMAIN ||
         hostWithoutPort === `www.${MAIN_DOMAIN}` ||
         hostWithoutPort === 'dfoldlab.co.uk' ||
@@ -93,6 +93,8 @@ export async function proxy(request: NextRequest) {
     // Check if it's a custom domain (not localhost, not main domain, no subdomain pattern)
     const isCustomDomain = !isLocalhost && !isMainDomain && !subdomain &&
         hostWithoutPort !== MAIN_DOMAIN &&
+        hostWithoutPort !== 'dfoldlab.co.uk' &&
+        !hostWithoutPort.endsWith('.netlify.app') &&
         !hostWithoutPort.includes(STOREFRONT_DOMAIN);
 
     // If no subdomain and not a custom domain, it's the main platform
@@ -138,10 +140,17 @@ function extractSubdomain(hostname: string, mainDomain: string): string | null {
     // Remove port if present
     const host = hostname.split(':')[0];
 
-    // Check if it's a subdomain
-    if (host.endsWith(`.${mainDomain}`)) {
+    // Check against configured MAIN_DOMAIN
+    if (mainDomain !== 'localhost' && host.endsWith(`.${mainDomain}`)) {
         const subdomain = host.replace(`.${mainDomain}`, '');
-        // Exclude www and common utility subdomains
+        if (subdomain && subdomain !== 'www' && subdomain !== 'app' && subdomain !== 'api') {
+            return subdomain;
+        }
+    }
+
+    // Hardcoded fallback for production domain
+    if (host.endsWith('.dfoldlab.co.uk')) {
+        const subdomain = host.replace('.dfoldlab.co.uk', '');
         if (subdomain && subdomain !== 'www' && subdomain !== 'app' && subdomain !== 'api') {
             return subdomain;
         }

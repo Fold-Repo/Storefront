@@ -7,12 +7,15 @@
  * Falls back to 'dfoldlab.co.uk' if not set
  */
 export function getMainDomain(): string {
-  if (typeof window !== 'undefined') {
-    // Client-side: use NEXT_PUBLIC_ prefix
-    return process.env.NEXT_PUBLIC_MAIN_DOMAIN || 'dfoldlab.co.uk';
+  const domain = (typeof window !== 'undefined')
+    ? process.env.NEXT_PUBLIC_MAIN_DOMAIN
+    : (process.env.NEXT_PUBLIC_MAIN_DOMAIN || process.env.MAIN_DOMAIN);
+
+  if (!domain || domain === 'localhost') {
+    return 'dfoldlab.co.uk';
   }
-  // Server-side: can use either prefix
-  return process.env.NEXT_PUBLIC_MAIN_DOMAIN || process.env.MAIN_DOMAIN || 'dfoldlab.co.uk';
+
+  return domain;
 }
 
 /**

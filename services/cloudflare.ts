@@ -262,9 +262,13 @@ export async function setupStorefrontSubdomain(
       proxied: true, // Enable Cloudflare proxy for CDN and protection
     });
 
+    const mainDomain = (process.env.NEXT_PUBLIC_MAIN_DOMAIN && process.env.NEXT_PUBLIC_MAIN_DOMAIN !== 'localhost')
+      ? process.env.NEXT_PUBLIC_MAIN_DOMAIN
+      : 'dfoldlab.co.uk';
+
     return {
       success: true,
-      domain: `${subdomain}.${process.env.NEXT_PUBLIC_MAIN_DOMAIN || 'yourdomain.com'}`,
+      domain: `${subdomain}.${mainDomain}`,
       recordId: record.id,
     };
   } catch (error: any) {

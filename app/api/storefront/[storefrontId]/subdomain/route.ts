@@ -49,7 +49,7 @@ export async function GET(
       subdomain,
       exists,
       domain: exists
-        ? `${subdomain}.${process.env.NEXT_PUBLIC_MAIN_DOMAIN || 'dfoldlab.co.uk'}`
+        ? `${subdomain}.${(process.env.NEXT_PUBLIC_MAIN_DOMAIN && process.env.NEXT_PUBLIC_MAIN_DOMAIN !== 'localhost') ? process.env.NEXT_PUBLIC_MAIN_DOMAIN : 'dfoldlab.co.uk'}`
         : null,
       record: record
         ? {
@@ -121,7 +121,9 @@ export async function POST(
     // Register with Netlify automatically
     try {
       const { addCustomDomainToNetlify } = await import('@/services/netlify');
-      const mainDomain = process.env.NEXT_PUBLIC_MAIN_DOMAIN || 'dfoldlab.co.uk';
+      const mainDomain = (process.env.NEXT_PUBLIC_MAIN_DOMAIN && process.env.NEXT_PUBLIC_MAIN_DOMAIN !== 'localhost')
+        ? process.env.NEXT_PUBLIC_MAIN_DOMAIN
+        : 'dfoldlab.co.uk';
       const fullDomain = `${subdomain}.${mainDomain}`;
       await addCustomDomainToNetlify(fullDomain);
     } catch (error: any) {
