@@ -33,7 +33,7 @@ function createDynamicPagePrompt(params: GeneratePageRequest): string {
 
   const pageRequirements = getPageSpecificRequirements(pageType, businessNiche);
 
-  return `You are an expert web developer specializing in modern, responsive e-commerce websites. Generate a complete, production-ready ${pageType} page from scratch.
+  return `You are an expert web developer specializing in modern, responsive e-commerce websites using Tailwind CSS. Generate a complete, production-ready ${pageType} page.
 
 ## Business Context
 - **Company Name**: ${companyName}
@@ -42,51 +42,106 @@ function createDynamicPagePrompt(params: GeneratePageRequest): string {
 - **Tone**: Professional, inviting, and industry-appropriate
 ${logoUrl ? `- **Logo URL**: ${logoUrl}` : ''}
 
-## Design Requirements
-- **Styling**: STRICTLY use Tailwind CSS utility classes. DO NOT generate separate CSS files or large <style> blocks unless absolutely necessary for custom animations.
-- **Primary Color**: ${theme.primaryColor} (Use this for primary buttons, links, and accents)
-- **Font Family**: ${theme.fontFamily} (Apply this to the root level)
-- **Design Style**: ${theme.designFeel} (Minimal, Bold, Modern, etc.)
+## Design Requirements (CRITICAL)
+- **Styling**: You MUST use Tailwind CSS utility classes for ALL styling. DO NOT generate separate CSS files or <style> blocks.
+- **Primary Color**: ${theme.primaryColor} (Use CSS custom properties: style="background-color: ${theme.primaryColor}" or create utility classes)
+- **Font Family**: ${theme.fontFamily}
+- **Design Style**: ${theme.designFeel}
+- **Include Tailwind CDN**: Add <script src="https://cdn.tailwindcss.com"></script> in the <head>
 
 ## Page-Specific Requirements
 ${pageRequirements}
 
 ## Technical Requirements
-1. **Fully Responsive**: Mobile-first design that works on all screen sizes (320px to 4K).
-2. **Modern & Clean**: Use contemporary design patterns, whitespace, and smooth transitions.
-3. **Accessibility**: WCAG 2.1 AA compliant (proper ARIA labels, semantic HTML).
-4. **Tailwind CSS ONLY**: All layout and styling MUST be done with Tailwind utility classes.
-5. **No Dummy Content**: Use realistic, niche-specific content for headings, paragraphs, and CTAs. DO NOT use "Lorem Ipsum".
-6. **SEO Optimized**: Include proper <h1>-<h3> hierarchy and descriptive text.
+1. **Fully Responsive**: Mobile-first design using Tailwind breakpoints (sm:, md:, lg:, xl:).
+2. **Modern Layout**: Use flexbox (flex) and grid (grid) utilities. Example: class="container mx-auto px-4"
+3. **Whitespace**: Use generous padding and margins (p-8, my-12, gap-6).
+4. **Typography**: Use text sizing (text-xl, text-3xl), font weights (font-bold, font-semibold).
+5. **Colors**: Use gray scale (bg-gray-50, text-gray-600) and the primary color for accents.
+6. **Interactive States**: Include hover effects (hover:bg-blue-600, hover:shadow-lg).
+7. **No Dummy Content**: Generate realistic, niche-specific content. NO "Lorem Ipsum".
+8. **SEO**: Proper heading hierarchy (single h1, h2 for sections).
 
-## Dynamic Data Placeholders (CRITICAL)
-Include these exact placeholders where dynamic data should be injected at runtime:
-- {{menu}} - MUST be placed inside the <header> or <nav> section.
-- {{footerLinks}} - Place in the <footer> section.
-- {{products}} - For product listings (grid/list). The data injector will replace this with a styled product grid.
-- {{product.name}}, {{product.price}}, {{product.description}}, {{product.image}} - Used in product detail pages.
-- {{categories}} - For category listings.
-- {{category.name}}, {{category.description}} - For category detail pages.
-- {{featuredProducts}} - Used for a featured/highlighted products section.
-- {{breadcrumbs}} - MUST be placed near the top of the page (below header).
-- {{companyName}} - Use for branding and copyright.
-- {{primaryColor}} - Can be used in inline styles if needed for exact color matching.
+## Dynamic Data Placeholders (MUST INCLUDE)
+Place these exact placeholders where dynamic data will be injected:
+- {{menu}} - Inside <header> or <nav>
+- {{footerLinks}} - Inside <footer>
+- {{products}} - For product grids (will be replaced by styled cards)
+- {{categories}} - For category listings
+- {{featuredProducts}} - For featured product section on homepage
+- {{breadcrumbs}} - Below header for navigation
+- {{companyName}} - For branding
 
-## Output Format
-Return your response in the following JSON format:
+## Client-Side Data Fetching Script (MUST INCLUDE)
+Include this script before </body> to enable dynamic data loading:
+\`\`\`html
+<script>
+(function() {
+  const storefrontId = window.location.hostname.split('.')[0];
+  const API_BASE = '/api/storefront/' + storefrontId;
+  
+  async function fetchData(endpoint, containerId) {
+    try {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      const res = await fetch(API_BASE + '/' + endpoint);
+      if (res.ok) {
+        const data = await res.json();
+        console.log(endpoint + ' loaded:', data);
+      }
+    } catch (e) { console.error('Fetch error:', e); }
+  }
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    fetchData('products', 'products-container');
+    fetchData('categories', 'categories-container');
+  });
+})();
+</script>
+\`\`\`
+
+## Output Format (STRICT JSON)
+Return ONLY valid JSON in this exact format, no markdown code blocks:
 {
-  "html": "<complete HTML code including <html>, <head>, and <body> tags>",
-  "css": "<Any minimal custom CSS if Tailwind cannot cover it (rare)>",
-  "js": "<Any necessary client-side scripts for interactivity (e.g., mobile menu toggle if not in {{menu}})>",
+  "html": "<complete HTML document with <!DOCTYPE html>, <html>, <head>, <body>>",
+  "css": "",
+  "js": "",
   "metadata": {
-    "title": "<SEO title>",
-    "description": "<SEO description>"
+    "title": "SEO optimized page title",
+    "description": "Meta description for SEO"
   }
 }
 
-IMPORTANT: Ensure the HTML is well-structured and uses the company name (${companyName}) and description effectively. The design should feel premium and tailor-made for the ${businessNiche} industry.
+## Example HTML Structure
+\`\`\`html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${companyName} - ${pageType}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=${theme.fontFamily.replace(' ', '+')}:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>body { font-family: '${theme.fontFamily}', sans-serif; }</style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="/" class="text-2xl font-bold" style="color: ${theme.primaryColor}">${companyName}</a>
+      {{menu}}
+    </nav>
+  </header>
+  <main>
+    <!-- Page content here with Tailwind classes -->
+  </main>
+  <footer class="bg-gray-900 text-white py-12">
+    <!-- Footer content -->
+  </footer>
+</body>
+</html>
+\`\`\`
 
-Generate the complete ${pageType} now:`;
+Generate the complete ${pageType} page now. Return ONLY the JSON object, no explanations.`;
 }
 
 /**
