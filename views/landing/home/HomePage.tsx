@@ -11,9 +11,10 @@ import { SubscriptionPlans } from "./sections/SubscriptionPlans";
 import { useToast } from "@/hooks/useToast";
 import { useAuth } from "@/contexts/AuthContext";
 import { generateCompleteSite } from "@/services/ai";
-import { saveGeneratedSiteToFirebase, GeneratedSite } from "@/services/firebase";
+import { saveGeneratedSiteToFirebase, clearWizardLocally, GeneratedSite } from "@/services/firebase";
 import { canCreateStorefront, incrementStorefrontCount, incrementPageCount } from "@/services/planLimits";
 import { createDefaultPageSettings } from "@/services/pageSettings";
+import { CaptivatingLoader } from "@/components/ui";
 
 const HomePage = () => {
   const router = useRouter();
@@ -124,6 +125,9 @@ const HomePage = () => {
         await incrementPageCount(userId, data.subdomain);
       }
 
+      // Clear wizard progress from browser so it doesn't load again
+      clearWizardLocally();
+
       showSuccess("Storefront created successfully! Redirecting to dashboard...");
 
       setTimeout(() => {
@@ -140,6 +144,24 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-50 to-white">
+      {/* Full-screen Loading Animation */}
+      {generating && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white/90 backdrop-blur-sm">
+          <div className="max-w-md w-full">
+            <CaptivatingLoader
+              loadingTexts={[
+                "Sparking your business idea...",
+                "Designing a unique brand identity...",
+                "Coding your digital storefront...",
+                "Optimizing for lightning speed...",
+                "Launching your dream store..."
+              ]}
+              subText="Our AI is building your storefront. This might take a minute."
+            />
+          </div>
+        </div>
+      )}
+
       <Navbar />
 
       {/* Hero Section */}

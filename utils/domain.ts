@@ -27,7 +27,7 @@ export function getSubdomainUrl(subdomain: string): string {
 }
 
 /**
- * Get the subdomain with domain suffix (e.g., "mysite.storefront.com")
+ * Get the subdomain with domain suffix (e.g., "mysite.dfoldlab.co.uk")
  */
 export function getSubdomainWithDomain(subdomain: string): string {
   const mainDomain = getMainDomain();

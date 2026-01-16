@@ -18,6 +18,7 @@ import {
   WizardData
 } from "@/services/firebase";
 import { useToast } from "@/hooks/useToast";
+import { getMainDomain } from "@/utils/domain";
 
 interface StorefrontWizardProps {
   isOpen: boolean;
@@ -77,6 +78,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
   const [authChecked, setAuthChecked] = useState(false);
 
   const { showSuccess, showError } = useToast();
+  const mainDomain = getMainDomain();
   const [aiGenerating, setAiGenerating] = useState(false);
   const [showLocalDataPrompt, setShowLocalDataPrompt] = useState(false);
 
@@ -548,11 +550,6 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
       setLoading(false);
       onComplete?.(formData);
       onClose();
-      // Clear saved data
-      if (typeof window !== "undefined") {
-        localStorage.removeItem(STORAGE_KEY);
-        localStorage.removeItem(`${STORAGE_KEY}_step`);
-      }
       // Reset form
       setCurrentStep(1);
       setFormData(getDefaultData());
@@ -716,7 +713,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
                 className="w-full pr-24"
               />
               <div className="absolute right-3 top-9 text-neutral-500 text-sm">
-                .storefront.com
+                .{mainDomain}
               </div>
             </div>
             <div className="bg-neutral-50 p-4 rounded-lg">
@@ -724,7 +721,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
                 Your storefront will be available at:
               </p>
               <p className="text-sm font-semibold text-primary-600 mt-1">
-                {formData.subdomain || "your-store"}.storefront.com
+                {formData.subdomain || "your-store"}.{mainDomain}
               </p>
             </div>
           </div>
