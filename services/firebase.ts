@@ -27,6 +27,7 @@ export interface WizardData {
   logo: string | null; // URL or base64
   logoPreview: string | null;
   theme?: WizardThemeSettings;
+  layout?: 'single-page' | 'multi-page';
   userId?: string;
   userEmail?: string;
   createdAt?: any;
@@ -50,6 +51,7 @@ export interface GeneratedSite {
   companyName: string;
   businessNiche: string;
   theme: WizardThemeSettings;
+  layout: 'single-page' | 'multi-page';
   pages: Record<string, GeneratedPage>;
   customDomain?: string;
   domainVerification?: {
@@ -62,7 +64,39 @@ export interface GeneratedSite {
   status: "generating" | "completed" | "failed";
 }
 
+/**
+ * Remove undefined values from an object recursively
+ * Firebase does not support undefined values
+ */
+export const sanitizeData = (data: any): any => {
+  if (data === null || typeof data !== 'object') {
+    return data;
+  }
+
+  if (Array.isArray(data)) {
+    return data.map(sanitizeData);
+  }
+
+  const sanitized: any = {};
+  Object.keys(data).forEach(key => {
+    const value = data[key];
+    if (value !== undefined) {
+      sanitized[key] = sanitizeData(value);
+    }
+  });
+  return sanitized;
+};
+
 const COLLECTION_NAME = "storefront_wizards";
+
+/**
+ * Helper to extract a string userId from various user object formats
+ */
+const extractUserId = (user: any): string | null => {
+  if (!user) return null;
+  const id = user.uid || user.id || user.user_id;
+  return id ? String(id) : null;
+};
 
 /**
  * Save wizard data to Firebase
@@ -72,11 +106,14 @@ export const saveWizardToFirebase = async (
   user: User | { email: string; uid: string } | any
 ): Promise<void> => {
   try {
-    if (!user) {
-      throw new Error("User must be authenticated to save to Firebase");
+    const userId = extractUserId(user);
+
+    // Validate userId - Firebase doc() requires a non-empty string
+    if (!userId) {
+      console.warn("Invalid userId, falling back to localStorage");
+      throw new Error("Invalid user ID - cannot save to Firebase");
     }
 
-    const userId = user.uid || (user as any).id;
     const userEmail = user.email || (user as any).email;
 
     const wizardData: WizardData = {
@@ -92,11 +129,11 @@ export const saveWizardToFirebase = async (
 
     if (wizardDoc.exists()) {
       // Update existing wizard
-      await updateDoc(wizardRef, wizardData as any);
+      await updateDoc(wizardRef, sanitizeData(wizardData));
     } else {
       // Create new wizard
       wizardData.createdAt = new Date();
-      await setDoc(wizardRef, wizardData);
+      await setDoc(wizardRef, sanitizeData(wizardData));
     }
   } catch (error) {
     console.error("Error saving wizard to Firebase:", error);
@@ -110,8 +147,10 @@ export const saveWizardToFirebase = async (
 export const loadWizardFromFirebase = async (
   user: User | { email: string; uid: string } | any
 ): Promise<WizardData | null> => {
+  const userId = extractUserId(user);
+  if (!userId) return null;
+
   try {
-    const userId = user.uid || (user as any).id;
     const wizardRef = doc(db, COLLECTION_NAME, userId);
     const wizardDoc = await getDoc(wizardRef);
 
@@ -178,6 +217,8 @@ export const hasLocalWizardData = (): boolean => {
 
 /**
  * Save generated site to Firebase
+ * Uses subdomain as document ID for multi-site support
+ * Also maintains a legacy copy at userId for backward compatibility
  */
 export const saveGeneratedSiteToFirebase = async (
   site: GeneratedSite,
@@ -185,35 +226,49 @@ export const saveGeneratedSiteToFirebase = async (
 ): Promise<void> => {
   try {
     // Handle different user object types
-    const userId = user?.uid || (user as any)?.id || (user as any)?.user_id;
+    const userId = extractUserId(user);
 
     if (!userId) {
       console.error("Firebase Service: User ID missing", { user });
       throw new Error("User ID is missing from user object");
     }
 
-    // Convert userId to string if it's a number (for user_id from UserData)
-    const userIdString = String(userId);
-    console.log(`Firebase Service: Saving site for userId: ${userIdString}`);
+    if (!site.subdomain) {
+      console.error("Firebase Service: Subdomain missing from site data");
+      throw new Error("Subdomain is required to save site");
+    }
 
-    const siteRef = doc(db, "storefront_sites", userIdString);
+    console.log(`Firebase Service: Saving site for userId: ${userId}, subdomain: ${site.subdomain}`);
 
     const siteData: GeneratedSite = {
       ...site,
-      userId: userIdString, // Ensure userId in data matches doc ID
+      userId: userId, // Ensure userId in data matches
       updatedAt: new Date(),
     };
 
-    const siteDoc = await getDoc(siteRef);
+    // Save to multi-site collection using subdomain as doc ID
+    const multiSiteRef = doc(db, "user_storefronts", site.subdomain);
+    const multiSiteDoc = await getDoc(multiSiteRef);
 
-    if (siteDoc.exists()) {
-      console.log("Firebase Service: Updating existing site document");
-      await updateDoc(siteRef, siteData as any);
+    if (multiSiteDoc.exists()) {
+      console.log("Firebase Service: Updating existing site in multi-site collection");
+      await updateDoc(multiSiteRef, sanitizeData(siteData));
     } else {
-      console.log("Firebase Service: Creating new site document");
+      console.log("Firebase Service: Creating new site in multi-site collection");
       siteData.generatedAt = new Date();
-      await setDoc(siteRef, siteData);
+      await setDoc(multiSiteRef, sanitizeData(siteData));
     }
+
+    // Also save to legacy collection (backward compatibility - first site only)
+    const legacySiteRef = doc(db, "storefront_sites", userId);
+    const legacySiteDoc = await getDoc(legacySiteRef);
+
+    if (!legacySiteDoc.exists()) {
+      // Only save to legacy if no site exists there yet
+      console.log("Firebase Service: Also saving to legacy collection for backward compat");
+      await setDoc(legacySiteRef, sanitizeData(siteData));
+    }
+
     console.log("Firebase Service: Site saved successfully");
   } catch (error: any) {
     console.error("Firebase Service: Error saving generated site to Firebase:", error);
@@ -231,156 +286,123 @@ export const loadGeneratedSiteFromFirebase = async (
   user: User | { email: string; uid: string } | { user_id: number; email: string } | any,
   retries: number = 3
 ): Promise<GeneratedSite | null> => {
+  const userId = extractUserId(user);
+  if (!userId) {
+    console.error("User ID is missing from user object", { user });
+    return null;
+  }
+
   try {
-    // Handle different user object types
-    const userId = user?.uid || (user as any)?.id || (user as any)?.user_id;
+    // 1. First attempt: Load from multi-site collection by querying for this userId
+    console.log("🔍 Loading site for userId:", userId);
 
-    if (!userId) {
-      console.error("User ID is missing from user object", { user });
-      return null;
-    }
+    const sitesRef = collection(db, "user_storefronts");
+    const q = query(sitesRef, where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
 
-    // Convert userId to string if it's a number (for user_id from UserData)
-    const userIdString = String(userId);
-
-    // Debug logging
-    if (process.env.NODE_ENV === 'development') {
-      console.log("🔍 Firestore Read Debug:", {
-        userId,
-        userIdString,
-        collection: "storefront_sites",
-        documentId: userIdString,
-        userObject: {
-          hasUid: !!user?.uid,
-          hasId: !!(user as any)?.id,
-          hasUserId: !!(user as any)?.user_id,
-          email: (user as any)?.email
-        }
+    if (!querySnapshot.empty) {
+      // Sort by updatedAt descending and pick the latest one
+      const sites = querySnapshot.docs.map(doc => doc.data() as GeneratedSite);
+      sites.sort((a, b) => {
+        const dateA = a.updatedAt instanceof Date ? a.updatedAt.getTime() : (a.updatedAt?.seconds ? a.updatedAt.seconds * 1000 : 0);
+        const dateB = b.updatedAt instanceof Date ? b.updatedAt.getTime() : (b.updatedAt?.seconds ? b.updatedAt.seconds * 1000 : 0);
+        return dateB - dateA;
       });
+      console.log("✅ Found site in user_storefronts:", sites[0].subdomain);
+      return sites[0];
     }
 
-    const siteRef = doc(db, "storefront_sites", userIdString);
+    // 2. Second attempt: Check legacy collection (for earlier users)
+    const legacyRef = doc(db, "storefront_sites", userId);
+    const legacyDoc = await getDoc(legacyRef);
 
-    // Try to enable network if offline (silently - don't log errors)
-    try {
-      const { enableNetwork } = await import("firebase/firestore");
-      await enableNetwork(db);
-      // Small delay to let network stabilize
-      await new Promise(resolve => setTimeout(resolve, 300));
-    } catch (networkError) {
-      // Silently fail - network might already be enabled
+    if (legacyDoc.exists()) {
+      console.log("✅ Found site in legacy collection");
+      return legacyDoc.data() as GeneratedSite;
     }
 
-    // Add timeout wrapper (10 second timeout)
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Firebase request timeout after 10 seconds')), 10000)
-    );
-
-    const siteDoc = await Promise.race([
-      getDoc(siteRef),
-      timeoutPromise
-    ]) as any;
-
-    if (process.env.NODE_ENV === 'development') {
-      console.log("📄 Firestore Response:", {
-        exists: siteDoc?.exists(),
-        hasData: !!siteDoc?.data(),
-        error: siteDoc?.code || siteDoc?.message
-      });
-    }
-
-    if (siteDoc && siteDoc.exists()) {
-      const data = siteDoc.data() as GeneratedSite;
-      if (process.env.NODE_ENV === 'development') {
-        console.log("✅ Document loaded successfully:", {
-          companyName: data.companyName,
-          subdomain: data.subdomain,
-          pagesCount: Object.keys(data.pages || {}).length
-        });
-      }
-      return data;
-    }
-
-    if (process.env.NODE_ENV === 'development') {
-      console.warn("⚠️ Document does not exist in Firestore:", {
-        collection: "storefront_sites",
-        documentId: userIdString,
-        suggestion: "Make sure you've created a storefront first"
-      });
-    }
-
+    console.log("❌ No site found for user");
     return null;
   } catch (error: any) {
+    console.error("Firebase Service: Error loading generated site:", error);
+
     // Log permission errors specifically for debugging
     if (error.code === 'permission-denied') {
-      const userId = (user as any)?.uid || (user as any)?.id || (user as any)?.user_id;
       console.error("🔒 Firestore Permission Denied:", {
-        collection: "storefront_sites",
-        documentId: String(userId || 'unknown'),
+        collection: "user_storefronts",
+        userId,
         errorCode: error.code,
-        errorMessage: error.message,
-        suggestion: "Check Firestore security rules for 'storefront_sites' collection. Rules should allow read: if true"
+        errorMessage: error.message
       });
     }
 
-    // Handle offline error specifically (check first to avoid logging expected errors)
-    if (error.code === 'unavailable' || error.message?.includes('offline') || error.message?.includes('Failed to get document') || error.message?.includes('Could not reach')) {
-      // Only log retry attempts in development or if it's the first retry
-      if (retries === 3 || process.env.NODE_ENV === 'development') {
-        console.warn("🔄 Firebase is offline, retrying...", { retries, errorCode: error.code });
-      }
-
-      // Retry with exponential backoff
-      if (retries > 0) {
-        const delay = 1000 * (4 - retries); // 1s, 2s, 3s delays
-        await new Promise(resolve => setTimeout(resolve, delay));
-
-        // Try to enable network before retry
-        try {
-          const { enableNetwork } = await import("firebase/firestore");
-          await enableNetwork(db);
-          // Wait a bit for network to stabilize
-          await new Promise(resolve => setTimeout(resolve, 500));
-        } catch (networkError) {
-          // Silently fail - network might already be enabled
-        }
-
-        return loadGeneratedSiteFromFirebase(user, retries - 1);
-      } else {
-        // Use console.warn instead of console.error for expected offline scenarios
-        // This is an expected error when Firebase is offline, not a critical failure
-        if (process.env.NODE_ENV === 'development') {
-          console.warn("⚠️ Max retries reached. Firebase appears to be offline or unreachable.");
-          console.warn("💡 This is usually due to:");
-          console.warn("   1. Network connectivity issues");
-          console.warn("   2. Firebase security rules blocking access");
-          console.warn("   3. Firebase project configuration issues");
-          console.warn("   4. Firestore backend being temporarily unavailable");
-        }
-        // Return null instead of throwing to allow graceful handling
-        // The component will handle the null case and show appropriate error
-        return null;
-      }
+    // Progressive backoff for retries
+    if (retries > 0) {
+      console.log(`🔄 Retrying load (${retries} attempts left)...`);
+      await new Promise(resolve => setTimeout(resolve, 1000 * (4 - retries)));
+      return loadGeneratedSiteFromFirebase(user, retries - 1);
     }
 
-    // For timeout errors
-    if (error.message?.includes('timeout') || error.message?.includes('Firebase request timeout')) {
-      if (process.env.NODE_ENV === 'development') {
-        console.warn("⏱️ Firebase request timed out");
-      }
-      return null;
-    }
-
-    // For permission errors
-    if (error.code === 'permission-denied') {
-      if (process.env.NODE_ENV === 'development') {
-        console.warn("🔒 Firebase permission denied. Check your security rules.");
-      }
-      return null;
-    }
-
-    // For all other unexpected errors, log and return null
-    console.error("❌ Unexpected error loading site from Firebase:", error);
     return null;
   }
 };
+
+/**
+ * Load ALL generated sites for a user (multi-site support)
+ * Uses a collection query to find all sites belonging to a user
+ */
+export const loadAllUserSites = async (
+  user: User | { email: string; uid: string } | { user_id: number; email: string } | any
+): Promise<GeneratedSite[]> => {
+  const userId = extractUserId(user);
+  if (!userId) {
+    console.error("User ID is missing from user object");
+    return [];
+  }
+
+  try {
+    const sites: GeneratedSite[] = [];
+
+    // 1. Check the multi-site collection
+    try {
+      const sitesRef = collection(db, 'user_storefronts');
+      const q = query(sitesRef, where('userId', '==', userId));
+      const snapshot = await getDocs(q);
+
+      snapshot.docs.forEach(doc => {
+        sites.push(doc.data() as GeneratedSite);
+      });
+    } catch (multiSiteError) {
+      console.warn('Error loading from user_storefronts:', multiSiteError);
+    }
+
+    // 2. Check the legacy collection
+    try {
+      const legacyRef = doc(db, 'storefront_sites', userId);
+      const legacyDoc = await getDoc(legacyRef);
+
+      if (legacyDoc.exists()) {
+        const legacyData = legacyDoc.data() as GeneratedSite;
+        // Avoid duplicates if already found in multi-site
+        if (!sites.find(s => s.subdomain === legacyData.subdomain)) {
+          sites.push(legacyData);
+        }
+      }
+    } catch (legacyError) {
+      console.warn('Error loading from legacy storefront_sites:', legacyError);
+    }
+
+    // Sort by updatedAt descending
+    sites.sort((a, b) => {
+      const dateA = a.updatedAt instanceof Date ? a.updatedAt.getTime() : (a.updatedAt?.seconds ? a.updatedAt.seconds * 1000 : 0);
+      const dateB = b.updatedAt instanceof Date ? b.updatedAt.getTime() : (b.updatedAt?.seconds ? b.updatedAt.seconds * 1000 : 0);
+      return dateB - dateA;
+    });
+
+    return sites;
+  } catch (error: any) {
+    console.error("Error loading user sites:", error);
+    return [];
+  }
+};
+

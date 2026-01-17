@@ -82,6 +82,7 @@ const HomePage = () => {
           description: data.description,
           subdomain: data.subdomain,
           logoPreview: data.logoPreview,
+          layout: data.layout || 'multi-page',
           theme: data.theme || {
             primaryColor: "#3B82F6",
             fontFamily: "Inter",
@@ -99,6 +100,7 @@ const HomePage = () => {
         subdomain: data.subdomain,
         companyName: data.companyName,
         businessNiche: data.ideaScope,
+        layout: data.layout || 'multi-page',
         theme: data.theme || {
           primaryColor: "#3B82F6",
           fontFamily: "Inter",
@@ -119,10 +121,14 @@ const HomePage = () => {
       // Increment storefront count
       await incrementStorefrontCount(userId);
 
-      // Count pages and increment page count
-      const pageCount = Object.keys(generatedPages).length;
-      for (let i = 0; i < pageCount; i++) {
-        await incrementPageCount(userId, data.subdomain);
+      // Count pages and increment page count (only if subdomain is valid)
+      if (data.subdomain && data.subdomain.length > 0) {
+        const pageCount = Object.keys(generatedPages).length;
+        for (let i = 0; i < pageCount; i++) {
+          await incrementPageCount(userId, data.subdomain);
+        }
+      } else {
+        console.warn("Subdomain is empty, skipping page count increment");
       }
 
       // Clear wizard progress from browser so it doesn't load again

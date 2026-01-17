@@ -26,6 +26,7 @@ export interface StorefrontConfig {
     fontFamily: string;
     designFeel: string;
   };
+  layout: 'single-page' | 'multi-page';
   logoUrl?: string;
   status: 'active' | 'inactive' | 'suspended';
   createdAt: Date;
@@ -111,6 +112,7 @@ async function loadStorefrontConfigFromFirebase(
         companyName: data.companyName,
         businessNiche: data.businessNiche,
         theme: data.theme,
+        layout: data.layout || 'multi-page',
         logoUrl: data.logoUrl,
         status: data.status || 'active',
         createdAt: data.createdAt?.toDate() || new Date(),
@@ -139,6 +141,7 @@ async function loadStorefrontConfigFromFirebase(
         companyName: data.companyName,
         businessNiche: data.businessNiche,
         theme: data.theme,
+        layout: data.layout || 'multi-page',
         logoUrl: data.logoUrl,
         status: data.status || 'active',
         createdAt: data.createdAt?.toDate() || new Date(),
@@ -167,6 +170,7 @@ async function loadStorefrontConfigFromFirebase(
         companyName: data.companyName,
         businessNiche: data.businessNiche,
         theme: data.theme,
+        layout: data.layout || 'multi-page',
         logoUrl: data.logoUrl,
         status: data.status || 'active',
         createdAt: data.createdAt?.toDate() || new Date(),

@@ -113,13 +113,14 @@ export const ecommerceApi = {
         return response.data;
     },
 
-    checkConnectivity: async () => {
-        try {
-            const response = await apiClient.get("/");
-            return response.status === 200;
-        } catch (error) {
-            console.error("Connectivity check failed:", error);
-            return false;
-        }
-    },
+    // Connectivity check disabled - backend hibernates on Render
+    // checkConnectivity: async () => {
+    //     try {
+    //         const response = await apiClient.get("/");
+    //         return response.status === 200;
+    //     } catch (error) {
+    //         console.error("Connectivity check failed:", error);
+    //         return false;
+    //     }
+    // },
 };

@@ -210,14 +210,24 @@ function generateProductsHTML(products: any[]): string {
 
   const items = products.map(product => {
     const productUrl = `/products/${product.slug || product.id}`;
+    const productImage = product.image || '';
+    const productPrice = product.price || '0.00';
     return `
     <div class="group bg-white border border-gray-100 rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-blue-500/5 transition-all duration-500 flex flex-col h-full" data-product-id="${product.id}">
       <div class="aspect-square bg-gray-50 relative overflow-hidden p-8">
         <a href="${productUrl}" class="block h-full">
-          ${product.image ? `<img src="${product.image}" alt="${product.name}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700" />` : ''}
+          ${productImage ? `<img src="${productImage}" alt="${product.name}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700" />` : ''}
           <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500"></div>
         </a>
-        <button class="absolute bottom-6 left-6 right-6 translate-y-32 group-hover:translate-y-0 bg-gray-900 text-white py-4 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-2lx transition-all duration-500 hover:bg-blue-600 add-to-cart" data-product-id="${product.id}">
+        <button 
+          class="absolute bottom-6 left-6 right-6 translate-y-32 group-hover:translate-y-0 bg-gray-900 text-white py-4 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-2lx transition-all duration-500 hover:bg-blue-600 add-to-cart" 
+          data-add-to-cart
+          data-product-id="${product.id}"
+          data-product-name="${product.name}"
+          data-product-price="${productPrice}"
+          data-product-image="${productImage}"
+          data-product-sku="${product.sku || ''}"
+        >
           Add to Cart
         </button>
       </div>
@@ -231,11 +241,18 @@ function generateProductsHTML(products: any[]): string {
         <div class="flex items-center justify-between mt-auto pt-5 border-t border-gray-50">
           <div class="flex flex-col">
             <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-0.5">Price</span>
-            <span class="text-2xl font-black text-gray-900 tracking-tighter">$${product.price || '0.00'}</span>
+            <span class="text-2xl font-black text-gray-900 tracking-tighter">$${productPrice}</span>
           </div>
-          <div class="w-10 h-10 rounded-xl bg-gray-50 group-hover:bg-blue-600 group-hover:text-white flex items-center justify-center text-gray-400 transition-all duration-500">
+          <button 
+            class="w-10 h-10 rounded-xl bg-gray-50 hover:bg-blue-600 hover:text-white flex items-center justify-center text-gray-400 transition-all duration-500"
+            data-add-to-cart
+            data-product-id="${product.id}"
+            data-product-name="${product.name}"
+            data-product-price="${productPrice}"
+            data-product-image="${productImage}"
+          >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
-          </div>
+          </button>
         </div>
       </div>
     </div>

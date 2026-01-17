@@ -367,8 +367,17 @@ async function fetchMenu(storefrontId: string) {
  */
 function generateMenuHTML(menuItems: any[], config: any): string {
   const primaryColor = config.theme?.primaryColor || '#3b82f6';
+  const isSinglePage = config.layout === 'single-page';
+
+  const formatRoute = (route: string) => {
+    if (!isSinglePage) return route;
+    if (route === '/') return '#home';
+    // Convert /products to #products, etc.
+    return '#' + route.replace(/^\//, '');
+  };
 
   const renderDesktopItem = (item: any) => {
+    const route = formatRoute(item.route);
     if (item.children && item.children.length > 0) {
       return `
         <div class="relative group/menu">
@@ -380,7 +389,7 @@ function generateMenuHTML(menuItems: any[], config: any): string {
           </button>
           <div class="absolute left-0 top-full hidden group-hover/menu:block min-w-[220px] bg-white shadow-2xl border border-gray-100 rounded-2xl py-3 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
             ${item.children.map((child: any) => `
-              <a href="${child.route}" class="block px-6 py-2.5 text-xs font-bold text-gray-600 hover:text-[${primaryColor}] hover:bg-gray-50 transition-all uppercase tracking-widest">
+              <a href="${formatRoute(child.route)}" class="block px-6 py-2.5 text-xs font-bold text-gray-600 hover:text-[${primaryColor}] hover:bg-gray-50 transition-all uppercase tracking-widest">
                 ${child.label}
               </a>
             `).join('')}
@@ -389,19 +398,20 @@ function generateMenuHTML(menuItems: any[], config: any): string {
       `;
     }
     return `
-      <a href="${item.route}" class="text-sm font-bold text-gray-700 hover:text-[${primaryColor}] transition-colors uppercase tracking-widest px-4 py-2">
+      <a href="${route}" class="text-sm font-bold text-gray-700 hover:text-[${primaryColor}] transition-colors uppercase tracking-widest px-4 py-2">
         ${item.label}
       </a>
     `;
   };
 
   const renderMobileItem = (item: any) => {
+    const route = formatRoute(item.route);
     if (item.children && item.children.length > 0) {
       return `
         <div class="space-y-1 py-2">
           <div class="px-6 text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">${item.label}</div>
           ${item.children.map((child: any) => `
-            <a href="${child.route}" class="block px-8 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 border-l-4 border-transparent hover:border-[${primaryColor}] uppercase tracking-widest">
+            <a href="${formatRoute(child.route)}" class="block px-8 py-3 text-sm font-bold text-gray-600 hover:bg-gray-50 border-l-4 border-transparent hover:border-[${primaryColor}] uppercase tracking-widest">
               ${child.label}
             </a>
           `).join('')}
@@ -409,7 +419,7 @@ function generateMenuHTML(menuItems: any[], config: any): string {
       `;
     }
     return `
-      <a href="${item.route}" class="block px-6 py-4 text-base font-black text-gray-900 hover:bg-gray-50 transition-all uppercase tracking-widest border-l-4 border-transparent hover:border-[${primaryColor}]">
+      <a href="${route}" class="block px-6 py-4 text-base font-black text-gray-900 hover:bg-gray-50 transition-all uppercase tracking-widest border-l-4 border-transparent hover:border-[${primaryColor}]">
         ${item.label}
       </a>
     `;

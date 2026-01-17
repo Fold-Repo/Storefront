@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { PopupModal } from "@/components/ui";
 import { Input, TextArea, Select } from "@/components/ui/form";
 import { Button, ColorPicker, CaptivatingLoader } from "@/components/ui";
-import { XMarkIcon, SparklesIcon, ArrowRightIcon, ArrowLeftIcon, CheckCircleIcon, LockClosedIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, SparklesIcon, ArrowRightIcon, ArrowLeftIcon, CheckCircleIcon, LockClosedIcon, DocumentIcon, Squares2X2Icon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
@@ -41,6 +41,7 @@ export interface StorefrontData {
   logo: File | null;
   logoPreview: string | null;
   theme?: ThemeSettings;
+  layout: 'single-page' | 'multi-page';
 }
 
 const STEPS = [
@@ -50,7 +51,8 @@ const STEPS = [
   { id: 4, title: "Subdomain", description: "Choose your storefront URL" },
   { id: 5, title: "Logo", description: "Upload your company logo" },
   { id: 6, title: "Theming", description: "Customize your storefront appearance" },
-  { id: 7, title: "AI Design", description: "Generate design recommendations" },
+  { id: 7, title: "Site Layout", description: "Choose how your site is structured" },
+  { id: 8, title: "AI Design", description: "Generate design recommendations" },
 ];
 
 const IDEA_SCOPES = [
@@ -84,15 +86,12 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
 
   // Interactive AI Description Generator State
   const [showAIDescriptionModal, setShowAIDescriptionModal] = useState(false);
-  const [currentQuestion, setCurrentQuestion] = useState<string>("");
+  const [allQuestions, setAllQuestions] = useState<Array<{ id: number; question: string; type: 'text' | 'textarea'; hint: string }>>([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [currentAnswer, setCurrentAnswer] = useState<string>("");
   const [questionAnswers, setQuestionAnswers] = useState<Record<string, string>>({});
-  const [questionNumber, setQuestionNumber] = useState(0);
-  const [totalQuestions, setTotalQuestions] = useState(5);
-  const [generatingQuestion, setGeneratingQuestion] = useState(false);
+  const [loadingQuestions, setLoadingQuestions] = useState(false);
   const [generatingDescription, setGeneratingDescription] = useState(false);
-  const [inputType, setInputType] = useState<"text" | "textarea">("text");
-  const [hint, setHint] = useState<string>("");
 
   // Load saved form data from localStorage or Firebase
   const loadSavedData = async (): Promise<StorefrontData> => {
@@ -113,6 +112,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
             logo: null,
             logoPreview: firebaseData.logoPreview || null,
             theme: firebaseData.theme || getDefaultTheme(),
+            layout: firebaseData.layout || 'multi-page',
           };
         }
       } catch (error) {
@@ -134,6 +134,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
           logo: null,
           logoPreview: localData.logoPreview || null,
           theme: localData.theme || getDefaultTheme(),
+          layout: localData.layout || 'multi-page',
         };
       }
     }
@@ -148,6 +149,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
           logo: null,
           logoPreview: parsed.logoPreview || null,
           theme: parsed.theme || getDefaultTheme(),
+          layout: parsed.layout || 'multi-page',
         };
       }
     } catch (error) {
@@ -165,6 +167,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
     logo: null,
     logoPreview: null,
     theme: getDefaultTheme(),
+    layout: 'multi-page',
   });
 
   const getDefaultTheme = (): ThemeSettings => ({
@@ -210,6 +213,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
               logo: null,
               logoPreview: firebaseData.logoPreview || null,
               theme: firebaseData.theme || getDefaultTheme(),
+              layout: firebaseData.layout || 'multi-page',
             });
             showSuccess("Your saved progress has been loaded!");
           }
@@ -234,6 +238,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
           logo: null, // Can't serialize File objects
           logoPreview: formData.logoPreview,
           theme: formData.theme || getDefaultTheme(),
+          layout: formData.layout || 'multi-page',
         };
 
         try {
@@ -367,6 +372,11 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
           newErrors.designFeel = "Design feel is required";
         }
         break;
+      case 7:
+        if (!formData.layout) {
+          newErrors.layout = "Please select a layout";
+        }
+        break;
     }
 
     setErrors(newErrors);
@@ -402,76 +412,72 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
     }
   };
 
-  // Generate next question from AI
-  const generateNextQuestion = async () => {
+  // Fetch all questions at once
+  const fetchAllQuestions = async () => {
     if (!formData.companyName || !formData.ideaScope) {
       showError("Company name and niche are required");
       return;
     }
 
-    setGeneratingQuestion(true);
+    setLoadingQuestions(true);
     try {
-      const response = await fetch('/api/ai/generate-description/questions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          companyName: formData.companyName,
-          niche: formData.ideaScope,
-          existingAnswers: questionAnswers,
-        }),
-      });
+      const response = await fetch(
+        `/api/ai/generate-description/questions/all?companyName=${encodeURIComponent(formData.companyName)}&niche=${encodeURIComponent(formData.ideaScope)}`
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to generate question');
+        throw new Error('Failed to fetch questions');
       }
 
       const data = await response.json();
 
-      if (data.type === 'generate_description') {
-        // All questions answered, generate description
-        await generateFinalDescription();
-      } else {
-        // Show next question
-        setCurrentQuestion(data.question);
-        setInputType(data.inputType || 'text');
-        setHint(data.hint || '');
-        setQuestionNumber(data.questionNumber || 0);
-        setTotalQuestions(data.totalQuestions || 5);
+      if (data.questions && data.questions.length > 0) {
+        setAllQuestions(data.questions);
+        setCurrentQuestionIndex(0);
         setCurrentAnswer('');
+        setQuestionAnswers({});
+      } else {
+        throw new Error('No questions received');
       }
     } catch (error: any) {
-      showError(error.message || 'Failed to generate question');
+      showError(error.message || 'Failed to load questions');
     } finally {
-      setGeneratingQuestion(false);
+      setLoadingQuestions(false);
     }
   };
 
-  // Handle answer submission
+  // Handle answer submission - navigate to next question or generate description
   const handleAnswerSubmit = async () => {
     if (!currentAnswer.trim()) {
       showError("Please provide an answer");
       return;
     }
 
+    const currentQ = allQuestions[currentQuestionIndex];
+    if (!currentQ) return;
+
     // Save answer
     const newAnswers = {
       ...questionAnswers,
-      [currentQuestion]: currentAnswer,
+      [currentQ.question]: currentAnswer,
     };
     setQuestionAnswers(newAnswers);
 
     // Clear current answer
     setCurrentAnswer('');
 
-    // Generate next question or final description
-    await generateNextQuestion();
+    // Move to next question or generate description
+    if (currentQuestionIndex < allQuestions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else {
+      // All questions answered, generate final description
+      await generateFinalDescriptionWithAnswers(newAnswers);
+    }
   };
 
   // Generate final description from all answers
-  const generateFinalDescription = async () => {
-    if (Object.keys(questionAnswers).length === 0) {
+  const generateFinalDescriptionWithAnswers = async (answers: Record<string, string>) => {
+    if (Object.keys(answers).length === 0) {
       showError("No answers provided");
       return;
     }
@@ -486,7 +492,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
         body: JSON.stringify({
           companyName: formData.companyName,
           niche: formData.ideaScope,
-          answers: questionAnswers,
+          answers: answers,
         }),
       });
 
@@ -504,14 +510,20 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
 
       showSuccess("Business description generated successfully!");
       setShowAIDescriptionModal(false);
+      setAllQuestions([]);
       setQuestionAnswers({});
-      setCurrentQuestion('');
+      setCurrentQuestionIndex(0);
       setCurrentAnswer('');
     } catch (error: any) {
       showError(error.message || 'Failed to generate description');
     } finally {
       setGeneratingDescription(false);
     }
+  };
+
+  // Legacy function for backwards compatibility
+  const generateFinalDescription = async () => {
+    await generateFinalDescriptionWithAnswers(questionAnswers);
   };
 
   const handleNext = () => {
@@ -544,16 +556,16 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
       return;
     }
 
-    setLoading(true);
-    // Simulate API call
+    // Trigger completion immediately
+    onComplete?.(formData);
+    onClose();
+
+    // Reset form after a short delay to allow transition
     setTimeout(() => {
-      setLoading(false);
-      onComplete?.(formData);
-      onClose();
-      // Reset form
       setCurrentStep(1);
       setFormData(getDefaultData());
-    }, 1500);
+      setLoading(false);
+    }, 500);
   };
 
 
@@ -668,8 +680,9 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
                     }
                     setShowAIDescriptionModal(true);
                     setQuestionAnswers({});
-                    setQuestionNumber(0);
-                    generateNextQuestion();
+                    setCurrentQuestionIndex(0);
+                    setAllQuestions([]);
+                    fetchAllQuestions();
                   }}
                   className="absolute right-3 top-9 p-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 transition-colors"
                   title="Generate description with AI"
@@ -912,6 +925,55 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
         );
 
       case 7:
+        return (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <button
+                onClick={() => setFormData({ ...formData, layout: 'single-page' })}
+                className={`p-6 rounded-2xl border-2 transition-all text-left flex flex-col gap-4 ${formData.layout === 'single-page'
+                  ? "border-blue-500 bg-blue-50"
+                  : "border-neutral-100 hover:border-neutral-200 bg-white"
+                  }`}
+              >
+                <div className={`p-3 rounded-xl w-fit ${formData.layout === 'single-page' ? "bg-blue-500 text-white" : "bg-neutral-100 text-neutral-500"}`}>
+                  <DocumentIcon className="w-8 h-8" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg text-neutral-900">Single Page Layout</h3>
+                  <p className="text-sm text-neutral-500 mt-1">
+                    Everything on one page (Home, Products, Cart, Checkout). Perfect for simple, fast stores.
+                  </p>
+                </div>
+                {formData.layout === 'single-page' && (
+                  <CheckCircleIcon className="w-6 h-6 text-blue-500 absolute top-4 right-4" />
+                )}
+              </button>
+
+              <button
+                onClick={() => setFormData({ ...formData, layout: 'multi-page' })}
+                className={`p-6 rounded-2xl border-2 transition-all text-left flex flex-col gap-4 ${formData.layout === 'multi-page'
+                  ? "border-blue-500 bg-blue-50"
+                  : "border-neutral-100 hover:border-neutral-200 bg-white"
+                  }`}
+              >
+                <div className={`p-3 rounded-xl w-fit ${formData.layout === 'multi-page' ? "bg-blue-500 text-white" : "bg-neutral-100 text-neutral-500"}`}>
+                  <Squares2X2Icon className="w-8 h-8" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg text-neutral-900">Multi Page Layout</h3>
+                  <p className="text-sm text-neutral-500 mt-1">
+                    Standard e-commerce structure with separate pages for browsing, cart, and checkout.
+                  </p>
+                </div>
+                {formData.layout === 'multi-page' && (
+                  <CheckCircleIcon className="w-6 h-6 text-blue-500 absolute top-4 right-4" />
+                )}
+              </button>
+            </div>
+          </div>
+        );
+
+      case 8:
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
@@ -1189,9 +1251,9 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
         onClose={() => {
           setShowAIDescriptionModal(false);
           setQuestionAnswers({});
-          setCurrentQuestion('');
+          setAllQuestions([]);
+          setCurrentQuestionIndex(0);
           setCurrentAnswer('');
-          setQuestionNumber(0);
         }}
         title="AI Description Generator"
         size="md"
@@ -1208,38 +1270,45 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
               ]}
               subText="Creating your unique business description"
             />
-          ) : generatingQuestion ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-neutral-600">Generating question...</p>
+          ) : loadingQuestions ? (
+            <div className="py-8">
+              <CaptivatingLoader
+                loadingTexts={[
+                  "Preparing AI interview...",
+                  "Understanding your business...",
+                  "Crafting relevant questions...",
+                  "Almost ready..."
+                ]}
+                subText="Our AI is tailored to your niche"
+              />
             </div>
-          ) : currentQuestion ? (
+          ) : allQuestions.length > 0 && currentQuestionIndex < allQuestions.length ? (
             <>
               <div className="bg-blue-50 rounded-lg p-4 mb-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-semibold text-blue-600">
-                    Question {questionNumber} of {totalQuestions}
+                    Question {currentQuestionIndex + 1} of {allQuestions.length}
                   </span>
                   <span className="text-xs text-blue-500">
-                    {Math.round((questionNumber / totalQuestions) * 100)}% complete
+                    {Math.round(((currentQuestionIndex + 1) / allQuestions.length) * 100)}% complete
                   </span>
                 </div>
                 <div className="w-full bg-blue-200 rounded-full h-2">
                   <div
                     className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${(questionNumber / totalQuestions) * 100}%` }}
+                    style={{ width: `${((currentQuestionIndex + 1) / allQuestions.length) * 100}%` }}
                   ></div>
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-neutral-700 mb-2">
-                  {currentQuestion}
+                  {allQuestions[currentQuestionIndex]?.question}
                 </label>
-                {hint && (
-                  <p className="text-xs text-neutral-500 mb-2">{hint}</p>
+                {allQuestions[currentQuestionIndex]?.hint && (
+                  <p className="text-xs text-neutral-500 mb-2">{allQuestions[currentQuestionIndex]?.hint}</p>
                 )}
-                {inputType === 'textarea' ? (
+                {allQuestions[currentQuestionIndex]?.type === 'textarea' ? (
                   <TextArea
                     value={currentAnswer}
                     onChange={(e) => setCurrentAnswer(e.target.value)}
@@ -1265,13 +1334,14 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
                   className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
                   isDisabled={!currentAnswer.trim()}
                 >
-                  {questionNumber < totalQuestions ? 'Next Question' : 'Generate Description'}
+                  {currentQuestionIndex < allQuestions.length - 1 ? 'Next Question' : 'Generate Description'}
                 </Button>
                 <Button
                   onClick={() => {
                     setShowAIDescriptionModal(false);
                     setQuestionAnswers({});
-                    setCurrentQuestion('');
+                    setAllQuestions([]);
+                    setCurrentQuestionIndex(0);
                     setCurrentAnswer('');
                   }}
                   variant="light"
@@ -1288,14 +1358,14 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
                 Let AI Help Create Your Description
               </h3>
               <p className="text-sm text-neutral-600 mb-6">
-                We'll ask you a few questions about your business to generate a compelling description.
+                We'll ask you 5 quick questions about your business to generate a compelling description.
               </p>
               <Button
-                onClick={generateNextQuestion}
+                onClick={fetchAllQuestions}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
-                isDisabled={generatingQuestion}
+                isDisabled={loadingQuestions}
               >
-                {generatingQuestion ? 'Starting...' : 'Start'}
+                {loadingQuestions ? 'Loading...' : 'Start Questionnaire'}
               </Button>
             </div>
           )}

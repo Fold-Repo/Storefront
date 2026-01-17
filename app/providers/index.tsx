@@ -1,6 +1,5 @@
 'use client'
 
-import { InternetCheck } from '@/utils'
 import { HeroUIProvider, ToastProvider } from '@heroui/react'
 import { ReactQueryProvider } from './ReactQueryProvider'
 import { Provider as ReduxProvider } from 'react-redux'
@@ -19,11 +18,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
                         {children}
 
-                        <ToastProvider 
-                            placement="top-right" 
+                        <ToastProvider
+                            placement="top-right"
                             toastOffset={10}
                         />
-                        <InternetCheck />
+
 
                     </AuthProvider>
 

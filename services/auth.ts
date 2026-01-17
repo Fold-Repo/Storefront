@@ -581,44 +581,34 @@ export interface RefreshTokenPayload {
 export const refreshToken = async (payload: RefreshTokenPayload): Promise<any> => {
   try {
     // Use a separate axios instance without interceptors to avoid infinite loops
+    // The user specified the URL: {{url}}/auth/refresh-token where url is api.dfoldlab.co.uk
+    // API_BASE_URL is 'https://api.dfoldlab.co.uk/api/v1' as per .env.local
     const response = await axios.post(`${API_BASE_URL}${ENDPOINT.AUTH.REFRESH_TOKEN}`, payload);
 
     // Store new tokens
+    let token: string | null = null;
+    let newRefreshToken: string | null = null;
+
     if (response.data?.data) {
-      const { token, refreshToken: newRefreshToken } = response.data.data;
-
-      if (token && typeof window !== "undefined") {
-        localStorage.setItem("auth_token", token);
-        const { setCookie } = await import("@/utils/cookies");
-        const { AUTH_TOKEN_KEY } = await import("@/types");
-        setCookie(AUTH_TOKEN_KEY, token, 7);
-
-        if (newRefreshToken) {
-          localStorage.setItem("refresh_token", newRefreshToken);
-        }
-      }
-
-      return { token, refreshToken: newRefreshToken };
+      token = response.data.data.token;
+      newRefreshToken = response.data.data.refreshToken;
     } else if (response.data?.token) {
-      // Fallback for different response structure
-      const token = response.data.token;
-      const newRefreshToken = response.data.refreshToken;
-
-      if (token && typeof window !== "undefined") {
-        localStorage.setItem("auth_token", token);
-        const { setCookie } = await import("@/utils/cookies");
-        const { AUTH_TOKEN_KEY } = await import("@/types");
-        setCookie(AUTH_TOKEN_KEY, token, 7);
-
-        if (newRefreshToken) {
-          localStorage.setItem("refresh_token", newRefreshToken);
-        }
-      }
-
-      return { token, refreshToken: newRefreshToken };
+      token = response.data.token;
+      newRefreshToken = response.data.refreshToken;
     }
 
-    return response.data;
+    if (token && typeof window !== "undefined") {
+      localStorage.setItem("auth_token", token);
+      const { setCookie } = await import("@/utils/cookies");
+      const { AUTH_TOKEN_KEY } = await import("@/types");
+      setCookie(AUTH_TOKEN_KEY, token, 7);
+
+      if (newRefreshToken) {
+        localStorage.setItem("refresh_token", newRefreshToken);
+      }
+    }
+
+    return { token, refreshToken: newRefreshToken, data: response.data };
   } catch (error: any) {
     // If refresh token fails, clear all auth and throw error
     if (typeof window !== "undefined") {

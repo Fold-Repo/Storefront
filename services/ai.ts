@@ -19,6 +19,7 @@ export interface GeneratePageParams {
   };
   templateHtml?: string; // Optional existing HTML template
   logoUrl?: string;
+  layout?: 'single-page' | 'multi-page';
 }
 
 
@@ -29,6 +30,7 @@ export interface GenerateSiteParams {
     description: string;
     subdomain: string;
     logoPreview?: string | null;
+    layout: 'single-page' | 'multi-page';
     theme?: {
       primaryColor: string;
       fontFamily: string;
@@ -82,29 +84,22 @@ export const generatePage = async (params: GeneratePageParams): Promise<Generate
  */
 export const generateCompleteSite = async (params: GenerateSiteParams): Promise<Record<string, GeneratedPage>> => {
   const { wizardData } = params;
+  const isSinglePage = wizardData.layout === 'single-page';
 
-  // Start with essential pages only to reduce generation time
-  // Additional pages can be generated on-demand later
-  const essentialPages: Array<GeneratePageParams['pageType']> = [
-    'homepage',
-    'products',
-    'product-detail',
-    'cart',
-    'checkout',
-  ];
+  // Strategy:
+  // For multi-page, we generate the full suite
+  // For single-page, we only generate 'homepage' but ensure it contains ALL sections
+  const essentialPages: Array<GeneratePageParams['pageType']> = isSinglePage
+    ? ['homepage']
+    : ['homepage', 'products', 'product-detail', 'cart', 'checkout'];
 
-  // Optional pages (can be generated later)
-  const optionalPages: Array<GeneratePageParams['pageType']> = [
-    'categories',
-    'account',
-    'search',
-    'testimonial',
-    'about',
-    'contact',
-  ];
+  const optionalPages: Array<GeneratePageParams['pageType']> = isSinglePage
+    ? []
+    : ['categories', 'account', 'search', 'testimonial'];
 
   console.log('🚀 Starting complete site generation for:', wizardData.companyName);
-  console.log(`📋 Will generate ${essentialPages.length} essential pages first`);
+  console.log(`📋 Layout: ${wizardData.layout}`);
+  console.log(`📋 Will generate ${essentialPages.length} essential pages`);
 
   const generatedPages: Record<string, GeneratedPage> = {};
   const theme = wizardData.theme || {
@@ -113,13 +108,12 @@ export const generateCompleteSite = async (params: GenerateSiteParams): Promise<
     designFeel: 'modern',
   };
 
-  // Generate essential pages first
-  for (let i = 0; i < essentialPages.length; i++) {
-    const pageType = essentialPages[i];
-    try {
-      console.log(`📄 Generating essential page ${i + 1}/${essentialPages.length}: ${pageType}`);
-      const startTime = Date.now();
+  // Create essential pages in parallel to speed up generation
+  console.log(`📄 Generating ${essentialPages.length} essential pages...`);
 
+  const pagePromises = essentialPages.map(async (pageType) => {
+    try {
+      const startTime = Date.now();
       const page = await generatePage({
         pageType,
         businessNiche: wizardData.ideaScope,
@@ -127,14 +121,43 @@ export const generateCompleteSite = async (params: GenerateSiteParams): Promise<
         description: wizardData.description,
         theme,
         logoUrl: wizardData.logoPreview || undefined,
+        // Pass layout info to the underlying AI call
+        layout: wizardData.layout,
       });
-
       const duration = ((Date.now() - startTime) / 1000).toFixed(1);
-      generatedPages[pageType] = page;
       console.log(`✅ Successfully generated ${pageType} in ${duration}s`);
+      return { pageType, page };
     } catch (error: any) {
       console.error(`❌ Error generating ${pageType}:`, error);
-      // Add a fallback page so the site generation doesn't completely fail
+      return {
+        pageType,
+        page: {
+          html: generateBasicHTML({
+            pageType,
+            businessNiche: wizardData.ideaScope,
+            companyName: wizardData.companyName,
+            description: wizardData.description,
+            theme,
+          }),
+          css: generateThemeCSS(theme),
+          metadata: {
+            title: `${wizardData.companyName} - ${getPageTitle(pageType)}`,
+            description: wizardData.description,
+          },
+        }
+      };
+    }
+  });
+
+  const results = await Promise.all(pagePromises);
+  results.forEach(result => {
+    generatedPages[result.pageType] = result.page;
+  });
+
+  // Generate optional pages with basic templates (faster)
+  if (!isSinglePage) {
+    for (const pageType of optionalPages) {
+      console.log(`📄 Creating basic template for optional page: ${pageType}`);
       generatedPages[pageType] = {
         html: generateBasicHTML({
           pageType,
@@ -149,27 +172,7 @@ export const generateCompleteSite = async (params: GenerateSiteParams): Promise<
           description: wizardData.description,
         },
       };
-      console.log(`⚠️ Using fallback template for ${pageType}`);
     }
-  }
-
-  // Generate optional pages with basic templates (faster)
-  for (const pageType of optionalPages) {
-    console.log(`📄 Creating basic template for optional page: ${pageType}`);
-    generatedPages[pageType] = {
-      html: generateBasicHTML({
-        pageType,
-        businessNiche: wizardData.ideaScope,
-        companyName: wizardData.companyName,
-        description: wizardData.description,
-        theme,
-      }),
-      css: generateThemeCSS(theme),
-      metadata: {
-        title: `${wizardData.companyName} - ${getPageTitle(pageType)}`,
-        description: wizardData.description,
-      },
-    };
   }
 
   console.log('🎉 Complete site generation finished. Generated pages:', Object.keys(generatedPages).length);
@@ -190,7 +193,7 @@ async function generatePageWithAI(params: GeneratePageParams): Promise<Generated
     const timeoutId = setTimeout(() => {
       console.warn('⏱️ Request timeout for:', params.pageType);
       controller.abort();
-    }, 120000); // 2 minute timeout
+    }, 180000); // 3 minute timeout (180 seconds)
 
     try {
       // Call our server-side API route
@@ -206,6 +209,7 @@ async function generatePageWithAI(params: GeneratePageParams): Promise<Generated
           description: params.description,
           theme: params.theme,
           logoUrl: params.logoUrl,
+          layout: params.layout,
         }),
         signal: controller.signal,
       });
@@ -425,11 +429,33 @@ function generateBasicHTML(params: GeneratePageParams): string {
             <a href="/products" class="inline-block primary-bg text-white px-8 py-4 rounded-lg font-semibold hover:opacity-90 transition-opacity">Shop Now</a>
           </div>
         </section>
+        
         <!-- Featured Products -->
         <section class="py-16 bg-gray-50">
           <div class="container mx-auto px-4">
             <h2 class="text-3xl font-bold text-center mb-10">Featured Products</h2>
             <div id="products-container">{{featuredProducts}}</div>
+          </div>
+        </section>
+
+        <!-- About Us Section -->
+        <section class="py-16 bg-white">
+          <div class="container mx-auto px-4 max-w-3xl text-center">
+            <h2 class="text-3xl font-bold mb-6">About Our Story</h2>
+            <p class="text-lg text-gray-600 mb-8">${description || 'We are dedicated to providing the best products in the ' + businessNiche + ' industry.'}</p>
+          </div>
+        </section>
+
+        <!-- Contact Us Section -->
+        <section class="py-16 bg-gray-50">
+          <div class="container mx-auto px-4 max-w-2xl">
+            <h2 class="text-3xl font-bold text-center mb-10">Get In Touch</h2>
+            <form class="space-y-4 bg-white p-8 rounded-xl shadow-sm">
+              <div><input type="text" placeholder="Name" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"></div>
+              <div><input type="email" placeholder="Email" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"></div>
+              <div><textarea placeholder="Message" rows="4" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea></div>
+              <button type="button" class="w-full primary-bg text-white py-3 rounded-lg font-semibold hover:opacity-90">Send Message</button>
+            </form>
           </div>
         </section>
         <!-- Categories -->

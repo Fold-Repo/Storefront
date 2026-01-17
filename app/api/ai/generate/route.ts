@@ -23,15 +23,24 @@ interface GeneratePageRequest {
     designFeel: string;
   };
   logoUrl?: string;
+  layout?: 'single-page' | 'multi-page';
 }
 
 /**
  * Create a comprehensive prompt for Claude to generate a page
  */
 function createDynamicPagePrompt(params: GeneratePageRequest): string {
-  const { pageType, businessNiche, companyName, description, theme, logoUrl } = params;
+  const { pageType, businessNiche, companyName, description, theme, logoUrl, layout } = params;
+  const isSinglePage = layout === 'single-page';
 
-  const pageRequirements = getPageSpecificRequirements(pageType, businessNiche);
+  console.log(`📋 Generating ${pageType} for ${companyName}${isSinglePage ? ' (Single Page Layout)' : ''}`);
+
+  let pageRequirements = getPageSpecificRequirements(pageType, businessNiche);
+
+  // Enhance requirements for single page
+  if (isSinglePage && pageType === 'homepage') {
+    pageRequirements = `${pageRequirements}\n- Since this is a SINGLE PAGE layout, also include:\n  - A detailed product catalog section\n  - A clear "About Us" and "Contact Us" section\n  - A simplified shopping cart and checkout section that can be handled within this page (e.g., using modals or toggling visibility)\n  - Smooth scroll navigation to these sections`;
+  }
 
   return `You are an expert web developer specializing in modern, responsive e-commerce websites using Tailwind CSS. Generate a complete, production-ready ${pageType} page.
 
@@ -155,7 +164,8 @@ function getPageSpecificRequirements(
     homepage: `
 - Hero section with compelling headline and call-to-action
 - Featured products or categories section
-- About/description section highlighting the business
+- "About Us" section highlighting the business story and mission
+- "Contact Us" section with a contact form and business info
 - Trust indicators (testimonials, badges, etc.)
 - Newsletter signup or promotional section
 - Footer with links and company info`,
@@ -373,6 +383,10 @@ function parseClaudeResponse(responseText: string): {
   };
 }
 
+// Route segment config for deployment
+export const maxDuration = 180; // 3 minutes (for platforms that support it)
+export const runtime = 'nodejs'; // Use Node.js runtime
+
 /**
  * POST /api/ai/generate
  * Generate a single page using Claude 3.5 Sonnet
@@ -417,8 +431,8 @@ export async function POST(request: NextRequest) {
     const prompt = createDynamicPagePrompt(body);
     console.log('🤖 Calling Claude API for page:', body.pageType);
 
-    // Call Claude API
-    const message = await anthropic.messages.create({
+    // Call Claude API with timeout wrapper
+    const claudePromise = anthropic.messages.create({
       model: 'claude-sonnet-4-5',
       max_tokens: 4000, // Enough for complete HTML/CSS/JS
       messages: [
@@ -428,6 +442,15 @@ export async function POST(request: NextRequest) {
         },
       ],
     });
+
+    // Add timeout (2 minutes) to prevent hanging requests
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => {
+        reject(new Error('Claude API request timeout after 2 minutes'));
+      }, 120000);
+    });
+
+    const message = await Promise.race([claudePromise, timeoutPromise]);
 
     console.log('✅ Claude API responded');
 

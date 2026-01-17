@@ -59,8 +59,13 @@ export async function proxy(request: NextRequest) {
     const hostWithoutPort = hostname.split(':')[0];
     const isLocalhost = hostWithoutPort === 'localhost' || hostWithoutPort === '127.0.0.1';
 
+    // Check for subdomain.localhost pattern (e.g., bukaxp.localhost)
+    const isSubdomainLocalhost = hostWithoutPort.endsWith('.localhost');
+    const localhostSubdomain = isSubdomainLocalhost ? hostWithoutPort.replace('.localhost', '') : null;
+
     // Improved subdomain extraction: handle localhost and production domains
-    const subdomain = isLocalhost ? null : extractSubdomain(hostname, MAIN_DOMAIN);
+    // For subdomain.localhost pattern in development, extract the subdomain
+    const subdomain = localhostSubdomain || (isLocalhost ? null : extractSubdomain(hostname, MAIN_DOMAIN));
 
     // Also treat .netlify.app technical domains as the main domain to avoid misrouting
     // We also check a hardcoded fallback if MAIN_DOMAIN is missing or set to localhost
@@ -78,6 +83,8 @@ export async function proxy(request: NextRequest) {
             MAIN_DOMAIN,
             subdomain,
             isLocalhost,
+            isSubdomainLocalhost,
+            localhostSubdomain,
             isMainDomain
         });
     }
