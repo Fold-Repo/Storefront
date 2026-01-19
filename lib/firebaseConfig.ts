@@ -1,6 +1,6 @@
-import { initializeApp } from "firebase/app";
-import { getFirestore, enableNetwork, disableNetwork, onSnapshotsInSync } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { initializeApp, type FirebaseApp } from "firebase/app";
+import { getFirestore, enableNetwork, disableNetwork, onSnapshotsInSync, type Firestore } from "firebase/firestore";
+import { getAuth, type Auth } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
@@ -14,12 +14,65 @@ const firebaseConfig = {
 
 // Validate that required config is present
 if (!firebaseConfig.apiKey) {
-  console.error("Firebase API key is missing. Please set NEXT_PUBLIC_FIREBASE_API_KEY in your .env.local file");
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn("Firebase API key is missing. Please set NEXT_PUBLIC_FIREBASE_API_KEY in your .env.local file");
+  }
 }
 
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
-export const auth = getAuth(app);
+// Initialize Firebase only if API key is present, otherwise use a placeholder config for build
+let app: FirebaseApp;
+let db: Firestore;
+let auth: Auth;
+
+try {
+  if (firebaseConfig.apiKey) {
+    app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    auth = getAuth(app);
+  } else {
+    // Use placeholder config for build time when API key is missing
+    const placeholderConfig = {
+      apiKey: "placeholder-key-for-build",
+      authDomain: firebaseConfig.authDomain,
+      projectId: firebaseConfig.projectId,
+      storageBucket: firebaseConfig.storageBucket,
+      messagingSenderId: firebaseConfig.messagingSenderId,
+      appId: firebaseConfig.appId,
+      measurementId: firebaseConfig.measurementId
+    };
+    app = initializeApp(placeholderConfig, 'placeholder');
+    db = getFirestore(app);
+    auth = getAuth(app);
+  }
+} catch (error) {
+  // During build, if Firebase initialization fails, try with placeholder
+  // This allows the build to complete even without valid Firebase config
+  if (process.env.NODE_ENV === 'production' || process.env.NEXT_PHASE === 'phase-production-build') {
+    console.warn("Firebase initialization failed during build. Using placeholder config.");
+    const placeholderConfig = {
+      apiKey: "placeholder-key-for-build",
+      authDomain: firebaseConfig.authDomain,
+      projectId: firebaseConfig.projectId,
+      storageBucket: firebaseConfig.storageBucket,
+      messagingSenderId: firebaseConfig.messagingSenderId,
+      appId: firebaseConfig.appId,
+      measurementId: firebaseConfig.measurementId
+    };
+    try {
+      app = initializeApp(placeholderConfig, 'placeholder');
+      db = getFirestore(app);
+      auth = getAuth(app);
+    } catch (placeholderError) {
+      // If even placeholder fails, we need to provide defaults
+      // This should rarely happen, but ensures build doesn't fail
+      throw new Error("Firebase initialization failed. Please check your Firebase configuration.");
+    }
+  } else {
+    throw error;
+  }
+}
+
+export { db, auth };
 
 // Helper function to ensure Firebase is online
 export const ensureFirebaseOnline = async () => {

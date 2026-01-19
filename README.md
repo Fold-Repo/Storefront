@@ -20,14 +20,35 @@ yarn dev
 
 ## Environment Setup
 
-Create `.env.local` file with required environment variables. See [API Keys Setup](./docs/API_KEYS_SETUP.md) for details.
+### Quick Start (Build Without Env Vars)
+**Good news!** The build works without environment variables. You can clone and build immediately:
 
-Required variables:
-- `ANTHROPIC_API_KEY` - Claude API key
-- `CLOUDFLARE_API_TOKEN` - Cloudflare API token
-- `CLOUDFLARE_ZONE_ID` - Cloudflare zone ID
-- `NEXT_PUBLIC_FIREBASE_API_KEY` - Firebase API key
-- And more... (see [API Keys Setup](./docs/API_KEYS_SETUP.md))
+```bash
+git clone <your-repo-url>
+cd storeFront
+npm install
+npm run build  # ✅ Will succeed without .env.local
+```
+
+### Full Setup (For Runtime Features)
+For the app to work at runtime, create `.env.local`:
+
+```bash
+# Copy the example file
+cp .env.example .env.local
+
+# Edit with your API keys
+nano .env.local
+```
+
+See **[ENV_SETUP.md](./ENV_SETUP.md)** for detailed instructions.
+
+**Minimum required for runtime:**
+- `NEXT_PUBLIC_FIREBASE_API_KEY` - Firebase API key (for authentication)
+- `ANTHROPIC_API_KEY` - Claude API key (for AI generation)
+- `CLOUDFLARE_API_TOKEN` & `CLOUDFLARE_ZONE_ID` - For subdomain management
+
+> **Note:** Build succeeds without env vars, but runtime features (auth, AI, subdomains) won't work without proper values.
 
 ## Documentation
 
