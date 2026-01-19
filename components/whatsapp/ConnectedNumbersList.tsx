@@ -59,7 +59,7 @@ export const ConnectedNumbersList: React.FC<ConnectedNumbersListProps> = ({
                 color="danger"
                 size="sm"
                 onClick={() => onDelete(number.id)}
-                disabled={isLoading}
+                isDisabled={isLoading}
                 className="text-red-600"
               >
                 <TrashIcon className="w-4 h-4 mr-1" />
@@ -83,7 +83,7 @@ export const ConnectedNumbersList: React.FC<ConnectedNumbersListProps> = ({
                 <Button
                   size="sm"
                   onClick={() => handleUpdateToken(number.id)}
-                  disabled={isLoading || updatingId === number.id}
+                  isDisabled={isLoading || updatingId === number.id}
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   <KeyIcon className="w-4 h-4 mr-1" />

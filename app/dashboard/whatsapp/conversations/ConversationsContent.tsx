@@ -8,6 +8,7 @@ import { SessionsTable } from "@/components/whatsapp/SessionsTable";
 import { SessionDetailDrawer } from "@/components/whatsapp/SessionDetailDrawer";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import type { SessionFilters, SessionStep, PaymentStatus } from "@/types/whatsapp";
 
 export const ConversationsContent: React.FC = () => {
   const { user } = useAuth();
@@ -15,12 +16,12 @@ export const ConversationsContent: React.FC = () => {
   const businessId = user?.business_id;
   const selectedSessionId = searchParams.get("session");
 
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<SessionFilters>({
     page: 1,
     limit: 20,
-    step: undefined as string | undefined,
-    payment_status: undefined as string | undefined,
-    search: undefined as string | undefined,
+    step: undefined,
+    payment_status: undefined,
+    search: undefined,
   });
 
   const { data: sessionsData, isLoading } = useWhatsAppSessions(businessId || 0, filters);

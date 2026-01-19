@@ -72,16 +72,18 @@ export const ENDPOINT = {
         },
         MARKETING: {
             SUBSCRIBERS: {
-                LIST: '/whatsapp/marketing/subscribers',
-                CREATE: '/whatsapp/marketing/subscribers',
-                UPDATE: (id: number) => `/whatsapp/marketing/subscribers/${id}`,
-                IMPORT: '/whatsapp/marketing/subscribers/import',
+                LIST: (businessId: string | number) => `/whatsapp/marketing/business/${businessId}/subscribers`,
+                CREATE: (businessId: string | number) => `/whatsapp/marketing/business/${businessId}/subscribers`,
+                UPDATE: (businessId: string | number, phone: string) => `/whatsapp/marketing/business/${businessId}/subscribers/${phone}`,
+                DELETE: (businessId: string | number, phone: string) => `/whatsapp/marketing/business/${businessId}/subscribers/${phone}`,
+                IMPORT: (businessId: string | number) => `/whatsapp/marketing/business/${businessId}/subscribers/import`,
             },
             CAMPAIGNS: {
-                LIST: '/whatsapp/marketing/campaigns',
-                CREATE: '/whatsapp/marketing/campaigns',
-                GET: (id: number) => `/whatsapp/marketing/campaigns/${id}`,
-                RUN: (id: number) => `/whatsapp/marketing/campaigns/${id}/run`,
+                LIST: (businessId: string | number) => `/whatsapp/marketing/business/${businessId}/campaigns`,
+                CREATE: (businessId: string | number) => `/whatsapp/marketing/business/${businessId}/campaigns`,
+                GET: (businessId: string | number, campaignId: string) => `/whatsapp/marketing/business/${businessId}/campaigns/${campaignId}`,
+                UPDATE: (businessId: string | number, campaignId: string) => `/whatsapp/marketing/business/${businessId}/campaigns/${campaignId}`,
+                RUN: (businessId: string | number, campaignId: string) => `/whatsapp/marketing/business/${businessId}/campaigns/${campaignId}/run`,
             },
         },
         SERVICE_TOKENS: {

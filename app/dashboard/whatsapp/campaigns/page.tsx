@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCampaigns } from "@/hooks";
+import { useCreateCampaign, useRunCampaign } from "@/hooks/useWhatsApp";
 import { Button, Input, TextArea } from "@/components/ui";
 import { useToast } from "@/hooks";
 import {
@@ -17,7 +18,18 @@ import {
 export default function WhatsAppCampaignsPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const { campaigns, createCampaign, runCampaign, loading } = useCampaigns(user?.business_id || null);
+  const businessId = user?.business_id;
+  
+  // Get campaigns query
+  const { data: campaignsData, isLoading: loading } = useCampaigns(businessId || 0);
+  // Handle PaginatedResponse structure - campaigns can be in campaigns property or items property
+  // PaginatedResponse has: campaigns?, items?, sessions?, pagination
+  const campaigns: any[] = campaignsData?.campaigns || campaignsData?.items || [];
+  
+  // Mutations
+  const createCampaignMutation = useCreateCampaign();
+  const runCampaignMutation = useRunCampaign(businessId || 0);
+  
   const { showSuccess, showError } = useToast();
 
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -25,41 +37,67 @@ export default function WhatsAppCampaignsPage() {
   const [running, setRunning] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
-    message_template: "",
-    offer_link: "",
-    schedule_time: "",
+    description: "",
+    template_name: "",
+    scheduled_at: "",
   });
 
   const handleCreateCampaign = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.message_template) {
-      showError("Name and message template are required");
+    if (!formData.name || !formData.template_name) {
+      showError("Name and template name are required");
+      return;
+    }
+
+    if (!businessId) {
+      showError("Business ID is required");
       return;
     }
 
     setCreating(true);
     try {
-      await createCampaign({
+      await createCampaignMutation.mutateAsync({
+        business_id: businessId,
         name: formData.name,
-        message_template: formData.message_template,
-        offer_link: formData.offer_link || undefined,
-        schedule_time: formData.schedule_time || undefined,
+        description: formData.description || undefined,
+        template_name: formData.template_name,
+        scheduled_at: formData.scheduled_at || undefined,
       });
-      setFormData({ name: "", message_template: "", offer_link: "", schedule_time: "" });
+      showSuccess("Campaign created successfully");
+      setFormData({ name: "", description: "", template_name: "", scheduled_at: "" });
       setShowCreateModal(false);
-    } catch (error) {
-      // Error is already handled in the hook
+    } catch (error: any) {
+      showError(error?.message || "Failed to create campaign");
     } finally {
       setCreating(false);
     }
   };
 
   const handleRunCampaign = async (campaignId: string) => {
+    if (!businessId) {
+      showError("Business ID is required");
+      return;
+    }
+
     setRunning(campaignId);
     try {
-      await runCampaign(campaignId);
-    } catch (error) {
-      // Error is already handled in the hook
+      // Get phone number ID from user or settings - for now using a placeholder
+      // You may need to get this from WhatsApp settings or number selection
+      const phoneNumberId = ""; // TODO: Get from WhatsApp settings or number selection
+      
+      if (!phoneNumberId) {
+        showError("Phone number ID is required. Please connect a WhatsApp number first.");
+        setRunning(null);
+        return;
+      }
+
+      await runCampaignMutation.mutateAsync({
+        campaignId: parseInt(campaignId),
+        phoneNumberId,
+      });
+      showSuccess("Campaign started successfully");
+    } catch (error: any) {
+      showError(error?.message || "Failed to run campaign");
     } finally {
       setRunning(null);
     }
@@ -126,24 +164,21 @@ export default function WhatsAppCampaignsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6">
-          {campaigns.map((campaign) => (
+          {campaigns.map((campaign: any) => (
             <div
-              key={campaign.campaign_id}
+              key={campaign.id || campaign.campaign_id}
               className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">{campaign.name}</h3>
-                  <p className="text-sm text-gray-600 mb-3 whitespace-pre-wrap">{campaign.message_template}</p>
-                  {campaign.offer_link && (
-                    <a
-                      href={campaign.offer_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-blue-600 hover:text-blue-700"
-                    >
-                      {campaign.offer_link}
-                    </a>
+                  <p className="text-sm text-gray-600 mb-3 whitespace-pre-wrap">
+                    {campaign.description || campaign.template_name || "No description"}
+                  </p>
+                  {campaign.template_components && campaign.template_components.length > 0 && (
+                    <div className="text-sm text-gray-500">
+                      Template: {campaign.template_name}
+                    </div>
                   )}
                 </div>
                 <span className={`px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(campaign.status)}`}>
@@ -151,42 +186,40 @@ export default function WhatsAppCampaignsPage() {
                 </span>
               </div>
 
-              {campaign.results && (
-                <div className="grid grid-cols-4 gap-4 mb-4 p-4 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="text-xs text-gray-500 mb-1">Sent</p>
-                    <p className="text-lg font-semibold text-gray-900">{campaign.results.sent}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 mb-1">Delivered</p>
-                    <p className="text-lg font-semibold text-green-600">{campaign.results.delivered}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 mb-1">Failed</p>
-                    <p className="text-lg font-semibold text-red-600">{campaign.results.failed}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 mb-1">Opt Out</p>
-                    <p className="text-lg font-semibold text-yellow-600">{campaign.results.opt_out}</p>
-                  </div>
+              <div className="grid grid-cols-4 gap-4 mb-4 p-4 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Sent</p>
+                  <p className="text-lg font-semibold text-gray-900">{campaign.sent_count || 0}</p>
                 </div>
-              )}
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Delivered</p>
+                  <p className="text-lg font-semibold text-green-600">{campaign.delivered_count || 0}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Failed</p>
+                  <p className="text-lg font-semibold text-red-600">{campaign.failed_count || 0}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Target</p>
+                  <p className="text-lg font-semibold text-blue-600">{campaign.target_count || 0}</p>
+                </div>
+              </div>
 
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-500">
                   Created {new Date(campaign.created_at).toLocaleDateString()}
-                  {campaign.schedule_time && (
+                  {campaign.scheduled_at && (
                     <span className="ml-4">
                       <ClockIcon className="w-4 h-4 inline mr-1" />
-                      Scheduled: {new Date(campaign.schedule_time).toLocaleString()}
+                      Scheduled: {new Date(campaign.scheduled_at).toLocaleString()}
                     </span>
                   )}
                 </div>
-                {campaign.status === 'draft' && (
+                {(campaign.status === 'draft' || campaign.status === 'scheduled') && (
                   <Button
-                    onClick={() => handleRunCampaign(campaign.campaign_id)}
+                    onClick={() => handleRunCampaign(String(campaign.id || campaign.campaign_id))}
                     className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
-                    loading={running === campaign.campaign_id}
+                    loading={running === String(campaign.id || campaign.campaign_id)}
                   >
                     <PlayIcon className="w-4 h-4" />
                     Run Now
@@ -210,6 +243,7 @@ export default function WhatsAppCampaignsPage() {
                     Campaign Name <span className="text-red-500">*</span>
                   </label>
                   <Input
+                    name="campaign_name"
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
@@ -220,40 +254,43 @@ export default function WhatsAppCampaignsPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Message Template <span className="text-red-500">*</span>
+                    Description (Optional)
                   </label>
                   <TextArea
-                    value={formData.message_template}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, message_template: e.target.value }))}
-                    placeholder="Hi! Check out our amazing summer sale..."
-                    required
-                    rows={6}
+                    name="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                    placeholder="Campaign description..."
+                    rows={4}
                     className="w-full"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Use {`{name}`} for personalization
-                  </p>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Offer Link (Optional)
+                    Template Name <span className="text-red-500">*</span>
                   </label>
                   <Input
-                    type="url"
-                    value={formData.offer_link}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, offer_link: e.target.value }))}
-                    placeholder="https://yourstore.com/sale"
+                    name="template_name"
+                    type="text"
+                    value={formData.template_name}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, template_name: e.target.value }))}
+                    placeholder="summer_sale_2024"
+                    required
                     className="w-full"
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    WhatsApp template name (must be approved by Meta)
+                  </p>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Schedule Time (Optional)
                   </label>
                   <Input
+                    name="scheduled_at"
                     type="datetime-local"
-                    value={formData.schedule_time}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, schedule_time: e.target.value }))}
+                    value={formData.scheduled_at}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, scheduled_at: e.target.value }))}
                     className="w-full"
                   />
                   <p className="text-xs text-gray-500 mt-1">
@@ -274,7 +311,7 @@ export default function WhatsAppCampaignsPage() {
                   variant="bordered"
                   onClick={() => {
                     setShowCreateModal(false);
-                    setFormData({ name: "", message_template: "", offer_link: "", schedule_time: "" });
+                    setFormData({ name: "", description: "", template_name: "", scheduled_at: "" });
                   }}
                   className="border-gray-300 text-gray-700 hover:bg-gray-50"
                 >

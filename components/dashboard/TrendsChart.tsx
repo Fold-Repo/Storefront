@@ -219,11 +219,13 @@ export const TrendsChart: React.FC<TrendsChartProps> = ({
                   borderRadius: "8px",
                   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
                 }}
-                formatter={(value: number, name: string) => {
-                  if (name === "revenue" || name === "averageOrderValue") {
-                    return [`$${value.toLocaleString()}`, name === "revenue" ? "Revenue" : "Avg Order Value"];
+                formatter={(value: number | undefined, name: string | undefined) => {
+                  if (value === undefined) return ["0", name || ""];
+                  const displayName = name || "";
+                  if (displayName === "revenue" || displayName === "averageOrderValue") {
+                    return [`$${value.toLocaleString()}`, displayName === "revenue" ? "Revenue" : "Avg Order Value"];
                   }
-                  return [value.toLocaleString(), name === "orders" ? "Orders" : name];
+                  return [value.toLocaleString(), displayName === "orders" ? "Orders" : displayName];
                 }}
               />
               <Legend />
@@ -268,11 +270,13 @@ export const TrendsChart: React.FC<TrendsChartProps> = ({
                   borderRadius: "8px",
                   boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
                 }}
-                formatter={(value: number, name: string) => {
-                  if (name === "conversionRate") {
+                formatter={(value: number | undefined, name: string | undefined) => {
+                  if (value === undefined) return ["0", name || ""];
+                  const displayName = name || "";
+                  if (displayName === "conversionRate") {
                     return [`${value.toFixed(2)}%`, "Conversion Rate"];
                   }
-                  return [value.toLocaleString(), name === "visits" ? "Visits" : name === "pageViews" ? "Page Views" : "Conversions"];
+                  return [value.toLocaleString(), displayName === "visits" ? "Visits" : displayName === "pageViews" ? "Page Views" : "Conversions"];
                 }}
               />
               <Legend />

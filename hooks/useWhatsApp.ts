@@ -60,7 +60,6 @@ export function useConnectNumber(businessId: number) {
       queryClient.invalidateQueries({ queryKey: ["whatsapp", "numbers", businessId] });
       queryClient.invalidateQueries({ queryKey: ["whatsapp", "overview", businessId] });
     },
-    select: (response) => response.data,
   });
 }
 
@@ -73,7 +72,6 @@ export function useUpdateNumberToken(businessId: number) {
       queryClient.invalidateQueries({ queryKey: ["whatsapp", "numbers", businessId] });
       queryClient.invalidateQueries({ queryKey: ["whatsapp", "overview", businessId] });
     },
-    select: (response) => response.data,
   });
 }
 
@@ -105,7 +103,6 @@ export function useUpdateSettings(businessId: number) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["whatsapp", "settings", businessId] });
     },
-    select: (response) => response.data,
   });
 }
 
@@ -154,7 +151,6 @@ export function useCreateSubscriber() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["whatsapp", "subscribers", variables.business_id] });
     },
-    select: (response) => response.data,
   });
 }
 
@@ -166,7 +162,6 @@ export function useUpdateSubscriber() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["whatsapp", "subscribers"] });
     },
-    select: (response) => response.data,
   });
 }
 
@@ -177,7 +172,6 @@ export function useImportSubscribers() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["whatsapp", "subscribers", variables.business_id] });
     },
-    select: (response) => response.data,
   });
 }
 
@@ -207,18 +201,16 @@ export function useCreateCampaign() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["whatsapp", "campaigns", variables.business_id] });
     },
-    select: (response) => response.data,
   });
 }
 
-export function useRunCampaign() {
+export function useRunCampaign(businessId: number) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ campaignId, phoneNumberId }: { campaignId: number; phoneNumberId: string }) =>
-      runCampaign(campaignId, { phone_number_id: phoneNumberId }),
+      runCampaign(campaignId, { phone_number_id: phoneNumberId }, businessId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["whatsapp", "campaigns"] });
     },
-    select: (response) => response.data,
   });
 }

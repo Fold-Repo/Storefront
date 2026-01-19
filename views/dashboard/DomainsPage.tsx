@@ -224,6 +224,7 @@ export const DomainsPage = () => {
                             onCreateNew={() => router.push("/dashboard")}
                             canCreate={true}
                             maxSites={10}
+                            onUpgrade={() => router.push('/dashboard/settings?tab=billing')}
                         />
                     </div>
                 )}

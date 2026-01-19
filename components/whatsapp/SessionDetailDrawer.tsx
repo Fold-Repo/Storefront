@@ -14,7 +14,7 @@ interface SessionDetailDrawerProps {
 
 export const SessionDetailDrawer: React.FC<SessionDetailDrawerProps> = ({ session, isOpen, onClose }) => {
   return (
-    <Drawer isOpen={isOpen} onClose={onClose} placement="right" size="lg">
+    <Drawer isOpen={isOpen} onOpenChange={(open) => !open && onClose()} placement="right" size="lg">
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Session Details</h2>

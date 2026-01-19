@@ -151,7 +151,7 @@ export const whatsappApi = {
    */
   getSession: async (businessId: string | number, sessionId: string): Promise<WhatsAppSession> => {
     const response = await apiClient.get(
-      ENDPOINT.WHATSAPP.SESSIONS.GET(businessId, sessionId)
+      ENDPOINT.WHATSAPP.SESSIONS.GET(sessionId)
     );
     return response.data;
   },

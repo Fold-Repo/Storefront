@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { useMarketingSubscribers } from "@/hooks";
+import { useMarketingSubscribers, useCreateSubscriber, useUpdateSubscriber } from "@/hooks";
 import { Button, Input } from "@/components/ui";
 import { useToast } from "@/hooks";
 import { SearchInput } from "@/components/reusable";
@@ -18,7 +18,11 @@ import {
 export default function WhatsAppMarketingPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const { subscribers, createSubscriber, updateSubscriberStatus, loading, refetch } = useMarketingSubscribers(user?.business_id || null);
+  const businessId = user?.business_id;
+  const { data: subscribersData, isLoading: loading, refetch } = useMarketingSubscribers(businessId || 0);
+  const subscribers: any[] = subscribersData?.items || [];
+  const createSubscriberMutation = useCreateSubscriber();
+  const updateSubscriberMutation = useUpdateSubscriber();
   const { showSuccess, showError } = useToast();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -35,29 +39,44 @@ export default function WhatsAppMarketingPage() {
 
   const handleAddSubscriber = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newSubscriber.phone) {
+    if (!newSubscriber.phone || !businessId) {
       showError("Phone number is required");
       return;
     }
 
     setAdding(true);
     try {
-      await createSubscriber(newSubscriber);
+      await createSubscriberMutation.mutateAsync({
+        business_id: businessId,
+        phone_number: newSubscriber.phone,
+        name: newSubscriber.name || undefined,
+      });
       setNewSubscriber({ phone: "", name: "" });
       setShowAddModal(false);
+      showSuccess("Subscriber added successfully");
     } catch (error) {
-      // Error is already handled in the hook
+      showError("Failed to add subscriber");
     } finally {
       setAdding(false);
     }
   };
 
   const handleToggleStatus = async (phone: string, currentStatus: 'opted_in' | 'opted_out') => {
+    const subscriber = subscribers.find(s => s.phone === phone);
+    if (!subscriber || !subscriber.id) {
+      showError("Subscriber not found");
+      return;
+    }
+
     const newStatus = currentStatus === 'opted_in' ? 'opted_out' : 'opted_in';
     try {
-      await updateSubscriberStatus(phone, newStatus);
+      await updateSubscriberMutation.mutateAsync({
+        id: subscriber.id,
+        data: { status: newStatus },
+      });
+      showSuccess(`Subscriber ${newStatus === 'opted_in' ? 'opted in' : 'opted out'} successfully`);
     } catch (error) {
-      // Error is already handled in the hook
+      showError("Failed to update subscriber status");
     }
   };
 
@@ -228,6 +247,7 @@ export default function WhatsAppMarketingPage() {
                     Phone Number <span className="text-red-500">*</span>
                   </label>
                   <Input
+                    name="phone"
                     type="tel"
                     value={newSubscriber.phone}
                     onChange={(e) => setNewSubscriber((prev) => ({ ...prev, phone: e.target.value }))}
@@ -241,6 +261,7 @@ export default function WhatsAppMarketingPage() {
                     Name (Optional)
                   </label>
                   <Input
+                    name="name"
                     type="text"
                     value={newSubscriber.name}
                     onChange={(e) => setNewSubscriber((prev) => ({ ...prev, name: e.target.value }))}
@@ -253,7 +274,7 @@ export default function WhatsAppMarketingPage() {
                 <Button
                   type="submit"
                   className="bg-blue-600 hover:bg-blue-700 text-white flex-1"
-                  loading={adding}
+                  loading={adding || createSubscriberMutation.isPending}
                 >
                   Add Subscriber
                 </Button>

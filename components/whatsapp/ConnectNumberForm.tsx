@@ -129,7 +129,7 @@ export const ConnectNumberForm: React.FC<ConnectNumberFormProps> = ({ onSubmit, 
       <Button
         type="submit"
         className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-        disabled={isLoading}
+        isDisabled={isLoading}
       >
         {isLoading ? "Connecting..." : "Connect WhatsApp Number"}
       </Button>

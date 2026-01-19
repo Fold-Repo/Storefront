@@ -98,29 +98,30 @@ export const getSessionCart = async (sessionId: string): Promise<ApiResponse<Car
 export const getMarketingSubscribers = async (
   filters: SubscriberFilters
 ): Promise<ApiResponse<PaginatedResponse<MarketingSubscriber>>> => {
-  const response = await apiClient.get(ENDPOINT.WHATSAPP.MARKETING.SUBSCRIBERS.LIST, { params: filters });
+  const response = await apiClient.get(ENDPOINT.WHATSAPP.MARKETING.SUBSCRIBERS.LIST(filters.business_id), { params: filters });
   return response.data;
 };
 
 export const createSubscriber = async (
   data: CreateSubscriberInput
 ): Promise<ApiResponse<MarketingSubscriber>> => {
-  const response = await apiClient.post(ENDPOINT.WHATSAPP.MARKETING.SUBSCRIBERS.CREATE, data);
+  const response = await apiClient.post(ENDPOINT.WHATSAPP.MARKETING.SUBSCRIBERS.CREATE(data.business_id), data);
   return response.data;
 };
 
 export const updateSubscriber = async (
   id: number,
-  data: { status?: string; name?: string; tags?: string[] }
+  data: { status?: string; name?: string; tags?: string[]; business_id?: number }
 ): Promise<ApiResponse<MarketingSubscriber>> => {
-  const response = await apiClient.patch(ENDPOINT.WHATSAPP.MARKETING.SUBSCRIBERS.UPDATE(id), data);
+  const businessId = data.business_id || 0;
+  const response = await apiClient.patch(ENDPOINT.WHATSAPP.MARKETING.SUBSCRIBERS.UPDATE(businessId, String(id)), data);
   return response.data;
 };
 
 export const importSubscribers = async (
   data: ImportSubscribersInput
 ): Promise<ApiResponse<{ total: number; created: number; updated: number; skipped: number; errors: any[] }>> => {
-  const response = await apiClient.post(ENDPOINT.WHATSAPP.MARKETING.SUBSCRIBERS.IMPORT, data);
+  const response = await apiClient.post(ENDPOINT.WHATSAPP.MARKETING.SUBSCRIBERS.IMPORT(data.business_id), data);
   return response.data;
 };
 
@@ -128,7 +129,7 @@ export const importSubscribers = async (
 export const getCampaigns = async (
   filters: CampaignFilters
 ): Promise<ApiResponse<PaginatedResponse<MarketingCampaign>>> => {
-  const response = await apiClient.get(ENDPOINT.WHATSAPP.MARKETING.CAMPAIGNS.LIST, { params: filters });
+  const response = await apiClient.get(ENDPOINT.WHATSAPP.MARKETING.CAMPAIGNS.LIST(filters.business_id), { params: filters });
   return response.data;
 };
 
@@ -136,24 +137,23 @@ export const getCampaign = async (
   campaignId: number,
   businessId: number
 ): Promise<ApiResponse<MarketingCampaign>> => {
-  const response = await apiClient.get(ENDPOINT.WHATSAPP.MARKETING.CAMPAIGNS.GET(campaignId), {
-    params: { business_id: businessId },
-  });
+  const response = await apiClient.get(ENDPOINT.WHATSAPP.MARKETING.CAMPAIGNS.GET(businessId, String(campaignId)));
   return response.data;
 };
 
 export const createCampaign = async (
   data: CreateCampaignInput
 ): Promise<ApiResponse<MarketingCampaign>> => {
-  const response = await apiClient.post(ENDPOINT.WHATSAPP.MARKETING.CAMPAIGNS.CREATE, data);
+  const response = await apiClient.post(ENDPOINT.WHATSAPP.MARKETING.CAMPAIGNS.CREATE(data.business_id), data);
   return response.data;
 };
 
 export const runCampaign = async (
   campaignId: number,
-  data: RunCampaignInput
+  data: RunCampaignInput,
+  businessId: number
 ): Promise<ApiResponse<{ total: number; sent: number; failed: number; errors: any[] }>> => {
-  const response = await apiClient.post(ENDPOINT.WHATSAPP.MARKETING.CAMPAIGNS.RUN(campaignId), data);
+  const response = await apiClient.post(ENDPOINT.WHATSAPP.MARKETING.CAMPAIGNS.RUN(businessId, String(campaignId)), data);
   return response.data;
 };
 
