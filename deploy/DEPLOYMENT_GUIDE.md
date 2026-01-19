@@ -57,13 +57,17 @@ After the script completes, save:
 
 ## Step 2: Configure Environment Variables
 
+> **Note:** The setup script automatically creates `.env.production` with a template. You just need to fill in your API keys.
+
 Edit the production environment file:
 
 ```bash
 nano /var/www/storefront/.env.production
 ```
 
-Add all required variables:
+The script already created this file with default values. You just need to fill in the empty API keys:
+
+**Required - Fill these empty values:**
 
 ```env
 # Server

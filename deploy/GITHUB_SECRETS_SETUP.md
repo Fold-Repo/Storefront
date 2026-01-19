@@ -14,9 +14,25 @@ Add these secrets:
 
 **What it is:** Your private SSH key to connect to the server
 
+**Which key to use:**
+- ✅ **Oracle's private key** (if Oracle generated it) - The `.pem` or `.key` file you downloaded
+- ✅ **Your own private key** (if you uploaded your public key) - Usually `~/.ssh/id_rsa`
+
 **How to get it:**
+
+**Option A: Using Oracle's Key (Most Common)**
 ```bash
-# On your local machine, check if you have an SSH key
+# Find your Oracle key file (usually in Downloads)
+ls ~/Downloads/*.pem ~/Downloads/*.key
+
+# Copy the entire key content
+cat ~/Downloads/your-oracle-key.pem
+# Copy everything including BEGIN and END lines
+```
+
+**Option B: Using Your Own Key**
+```bash
+# Check if you have a key
 cat ~/.ssh/id_rsa
 
 # If you don't have one, generate it:
@@ -30,14 +46,16 @@ cat ~/.ssh/id_rsa
 - Copy the **entire** private key (starts with `-----BEGIN OPENSSH PRIVATE KEY-----` or `-----BEGIN RSA PRIVATE KEY-----`)
 - Include the BEGIN and END lines
 - This is your **private** key (not the `.pub` file)
+- **Use the same key that works for manual deployment!**
 
-**Add to server:**
-```bash
-# On your server, add the public key to authorized_keys
-# Copy the PUBLIC key (id_rsa.pub) content and add it:
-echo "your-public-key-content" >> ~/.ssh/authorized_keys
-chmod 600 ~/.ssh/authorized_keys
-```
+**Add to GitHub Secrets:**
+1. Go to: GitHub Repository → Settings → Secrets and variables → Actions
+2. Click "New repository secret"
+3. Name: `SSH_PRIVATE_KEY`
+4. Value: Paste the entire private key content (including BEGIN/END lines)
+5. Click "Add secret"
+
+**Note:** The GitHub Actions workflow uses `webfactory/ssh-agent` which automatically handles the SSH key - you just need to add it to GitHub Secrets. No code changes needed!
 
 ---
 
