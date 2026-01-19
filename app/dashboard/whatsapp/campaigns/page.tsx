@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCampaigns } from "@/hooks";
 import { useCreateCampaign, useRunCampaign } from "@/hooks/useWhatsApp";
+import type { MarketingCampaign } from "@/types/whatsapp";
 import { Button, Input, TextArea } from "@/components/ui";
 import { useToast } from "@/hooks";
 import {
@@ -24,7 +25,7 @@ export default function WhatsAppCampaignsPage() {
   const { data: campaignsData, isLoading: loading } = useCampaigns(businessId || 0);
   // Handle PaginatedResponse structure - campaigns can be in campaigns property or items property
   // PaginatedResponse has: campaigns?, items?, sessions?, pagination
-  const campaigns: any[] = campaignsData?.campaigns || campaignsData?.items || [];
+  const campaigns: MarketingCampaign[] = campaignsData?.campaigns || campaignsData?.items || [];
   
   // Mutations
   const createCampaignMutation = useCreateCampaign();
@@ -66,8 +67,8 @@ export default function WhatsAppCampaignsPage() {
       showSuccess("Campaign created successfully");
       setFormData({ name: "", description: "", template_name: "", scheduled_at: "" });
       setShowCreateModal(false);
-    } catch (error: any) {
-      showError(error?.message || "Failed to create campaign");
+    } catch (error: unknown) {
+      showError(error instanceof Error ? error.message : "Failed to create campaign");
     } finally {
       setCreating(false);
     }
@@ -96,8 +97,8 @@ export default function WhatsAppCampaignsPage() {
         phoneNumberId,
       });
       showSuccess("Campaign started successfully");
-    } catch (error: any) {
-      showError(error?.message || "Failed to run campaign");
+    } catch (error: unknown) {
+      showError(error instanceof Error ? error.message : "Failed to run campaign");
     } finally {
       setRunning(null);
     }
@@ -164,9 +165,9 @@ export default function WhatsAppCampaignsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6">
-          {campaigns.map((campaign: any) => (
+          {campaigns.map((campaign) => (
             <div
-              key={campaign.id || campaign.campaign_id}
+              key={campaign.id}
               className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
             >
               <div className="flex items-start justify-between mb-4">
@@ -217,9 +218,9 @@ export default function WhatsAppCampaignsPage() {
                 </div>
                 {(campaign.status === 'draft' || campaign.status === 'scheduled') && (
                   <Button
-                    onClick={() => handleRunCampaign(String(campaign.id || campaign.campaign_id))}
+                    onClick={() => handleRunCampaign(String(campaign.id))}
                     className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
-                    loading={running === String(campaign.id || campaign.campaign_id)}
+                    loading={running === String(campaign.id)}
                   >
                     <PlayIcon className="w-4 h-4" />
                     Run Now

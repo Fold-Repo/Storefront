@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMarketingSubscribers, useCreateSubscriber, useUpdateSubscriber } from "@/hooks";
 import { Button, Input } from "@/components/ui";
+import type { MarketingSubscriber, SubscriberStatus } from "@/types/whatsapp";
 import { useToast } from "@/hooks";
 import { SearchInput } from "@/components/reusable";
 import {
@@ -20,7 +21,7 @@ export default function WhatsAppMarketingPage() {
   const { user } = useAuth();
   const businessId = user?.business_id;
   const { data: subscribersData, isLoading: loading, refetch } = useMarketingSubscribers(businessId || 0);
-  const subscribers: any[] = subscribersData?.items || [];
+  const subscribers: MarketingSubscriber[] = subscribersData?.items || [];
   const createSubscriberMutation = useCreateSubscriber();
   const updateSubscriberMutation = useUpdateSubscriber();
   const { showSuccess, showError } = useToast();
@@ -32,7 +33,7 @@ export default function WhatsAppMarketingPage() {
 
   const filteredSubscribers = subscribers.filter((sub) => {
     const matchesSearch = 
-      sub.phone.includes(searchQuery) ||
+      sub.phone_number.includes(searchQuery) ||
       (sub.name && sub.name.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesSearch;
   });
@@ -61,8 +62,8 @@ export default function WhatsAppMarketingPage() {
     }
   };
 
-  const handleToggleStatus = async (phone: string, currentStatus: 'opted_in' | 'opted_out') => {
-    const subscriber = subscribers.find(s => s.phone === phone);
+  const handleToggleStatus = async (phone: string, currentStatus: SubscriberStatus) => {
+    const subscriber = subscribers.find(s => s.phone_number === phone);
     if (!subscriber || !subscriber.id) {
       showError("Subscriber not found");
       return;
@@ -192,9 +193,9 @@ export default function WhatsAppMarketingPage() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredSubscribers.map((subscriber) => (
-                  <tr key={subscriber.phone} className="hover:bg-gray-50">
+                  <tr key={subscriber.phone_number} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {subscriber.phone}
+                      {subscriber.phone_number}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {subscriber.name || "-"}
@@ -217,7 +218,7 @@ export default function WhatsAppMarketingPage() {
                       <Button
                         size="sm"
                         variant="light"
-                        onClick={() => handleToggleStatus(subscriber.phone, subscriber.status)}
+                        onClick={() => handleToggleStatus(subscriber.phone_number, subscriber.status)}
                         className={
                           subscriber.status === 'opted_in'
                             ? 'text-red-600 hover:text-red-700'

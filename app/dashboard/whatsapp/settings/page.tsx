@@ -3,6 +3,7 @@
 import React from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWhatsAppSettings, useUpdateSettings } from "@/hooks/useWhatsApp";
+import type { UpdateSettingsInput } from "@/types/whatsapp";
 import { useToast } from "@/hooks";
 import { SettingsForm } from "@/components/whatsapp/SettingsForm";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
@@ -26,12 +27,13 @@ export default function WhatsAppSettingsPage() {
     );
   }
 
-  const handleSave = async (data: any) => {
+  const handleSave = async (data: UpdateSettingsInput) => {
     try {
       await updateMutation.mutateAsync(data);
       showSuccess("Settings saved successfully!");
-    } catch (error: any) {
-      showError(error.response?.data?.message || "Failed to save settings");
+    } catch (error: unknown) {
+      const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      showError(message || "Failed to save settings");
     }
   };
 

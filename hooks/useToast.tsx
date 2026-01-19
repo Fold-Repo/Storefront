@@ -31,23 +31,23 @@ export const useToast = () => {
         };
 
         const selectedColors = colorClasses[color];
-        let toastId: any;
+        let toastId: string | number | null;
 
         // Create toast options with 5-second auto-dismiss
-        const toastOptions: any = {
+        const toastOptions = {
             title: message,
             description,
             color,
-            variant: "flat",
+            variant: "flat" as const,
             timeout: 5000,
-            radius: "lg",
+            radius: "lg" as const,
             endContent: (
                 <Button
                     isIconOnly
                     size="sm"
                     variant="light"
                     onPress={() => {
-                        if (toastId) closeToast(toastId);
+                        if (toastId !== null) closeToast(String(toastId));
                     }}
                     className="min-w-8 w-8 h-8 rounded-full hover:bg-black/5"
                 >

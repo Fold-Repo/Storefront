@@ -57,7 +57,7 @@ export async function GET(
 
         // Build query for products
         const productsRef = collection(db, 'products');
-        let constraints: any[] = [where('userId', '==', userId), where('status', '==', 'active')];
+        const constraints: any[] = [where('userId', '==', userId), where('status', '==', 'active')];
 
         // Category filter
         if (filters.category) {

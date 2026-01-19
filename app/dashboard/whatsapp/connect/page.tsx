@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWhatsAppNumbers, useConnectNumber, useUpdateNumberToken, useDeleteNumber } from "@/hooks/useWhatsApp";
+import type { ConnectNumberInput } from "@/types/whatsapp";
 import { useToast } from "@/hooks";
 import { Button } from "@/components/ui";
 import { ConnectNumberForm } from "@/components/whatsapp/ConnectNumberForm";
@@ -35,13 +36,14 @@ export default function ConnectWhatsAppPage() {
     );
   }
 
-  const handleConnect = async (data: any) => {
+  const handleConnect = async (data: ConnectNumberInput) => {
     try {
       await connectMutation.mutateAsync(data);
       showSuccess("WhatsApp number connected successfully!");
       router.push("/dashboard/whatsapp");
-    } catch (error: any) {
-      showError(error.response?.data?.message || "Failed to connect WhatsApp number");
+    } catch (error: unknown) {
+      const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      showError(message || "Failed to connect WhatsApp number");
     }
   };
 
@@ -49,8 +51,9 @@ export default function ConnectWhatsAppPage() {
     try {
       await updateTokenMutation.mutateAsync({ id, accessToken });
       showSuccess("Access token updated successfully!");
-    } catch (error: any) {
-      showError(error.response?.data?.message || "Failed to update access token");
+    } catch (error: unknown) {
+      const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      showError(message || "Failed to update access token");
     }
   };
 
@@ -60,8 +63,9 @@ export default function ConnectWhatsAppPage() {
     try {
       await deleteMutation.mutateAsync(id);
       showSuccess("WhatsApp number disconnected successfully!");
-    } catch (error: any) {
-      showError(error.response?.data?.message || "Failed to disconnect WhatsApp number");
+    } catch (error: unknown) {
+      const message = (error as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      showError(message || "Failed to disconnect WhatsApp number");
     }
   };
 

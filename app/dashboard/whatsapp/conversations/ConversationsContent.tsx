@@ -8,7 +8,7 @@ import { SessionsTable } from "@/components/whatsapp/SessionsTable";
 import { SessionDetailDrawer } from "@/components/whatsapp/SessionDetailDrawer";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import type { SessionFilters, SessionStep, PaymentStatus } from "@/types/whatsapp";
+import type { SessionFilters } from "@/types/whatsapp";
 
 export const ConversationsContent: React.FC = () => {
   const { user } = useAuth();

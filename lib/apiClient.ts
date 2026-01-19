@@ -43,7 +43,7 @@ apiClient.interceptors.request.use(
 
         // Log request in development
         if (process.env.NODE_ENV === "development") {
-            // eslint-disable-next-line no-console
+             
             console.log(`[API Request] ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);
         }
 
@@ -88,7 +88,7 @@ const responseInterceptor = async (error: AxiosError) => {
             errorDetails.responseData = error.response.data;
         }
         
-        // eslint-disable-next-line no-console
+         
         console.error("[API Error]", errorDetails);
     }
 

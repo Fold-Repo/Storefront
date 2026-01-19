@@ -1,0 +1,671 @@
+
+> storefront@0.1.0 lint
+> eslint
+
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/api/ai/generate-description/questions/all/route.ts
+   90:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  111:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/api/ai/generate-description/questions/route.ts
+  124:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  139:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/api/ai/generate-description/route.ts
+  76:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/api/ai/generate/route.ts
+  483:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/api/auth/register-customer/route.ts
+  105:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/api/storefront/[storefrontId]/data/route.ts
+   94:19  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  107:3   warning  'storefrontId' is defined but never used  @typescript-eslint/no-unused-vars
+  108:3   warning  'options' is defined but never used       @typescript-eslint/no-unused-vars
+  115:35  warning  'storefrontId' is defined but never used  @typescript-eslint/no-unused-vars
+  115:57  warning  'slug' is defined but never used          @typescript-eslint/no-unused-vars
+  120:32  warning  'storefrontId' is defined but never used  @typescript-eslint/no-unused-vars
+  125:36  warning  'storefrontId' is defined but never used  @typescript-eslint/no-unused-vars
+  125:58  warning  'slug' is defined but never used          @typescript-eslint/no-unused-vars
+  130:26  warning  'storefrontId' is defined but never used  @typescript-eslint/no-unused-vars
+  136:33  warning  'storefrontId' is defined but never used  @typescript-eslint/no-unused-vars
+  142:34  warning  'storefrontId' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/api/storefront/[storefrontId]/orders/route.ts
+  124:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  169:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/api/storefront/[storefrontId]/pages/route.ts
+   18:3   warning  'createDefaultPageSettings' is defined but never used  @typescript-eslint/no-unused-vars
+   55:19  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  154:19  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  200:19  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  250:19  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/api/storefront/[storefrontId]/products/route.ts
+    9:79  warning  'startAfter' is defined but never used                  @typescript-eslint/no-unused-vars
+   60:13  error    'constraints' is never reassigned. Use 'const' instead  prefer-const
+   60:26  error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+   98:23  error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  107:44  error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  143:21  error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/api/storefront/[storefrontId]/subdomain/route.ts
+   63:19  error    Unexpected any. Specify a different type           @typescript-eslint/no-explicit-any
+   81:13  warning  'storefrontId' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  129:21  error    Unexpected any. Specify a different type           @typescript-eslint/no-explicit-any
+  140:19  error    Unexpected any. Specify a different type           @typescript-eslint/no-explicit-any
+  186:19  error    Unexpected any. Specify a different type           @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/api/user/limits/route.ts
+  78:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/api/user/plan/route.ts
+   13:7   warning  'PLANS_COLLECTION' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   36:17  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+   37:15  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+   68:19  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  126:23  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  149:29  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  169:30  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  190:19  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  280:19  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/dashboard/products/brands/page.tsx
+  17:5   warning  'PlusIcon' is defined but never used                                                                            @typescript-eslint/no-unused-vars
+  24:42  error    Unexpected any. Specify a different type                                                                        @typescript-eslint/no-explicit-any
+  46:8   warning  React Hook useEffect has a missing dependency: 'fetchBrands'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  58:18  warning  'error' is defined but never used                                                                               @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/dashboard/products/categories/page.tsx
+  20:5   warning  'MagnifyingGlassIcon' is defined but never used                                                                     @typescript-eslint/no-unused-vars
+  24:50  error    Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+  45:25  error    Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+  59:8   warning  React Hook useEffect has a missing dependency: 'fetchCategories'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  71:18  warning  'error' is defined but never used                                                                                   @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/dashboard/products/import/page.tsx
+  28:13  warning  'showError' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  29:52  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/dashboard/products/new/page.tsx
+   13:5   warning  'ArchiveBoxIcon' is defined but never used  @typescript-eslint/no-unused-vars
+   14:5   warning  'PlusIcon' is defined but never used        @typescript-eslint/no-unused-vars
+   42:50  error    Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+   43:42  error    Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+   44:40  error    Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+   87:29  error    Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+  108:28  error    Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+  124:57  error    Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/dashboard/products/page.tsx
+   26:46  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   46:8   warning  React Hook useEffect has a missing dependency: 'fetchProducts'. Either include it or remove the dependency array                                                                                                                                                                         react-hooks/exhaustive-deps
+   54:18  warning  'error' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  123:57  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/dashboard/products/units/page.tsx
+  17:5   warning  'PlusIcon' is defined but never used                                                                           @typescript-eslint/no-unused-vars
+  20:5   warning  'VariableIcon' is defined but never used                                                                       @typescript-eslint/no-unused-vars
+  24:40  error    Unexpected any. Specify a different type                                                                       @typescript-eslint/no-explicit-any
+  46:8   warning  React Hook useEffect has a missing dependency: 'fetchUnits'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  58:18  warning  'error' is defined but never used                                                                              @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/dashboard/products/variations/page.tsx
+   24:50  error    Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+   46:8   warning  React Hook useEffect has a missing dependency: 'fetchVariations'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   67:18  warning  'error' is defined but never used                                                                                   @typescript-eslint/no-unused-vars
+  172:71  error    Unexpected any. Specify a different type                                                                            @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/dashboard/sales/page.tsx
+   22:5    warning  'PencilIcon' is defined but never used                                                                         @typescript-eslint/no-unused-vars
+   28:40   error    Unexpected any. Specify a different type                                                                       @typescript-eslint/no-explicit-any
+   35:54   error    Unexpected any. Specify a different type                                                                       @typescript-eslint/no-explicit-any
+   54:8    warning  React Hook useEffect has a missing dependency: 'fetchSales'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   56:42   error    Unexpected any. Specify a different type                                                                       @typescript-eslint/no-explicit-any
+   73:18   warning  'error' is defined but never used                                                                              @typescript-eslint/no-unused-vars
+  197:122  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                react/no-unescaped-entities
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/dashboard/settings/notifications/page.tsx
+   7:5   warning  'BellIcon' is defined but never used                 @typescript-eslint/no-unused-vars
+   9:5   warning  'ChatBubbleLeftRightIcon' is defined but never used  @typescript-eslint/no-unused-vars
+  11:5   warning  'ArrowPathIcon' is defined but never used            @typescript-eslint/no-unused-vars
+  35:18  warning  'error' is defined but never used                    @typescript-eslint/no-unused-vars
+  72:76  error    Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/dashboard/whatsapp/campaigns/page.tsx
+   27:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   69:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   99:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  167:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/dashboard/whatsapp/connect/page.tsx
+  21:26  warning  'isLoading' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  38:38  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  43:21  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  52:21  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  63:21  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/dashboard/whatsapp/conversations/ConversationsContent.tsx
+  11:31  warning  'SessionStep' is defined but never used    @typescript-eslint/no-unused-vars
+  11:44  warning  'PaymentStatus' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/dashboard/whatsapp/marketing/page.tsx
+  22:54  warning  'refetch' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  23:22  error    Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  57:14  warning  'error' is defined but never used             @typescript-eslint/no-unused-vars
+  78:14  warning  'error' is defined but never used             @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/dashboard/whatsapp/page.tsx
+  10:3  warning  'ChatBubbleLeftRightIcon' is defined but never used  @typescript-eslint/no-unused-vars
+  15:3  warning  'CheckCircleIcon' is defined but never used          @typescript-eslint/no-unused-vars
+  16:3  warning  'XCircleIcon' is defined but never used              @typescript-eslint/no-unused-vars
+  17:3  warning  'CurrencyDollarIcon' is defined but never used       @typescript-eslint/no-unused-vars
+  18:3  warning  'ShoppingBagIcon' is defined but never used          @typescript-eslint/no-unused-vars
+  25:9  warning  'router' is assigned a value but never used          @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/dashboard/whatsapp/settings/page.tsx
+  29:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  33:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/app/storefront/[[...path]]/page.tsx
+   12:78  warning  'PageSetting' is defined but never used               @typescript-eslint/no-unused-vars
+   73:26  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  131:7   error    'finalData' is never reassigned. Use 'const' instead  prefer-const
+  194:65  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  232:23  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  233:27  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  234:30  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  336:21  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  340:19  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  354:33  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  368:38  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  368:53  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  379:36  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  391:41  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  407:35  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  413:39  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  487:33  warning  'storefrontId' is defined but never used              @typescript-eslint/no-unused-vars
+  492:34  warning  'storefrontId' is defined but never used              @typescript-eslint/no-unused-vars
+  497:38  warning  'storefrontId' is defined but never used              @typescript-eslint/no-unused-vars
+  501:29  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  539:29  error    Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+  572:37  warning  'storefrontId' is defined but never used              @typescript-eslint/no-unused-vars
+  572:59  warning  'productSlug' is defined but never used               @typescript-eslint/no-unused-vars
+  577:36  warning  'storefrontId' is defined but never used              @typescript-eslint/no-unused-vars
+  577:58  warning  'slug' is defined but never used                      @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/auth/LoginModal.tsx
+   79:17  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  108:21  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  127:17  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  156:21  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  274:16  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/auth/SignupModal.tsx
+  74:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/dashboard/MobileSidebar.tsx
+   31:11  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  102:25  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/dashboard/Sidebar.tsx
+  17:5   warning  'QrCodeIcon' is defined but never used                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+  27:11  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  36:11  warning  'Component' is assigned a value but never used                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+  92:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/dashboard/TopNav.tsx
+  1:17  warning  'useState' is defined but never used   @typescript-eslint/no-unused-vars
+  1:27  warning  'useEffect' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/editor/PageEditor.tsx
+   14:3   warning  'XMarkIcon' is defined but never used                                                                                          @typescript-eslint/no-unused-vars
+   22:3   warning  'deletePageSetting' is defined but never used                                                                                  @typescript-eslint/no-unused-vars
+   25:3   warning  'createDefaultPageSettings' is defined but never used                                                                          @typescript-eslint/no-unused-vars
+  159:28  error    Unexpected any. Specify a different type                                                                                       @typescript-eslint/no-explicit-any
+  162:40  error    Unexpected any. Specify a different type                                                                                       @typescript-eslint/no-explicit-any
+  173:10  warning  'dragId' is assigned a value but never used                                                                                    @typescript-eslint/no-unused-vars
+  173:18  warning  'setDragId' is assigned a value but never used                                                                                 @typescript-eslint/no-unused-vars
+  205:95  error    Unexpected any. Specify a different type                                                                                       @typescript-eslint/no-explicit-any
+  240:21  error    Unexpected any. Specify a different type                                                                                       @typescript-eslint/no-explicit-any
+  259:61  error    Unexpected any. Specify a different type                                                                                       @typescript-eslint/no-explicit-any
+  286:25  error    Unexpected any. Specify a different type                                                                                       @typescript-eslint/no-explicit-any
+  298:13  warning  'container' is assigned a value but never used                                                                                 @typescript-eslint/no-unused-vars
+  333:37  error    Unexpected any. Specify a different type                                                                                       @typescript-eslint/no-explicit-any
+  336:38  warning  'editor' is defined but never used                                                                                             @typescript-eslint/no-unused-vars
+  336:46  error    Unexpected any. Specify a different type                                                                                       @typescript-eslint/no-explicit-any
+  423:35  error    Unexpected any. Specify a different type                                                                                       @typescript-eslint/no-explicit-any
+  446:59  error    Unexpected any. Specify a different type                                                                                       @typescript-eslint/no-explicit-any
+  464:29  error    Unexpected any. Specify a different type                                                                                       @typescript-eslint/no-explicit-any
+  504:6   warning  React Hook useEffect has missing dependencies: 'currentPage' and 'router'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  586:12  error    Unexpected any. Specify a different type                                                                                       @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/editor/customBlocks.ts
+  6:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/editor/ecommerceBlocks.ts
+  530:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/nav/MobileNav.tsx
+  18:54  warning  'onLoginClick' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/nav/UserProfileDropdown.tsx
+  5:10  warning  'MenuDropdown' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/reusable/TableComponent.tsx
+  109:44  warning  'index' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/storefront/CartSidebar.tsx
+   60:57  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   61:24  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   67:57  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   68:24  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  127:45  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/storefront/CheckoutModal.tsx
+    4:21  warning  'ShoppingBagIcon' is defined but never used  @typescript-eslint/no-unused-vars
+   75:57  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   76:41  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   92:57  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   94:45  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  121:29  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  160:61  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  161:41  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  183:61  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  184:28  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  189:25  error    Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/ui/MenuDropdown.tsx
+  57:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/ui/MenuDropdown.tsx:57:13
+  55 |         if (value !== undefined) {
+  56 |             const found = items.find(i => i.key === value);
+> 57 |             setInternalLabel(found ? found.label : (label || "Select"));
+     |             ^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  58 |         }
+  59 |     }, [value, items, label]);
+  60 |  react-hooks/set-state-in-effect
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/ui/PopupModal.tsx
+  74:40  error  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/ui/PopupModal.tsx:74:40
+  72 |     return (
+  73 |         <Modal
+> 74 |             id={name ? name : `modal-${Date.now()}`}
+     |                                        ^^^^^^^^^^ Cannot call impure function
+  75 |             size={getModalSize()}
+  76 |             isOpen={isOpen}
+  77 |             onClose={onClose}  react-hooks/purity
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/ui/form/CheckBox.tsx
+   6:10  warning  'controlRadiusClasses' is defined but never used  @typescript-eslint/no-unused-vars
+  30:5   warning  'radius' is assigned a value but never used       @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/ui/form/Input.tsx
+  52:5  warning  'innerShadow' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/ui/form/PasswordInput.tsx
+  40:5  warning  'innerShadow' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/ui/form/PhoneInput.tsx
+  42:5  warning  'innerShadow' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/ui/form/Select.tsx
+  41:5  warning  'innerShadow' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/ui/form/TextArea.tsx
+  39:5  warning  'innerShadow' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/whatsapp/SessionDetailDrawer.tsx
+  5:10  warning  'Button' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/whatsapp/SessionsTable.tsx
+  10:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  12:12  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  13:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/whatsapp/SettingsForm.tsx
+  27:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/whatsapp/SettingsForm.tsx:27:7
+  25 |   useEffect(() => {
+  26 |     if (settings) {
+> 27 |       setFormData({
+     |       ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  28 |         multi_store_routing: settings.multi_store_routing,
+  29 |         default_store_id: settings.default_store_id,
+  30 |         pickup_enabled: settings.pickup_enabled,  react-hooks/set-state-in-effect
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/components/wizard/StorefrontWizard.tsx
+   194:6   warning  React Hook useEffect has a missing dependency: 'loadSavedData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   227:6   warning  React Hook useEffect has a missing dependency: 'showSuccess'. Either include it or remove the dependency array    react-hooks/exhaustive-deps
+   408:14  warning  'error' is defined but never used                                                                                 @typescript-eslint/no-unused-vars
+   442:21  error    Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+   517:21  error    Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+   525:9   warning  'generateFinalDescription' is assigned a value but never used                                                     @typescript-eslint/no-unused-vars
+  1361:19  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                   react/no-unescaped-entities
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/contexts/AuthContext.tsx
+  36:11  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/contexts/AuthContext.tsx:36:11
+  34 |       if (storedUser) {
+  35 |         try {
+> 36 |           setUser(JSON.parse(storedUser));
+     |           ^^^^^^^ Avoid calling setState() directly within an effect
+  37 |         } catch (error) {
+  38 |           console.error("Error parsing stored user data:", error);
+  39 |         }  react-hooks/set-state-in-effect
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/hooks/useToast.tsx
+  34:13  error  'toastId' is never reassigned. Use 'const' instead  prefer-const
+  34:22  error  Unexpected any. Specify a different type            @typescript-eslint/no-explicit-any
+  37:29  error  Unexpected any. Specify a different type            @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/hooks/useWhatsApp.ts
+  31:3  warning  'RunCampaignInput' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/lib/api/whatsapp.ts
+  123:100  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  155:79   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/lib/apiClient.ts
+    9:23  error    Unexpected any. Specify a different type                                       @typescript-eslint/no-explicit-any
+   10:22  error    Unexpected any. Specify a different type                                       @typescript-eslint/no-explicit-any
+   46:13  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+   77:29  error    Unexpected any. Specify a different type                                       @typescript-eslint/no-explicit-any
+   91:9   warning  Unused eslint-disable directive (no problems were reported from 'no-console')
+  217:14  error    Unexpected any. Specify a different type                                       @typescript-eslint/no-explicit-any
+  227:14  error    Unexpected any. Specify a different type                                       @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/lib/dataInjector.ts
+   19:10  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   20:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   21:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   22:14  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   23:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   24:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   25:14  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   26:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   27:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   28:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   29:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  121:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  142:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  167:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  178:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  195:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  206:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  268:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  285:53  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  296:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  316:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  330:57  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  340:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  395:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  406:57  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  417:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  442:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  457:53  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  476:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  487:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  516:61  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/lib/firebaseConfig.ts
+   2:39  warning  'disableNetwork' is defined but never used     @typescript-eslint/no-unused-vars
+   2:55  warning  'onSnapshotsInSync' is defined but never used  @typescript-eslint/no-unused-vars
+  29:12  warning  'error' is defined but never used              @typescript-eslint/no-unused-vars
+  46:19  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/lib/grapesJSConfig.ts
+  11:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  50:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  70:47  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  74:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/services/address.ts
+  50:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  70:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/services/ai.ts
+  130:21  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  240:26  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  247:19  error    Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  658:10  warning  'createPromptForPage' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/services/analytics.ts
+   2:10  warning  'ENDPOINT' is defined but never used      @typescript-eslint/no-unused-vars
+  31:17  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  45:19  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/services/auth.ts
+   67:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   92:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   93:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  108:63  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  133:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  188:75  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  200:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  242:73  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  269:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  313:71  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  325:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  368:69  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  372:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  405:77  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  442:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  488:79  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  492:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  531:77  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  535:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  581:75  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  612:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/services/cloudflare.ts
+   23:12  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  206:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  274:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/services/ecommerceApi.ts
+   31:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   62:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   71:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   81:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   90:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  100:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  109:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  119:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/services/firebase.ts
+   19:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   33:15  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   34:15  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   59:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   62:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   63:14  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   71:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   71:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   80:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   95:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  106:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  117:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  148:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  225:86  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  273:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  286:86  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  326:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  355:86  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  403:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/services/pageSettings.ts
+   34:18  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   42:20  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   44:14  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   45:14  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  132:5   error  'q' is never reassigned. Use 'const' instead  prefer-const
+  172:5   error  'q' is never reassigned. Use 'const' instead  prefer-const
+  224:12  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  237:21  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/services/planLimits.ts
+   15:3   warning  'collection' is defined but never used    @typescript-eslint/no-unused-vars
+   16:3   warning  'query' is defined but never used         @typescript-eslint/no-unused-vars
+   17:3   warning  'where' is defined but never used         @typescript-eslint/no-unused-vars
+   18:3   warning  'getDocs' is defined but never used       @typescript-eslint/no-unused-vars
+   29:14  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   30:14  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   45:17  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   46:15  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  203:49  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/services/storefront.ts
+    8:10  warning  'loadGeneratedSiteFromFirebase' is defined but never used  @typescript-eslint/no-unused-vars
+  194:55  warning  'doc' is assigned a value but never used                   @typescript-eslint/no-unused-vars
+  194:60  warning  'getDoc' is assigned a value but never used                @typescript-eslint/no-unused-vars
+  253:3   warning  'identifier' is defined but never used                     @typescript-eslint/no-unused-vars
+  260:3   warning  'storefrontId' is defined but never used                   @typescript-eslint/no-unused-vars
+  261:3   warning  'pageType' is defined but never used                       @typescript-eslint/no-unused-vars
+  269:3   warning  'identifier' is defined but never used                     @typescript-eslint/no-unused-vars
+  276:3   warning  'storefrontId' is defined but never used                   @typescript-eslint/no-unused-vars
+  277:3   warning  'pageType' is defined but never used                       @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/services/subscription.ts
+   14:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   20:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  112:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/types/whatsapp.ts
+   98:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  113:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  260:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/utils/csv.ts
+  16:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  36:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/views/auth/ForgotPasswordPage.tsx
+  103:21  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  134:21  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  198:21  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  240:39  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/views/auth/LoginPage.tsx
+   76:17  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  106:21  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  116:18  warning  'e' is defined but never used                                    @typescript-eslint/no-unused-vars
+  148:28  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  179:17  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  217:21  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  374:16  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/views/auth/ResetPasswordPage.tsx
+   66:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  125:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/views/auth/SignupPage.tsx
+    14:45  warning  'generateSecurePassword' is defined but never used  @typescript-eslint/no-unused-vars
+    17:67  warning  'User' is defined but never used                    @typescript-eslint/no-unused-vars
+   106:17  warning  'email' is assigned a value but never used          @typescript-eslint/no-unused-vars
+   106:24  warning  'phone' is assigned a value but never used          @typescript-eslint/no-unused-vars
+   106:31  warning  'altphone' is assigned a value but never used       @typescript-eslint/no-unused-vars
+   301:67  error    Unexpected any. Specify a different type            @typescript-eslint/no-explicit-any
+   316:21  error    Unexpected any. Specify a different type            @typescript-eslint/no-explicit-any
+   361:21  error    Unexpected any. Specify a different type            @typescript-eslint/no-explicit-any
+   582:18  warning  'error' is defined but never used                   @typescript-eslint/no-unused-vars
+   637:70  error    Unexpected any. Specify a different type            @typescript-eslint/no-explicit-any
+   641:25  error    Unexpected any. Specify a different type            @typescript-eslint/no-explicit-any
+   706:21  error    Unexpected any. Specify a different type            @typescript-eslint/no-explicit-any
+   759:18  warning  'e' is defined but never used                       @typescript-eslint/no-unused-vars
+  1055:46  error    Unexpected any. Specify a different type            @typescript-eslint/no-explicit-any
+  1057:60  error    Unexpected any. Specify a different type            @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/views/auth/VerifyAccountPage.tsx
+    6:24  warning  'CheckCircleIcon' is defined but never used                      @typescript-eslint/no-unused-vars
+    6:41  warning  'XMarkIcon' is defined but never used                            @typescript-eslint/no-unused-vars
+  133:21  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  160:21  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  180:17  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  224:19  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  249:46  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/views/components.tsx
+  5:52  warning  'Table' is defined but never used        @typescript-eslint/no-unused-vars
+  5:59  warning  'TableHeader' is defined but never used  @typescript-eslint/no-unused-vars
+  5:72  warning  'TableRow' is defined but never used     @typescript-eslint/no-unused-vars
+  5:82  warning  'TableHead' is defined but never used    @typescript-eslint/no-unused-vars
+  5:93  warning  'TableBody' is defined but never used    @typescript-eslint/no-unused-vars
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/views/dashboard/DashboardPage.tsx
+    9:10  warning  'Input' is defined but never used                                                                                 @typescript-eslint/no-unused-vars
+   17:3   warning  'DocumentTextIcon' is defined but never used                                                                      @typescript-eslint/no-unused-vars
+   18:3   warning  'Cog6ToothIcon' is defined but never used                                                                         @typescript-eslint/no-unused-vars
+   23:3   warning  'CheckCircleIcon' is defined but never used                                                                       @typescript-eslint/no-unused-vars
+   24:3   warning  'XCircleIcon' is defined but never used                                                                           @typescript-eslint/no-unused-vars
+   25:3   warning  'PencilIcon' is defined but never used                                                                            @typescript-eslint/no-unused-vars
+   28:3   warning  'ShieldCheckIcon' is defined but never used                                                                       @typescript-eslint/no-unused-vars
+   35:8   warning  'Image' is defined but never used                                                                                 @typescript-eslint/no-unused-vars
+   36:10  warning  'NAV_CONSTANT' is defined but never used                                                                          @typescript-eslint/no-unused-vars
+   38:10  warning  'UserProfileDropdown' is defined but never used                                                                   @typescript-eslint/no-unused-vars
+   53:10  warning  'customDomain' is assigned a value but never used                                                                 @typescript-eslint/no-unused-vars
+   53:24  warning  'setCustomDomain' is assigned a value but never used                                                              @typescript-eslint/no-unused-vars
+   54:10  warning  'savingDomain' is assigned a value but never used                                                                 @typescript-eslint/no-unused-vars
+   73:46  error    Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+   74:54  error    Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+   92:56  error    Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+   92:77  error    Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+  165:6   warning  React Hook useEffect has a missing dependency: 'loadAnalytics'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  173:9   warning  'handleSaveDomain' is assigned a value but never used                                                             @typescript-eslint/no-unused-vars
+  212:9   warning  'pages' is assigned a value but never used                                                                        @typescript-eslint/no-unused-vars
+  532:62  error    Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+  532:83  error    Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+  609:29  error    Unexpected any. Specify a different type                                                                          @typescript-eslint/no-explicit-any
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/views/dashboard/DomainsPage.tsx
+    6:10   warning  'loadGeneratedSiteFromFirebase' is defined but never used                                                    @typescript-eslint/no-unused-vars
+   13:5    warning  'XCircleIcon' is defined but never used                                                                      @typescript-eslint/no-unused-vars
+   24:8    warning  'Image' is defined but never used                                                                            @typescript-eslint/no-unused-vars
+   25:10   warning  'NAV_CONSTANT' is defined but never used                                                                     @typescript-eslint/no-unused-vars
+   26:10   warning  'UserProfileDropdown' is defined but never used                                                              @typescript-eslint/no-unused-vars
+   43:62   error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+   97:8    warning  React Hook useEffect has a missing dependency: 'loadSite'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  155:25   error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  184:25   error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  374:155  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  440:92   error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                              react/no-unescaped-entities
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/views/landing/home/HomePage.tsx
+  142:21  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  289:35  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  436:48  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/ogunwolesamuel/development/projects/fold-project/storeFront/views/landing/home/sections/WhatYouAreMissing.tsx
+  12:23  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+✖ 439 problems (291 errors, 148 warnings)
+  2 errors and 2 warnings potentially fixable with the `--fix` option.
+

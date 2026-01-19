@@ -128,7 +128,7 @@ export default async function StorefrontPage({ params }: StorefrontPageProps) {
   );
 
   // Inject dynamic data into HTML
-  let finalData = { ...dynamicData };
+  const finalData = { ...dynamicData };
   finalData.menu = generateMenuHTML(dynamicData.menu || [], config);
 
   const renderedHTML = injectDynamicData(
