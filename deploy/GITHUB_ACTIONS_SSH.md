@@ -44,7 +44,7 @@ cat ~/.ssh/id_rsa
 
 Also add these secrets:
 
-- `SERVER_IP`: `79.72.95.124`
+- `SERVER_IP`: `145.241.251.29`
 - `SERVER_USER`: `ubuntu`
 - `DEPLOY_PATH`: `/var/www/storefront` (optional)
 
@@ -91,10 +91,10 @@ GitHub Actions will automatically deploy!
 2. **Verify the key works manually:**
    ```bash
    # Test with Oracle key
-   ssh -i ~/Downloads/oracle-key.pem ubuntu@79.72.95.124
+   ssh -i ~/Downloads/oracle-key.pem ubuntu@145.241.251.29
    
    # Or with default key
-   ssh ubuntu@79.72.95.124
+   ssh ubuntu@145.241.251.29
    ```
    If manual SSH works, the same key will work in GitHub Actions.
 

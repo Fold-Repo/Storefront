@@ -37,7 +37,7 @@ When you create an Oracle Cloud instance, you have two options for SSH access:
 
 2. **Can you SSH without specifying a key file?**
    ```bash
-   ssh ubuntu@79.72.95.124
+   ssh ubuntu@145.241.251.29
    # If this works, you're using your own key
    ```
 
@@ -59,7 +59,7 @@ When you create an Oracle Cloud instance, you have two options for SSH access:
 
 3. **Test SSH connection:**
    ```bash
-   ssh -i /path/to/oracle-private-key.pem ubuntu@79.72.95.124
+   ssh -i /path/to/oracle-private-key.pem ubuntu@145.241.251.29
    ```
 
 4. **For GitHub Actions:**
@@ -82,7 +82,7 @@ When you create an Oracle Cloud instance, you have two options for SSH access:
 
 2. **Test SSH connection:**
    ```bash
-   ssh ubuntu@79.72.95.124
+   ssh ubuntu@145.241.251.29
    # Should work without -i flag
    ```
 
@@ -98,7 +98,7 @@ Run this to check:
 
 ```bash
 # Try SSH with your default key
-ssh ubuntu@79.72.95.124
+ssh ubuntu@145.241.251.29
 
 # If that works, you're using your own key
 # Use: ~/.ssh/id_rsa (or id_ed25519)
@@ -165,7 +165,7 @@ ssh ubuntu@79.72.95.124
 **If using Oracle's key:**
 ```bash
 # Make sure you're using the correct key file
-ssh -i /path/to/oracle-key.pem ubuntu@79.72.95.124
+ssh -i /path/to/oracle-key.pem ubuntu@145.241.251.29
 
 # Check key permissions
 chmod 600 /path/to/oracle-key.pem
@@ -174,7 +174,7 @@ chmod 600 /path/to/oracle-key.pem
 **If using your own key:**
 ```bash
 # Make sure public key is on server
-ssh ubuntu@79.72.95.124
+ssh ubuntu@145.241.251.29
 # Check: cat ~/.ssh/authorized_keys
 ```
 

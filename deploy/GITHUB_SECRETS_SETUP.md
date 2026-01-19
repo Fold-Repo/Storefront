@@ -63,7 +63,7 @@ cat ~/.ssh/id_rsa
 
 **What it is:** Your Oracle Cloud server's public IP address
 
-**Value:** `79.72.95.124` (from your setup)
+**Value:** `145.241.251.29` (from your setup)
 
 **How to verify:**
 ```bash
@@ -87,7 +87,7 @@ curl ifconfig.me
 **How to verify:**
 ```bash
 # Check who you SSH as
-# Usually shown in your SSH command: ssh ubuntu@79.72.95.124
+# Usually shown in your SSH command: ssh ubuntu@145.241.251.29
 ```
 
 ---
@@ -121,7 +121,7 @@ ssh-keygen -t rsa -b 4096 -C "your-email@example.com"
 cat ~/.ssh/id_rsa.pub
 
 # SSH into your server
-ssh ubuntu@79.72.95.124
+ssh ubuntu@145.241.251.29
 
 # On the server, add the public key
 mkdir -p ~/.ssh
@@ -134,7 +134,7 @@ chmod 600 ~/.ssh/authorized_keys
 
 ```bash
 # From your local machine, test SSH without password
-ssh ubuntu@79.72.95.124
+ssh ubuntu@145.241.251.29
 
 # Should connect without asking for password
 ```
@@ -153,7 +153,7 @@ ssh ubuntu@79.72.95.124
 
 #### Secret 2: SERVER_IP
 - **Name:** `SERVER_IP`
-- **Value:** `79.72.95.124`
+- **Value:** `145.241.251.29`
 
 #### Secret 3: SERVER_USER
 - **Name:** `SERVER_USER`
@@ -170,7 +170,7 @@ ssh ubuntu@79.72.95.124
 | Secret Name | Value | Example |
 |------------|-------|---------|
 | `SSH_PRIVATE_KEY` | Your private SSH key | `-----BEGIN OPENSSH PRIVATE KEY-----...` |
-| `SERVER_IP` | Server IP address | `79.72.95.124` |
+| `SERVER_IP` | Server IP address | `145.241.251.29` |
 | `SERVER_USER` | SSH username | `ubuntu` |
 | `DEPLOY_PATH` | Deployment directory | `/var/www/storefront` |
 
@@ -193,7 +193,7 @@ After adding secrets, test the deployment:
 3. **Verify deployment:**
    ```bash
    # SSH into server
-   ssh ubuntu@79.72.95.124
+   ssh ubuntu@145.241.251.29
    
    # Check if code was deployed
    cd /var/www/storefront
@@ -262,7 +262,7 @@ Based on your setup:
 
 ```yaml
 SSH_PRIVATE_KEY: [Your private SSH key - get from ~/.ssh/id_rsa]
-SERVER_IP: 79.72.95.124
+SERVER_IP: 145.241.251.29
 SERVER_USER: ubuntu
 DEPLOY_PATH: /var/www/storefront
 ```

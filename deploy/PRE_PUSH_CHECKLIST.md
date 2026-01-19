@@ -11,7 +11,7 @@ Go to: **GitHub Repository → Settings → Secrets and variables → Actions**
 Verify these secrets exist:
 
 - [ ] `SSH_PRIVATE_KEY` - Your Oracle private key or local SSH key
-- [ ] `SERVER_IP` - `79.72.95.124`
+- [ ] `SERVER_IP` - `145.241.251.29`
 - [ ] `SERVER_USER` - `ubuntu` (or your username)
 - [ ] `DEPLOY_PATH` - `/var/www/storefront` (optional)
 
@@ -35,7 +35,7 @@ Verify server is ready:
 **Test commands:**
 ```bash
 # Test SSH
-ssh ubuntu@79.72.95.124
+ssh ubuntu@145.241.251.29
 
 # On server, check services
 sudo systemctl status nginx
@@ -104,7 +104,7 @@ After pushing:
 
 3. **Verify on server:**
    ```bash
-   ssh ubuntu@79.72.95.124
+   ssh ubuntu@145.241.251.29
    cd /var/www/storefront
    pm2 status
    pm2 logs storefront
@@ -119,10 +119,10 @@ After pushing:
 **"Permission denied (publickey)"**
 - Check `SSH_PRIVATE_KEY` secret is correct
 - Verify key includes BEGIN/END lines
-- Test SSH manually: `ssh -i key.pem ubuntu@79.72.95.124`
+- Test SSH manually: `ssh -i key.pem ubuntu@145.241.251.29`
 
 **"Could not resolve hostname"**
-- Check `SERVER_IP` secret is correct: `79.72.95.124`
+- Check `SERVER_IP` secret is correct: `145.241.251.29`
 - Verify server is running
 
 **"No such file or directory"**
@@ -179,7 +179,7 @@ git push origin main
 # Go to GitHub → Actions tab
 
 # 5. Verify on server
-ssh ubuntu@79.72.95.124
+ssh ubuntu@145.241.251.29
 pm2 status
 curl http://localhost:3000
 ```

@@ -31,6 +31,6 @@ git push origin main
 1. Go to: **GitHub Repo → Settings → Secrets and variables → Actions**
 2. Add these secrets:
    - `SSH_PRIVATE_KEY` - Your Oracle private key content
-   - `SERVER_IP` - `79.72.95.124`
+   - `SERVER_IP` - `145.241.251.29`
    - `SERVER_USER` - `ubuntu`
 3. Then push

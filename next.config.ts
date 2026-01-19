@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  // Enable standalone output for Docker
+  output: 'standalone',
   // Enable middleware for subdomain routing
   experimental: {
     // Middleware is enabled by default in Next.js 13+

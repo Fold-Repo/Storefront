@@ -15,7 +15,7 @@ ls ~/Downloads/*.pem
 ls ~/Downloads/*.key
 
 # 2. Set the key path and run deploy
-export SERVER_IP=79.72.95.124
+export SERVER_IP=145.241.251.29
 export SSH_KEY=~/Downloads/your-oracle-key.pem  # Update path
 ./deploy/deploy-manual.sh
 ```
@@ -26,10 +26,10 @@ If you uploaded your own public key to Oracle:
 
 ```bash
 # 1. Test if your default key works
-ssh ubuntu@79.72.95.124
+ssh ubuntu@145.241.251.29
 
 # 2. If that works, deploy without SSH_KEY
-export SERVER_IP=79.72.95.124
+export SERVER_IP=145.241.251.29
 ./deploy/deploy-manual.sh
 ```
 
@@ -42,13 +42,13 @@ If you don't have a key set up:
 ssh-keygen -t rsa -b 4096 -C "your-email@example.com"
 
 # 2. Copy public key to server (you'll need password)
-ssh-copy-id ubuntu@79.72.95.124
+ssh-copy-id ubuntu@145.241.251.29
 
 # 3. Test connection
-ssh ubuntu@79.72.95.124
+ssh ubuntu@145.241.251.29
 
 # 4. Deploy
-export SERVER_IP=79.72.95.124
+export SERVER_IP=145.241.251.29
 ./deploy/deploy-manual.sh
 ```
 
@@ -73,7 +73,7 @@ export SERVER_IP=79.72.95.124
    ```bash
    chmod 600 /path/to/oracle-key.pem
    export SSH_KEY=/path/to/oracle-key.pem
-   export SERVER_IP=79.72.95.124
+   export SERVER_IP=145.241.251.29
    ./deploy/deploy-manual.sh
    ```
 
@@ -83,10 +83,10 @@ Before deploying, test your SSH connection:
 
 ```bash
 # With Oracle key
-ssh -i /path/to/oracle-key.pem ubuntu@79.72.95.124
+ssh -i /path/to/oracle-key.pem ubuntu@145.241.251.29
 
 # Or with your default key
-ssh ubuntu@79.72.95.124
+ssh ubuntu@145.241.251.29
 ```
 
 If SSH works, deployment will work too!
@@ -97,12 +97,12 @@ The script now supports SSH keys. Use it like this:
 
 ```bash
 # With Oracle key
-export SERVER_IP=79.72.95.124
+export SERVER_IP=145.241.251.29
 export SSH_KEY=~/Downloads/oracle-key.pem
 ./deploy/deploy-manual.sh
 
 # Or without key (if using default SSH key)
-export SERVER_IP=79.72.95.124
+export SERVER_IP=145.241.251.29
 ./deploy/deploy-manual.sh
 ```
 
@@ -121,7 +121,7 @@ export SERVER_IP=79.72.95.124
 
 3. **Test SSH manually:**
    ```bash
-   ssh -i /path/to/key.pem -v ubuntu@79.72.95.124
+   ssh -i /path/to/key.pem -v ubuntu@145.241.251.29
    # The -v flag shows detailed connection info
    ```
 

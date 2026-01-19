@@ -6,10 +6,10 @@
 
 ```bash
 # If using Oracle key
-ssh -i ~/Downloads/your-oracle-key.key ubuntu@79.72.95.124
+ssh -i ~/Downloads/your-oracle-key.key ubuntu@145.241.251.29
 
 # Or if using default key
-ssh ubuntu@79.72.95.124
+ssh ubuntu@145.241.251.29
 ```
 
 **If SSH works manually, deployment will work too!**
@@ -23,7 +23,7 @@ ssh ubuntu@79.72.95.124
 chmod 600 ~/Downloads/your-oracle-key.key
 
 # Try SSH again
-ssh -i ~/Downloads/your-oracle-key.key ubuntu@79.72.95.124
+ssh -i ~/Downloads/your-oracle-key.key ubuntu@145.241.251.29
 ```
 
 ### Verify Key File
@@ -40,7 +40,7 @@ head -1 ~/Downloads/your-oracle-key.key
 
 ```bash
 # See detailed connection info
-ssh -v -i ~/Downloads/your-oracle-key.key ubuntu@79.72.95.124
+ssh -v -i ~/Downloads/your-oracle-key.key ubuntu@145.241.251.29
 ```
 
 ## Step 3: Common Issues
@@ -68,16 +68,16 @@ ssh -v -i ~/Downloads/your-oracle-key.key ubuntu@79.72.95.124
 **Cause:** Network issue or wrong IP
 
 **Fix:**
-1. Verify server IP: `79.72.95.124`
+1. Verify server IP: `145.241.251.29`
 2. Check if server is running
-3. Ping server: `ping 79.72.95.124`
+3. Ping server: `ping 145.241.251.29`
 
 ## Step 4: Once SSH Works
 
 After SSH connection works manually, deployment will work:
 
 ```bash
-export SERVER_IP=79.72.95.124
+export SERVER_IP=145.241.251.29
 export SSH_KEY=~/Downloads/your-oracle-key.key
 ./deploy/deploy-manual.sh
 ```

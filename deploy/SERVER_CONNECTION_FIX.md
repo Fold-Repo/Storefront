@@ -85,7 +85,7 @@ Oracle Cloud has its own firewall that can block connections!
 nano ~/.ssh/config
 
 # Add this (create file if it doesn't exist):
-Host 79.72.95.124
+Host 145.241.251.29
     ServerAliveInterval 60
     ServerAliveCountMax 3
     TCPKeepAlive yes
@@ -151,13 +151,13 @@ sudo lsof -i:3000
 
 ```bash
 # Test SSH (port 22)
-ssh -v ubuntu@79.72.95.124
+ssh -v ubuntu@145.241.251.29
 
 # Test HTTP (port 80)
-curl -I http://79.72.95.124
+curl -I http://145.241.251.29
 
 # Test HTTPS (port 443)
-curl -I https://79.72.95.124
+curl -I https://145.241.251.29
 ```
 
 **From the SERVER:**
@@ -291,15 +291,15 @@ pm2 logs storefront --lines 20
 
 ```bash
 # Test SSH
-ssh -v ubuntu@79.72.95.124
+ssh -v ubuntu@145.241.251.29
 
 # Test ports
-nc -zv 79.72.95.124 22   # SSH
-nc -zv 79.72.95.124 80   # HTTP
-nc -zv 79.72.95.124 443  # HTTPS
+nc -zv 145.241.251.29 22   # SSH
+nc -zv 145.241.251.29 80   # HTTP
+nc -zv 145.241.251.29 443  # HTTPS
 
 # Test HTTP
-curl -I http://79.72.95.124
+curl -I http://145.241.251.29
 ```
 
 ## Common Issues

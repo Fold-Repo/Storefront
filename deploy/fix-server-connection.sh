@@ -61,6 +61,20 @@ else
     echo "TCPKeepAlive yes" | sudo tee -a /etc/ssh/sshd_config > /dev/null
 fi
 
+# Disable DNS lookups (fixes slow SSH)
+if grep -q "^UseDNS" /etc/ssh/sshd_config; then
+    sudo sed -i 's/^UseDNS.*/UseDNS no/' /etc/ssh/sshd_config
+else
+    echo "UseDNS no" | sudo tee -a /etc/ssh/sshd_config > /dev/null
+fi
+
+# Disable GSSAPI (can cause delays)
+if grep -q "^GSSAPIAuthentication" /etc/ssh/sshd_config; then
+    sudo sed -i 's/^GSSAPIAuthentication.*/GSSAPIAuthentication no/' /etc/ssh/sshd_config
+else
+    echo "GSSAPIAuthentication no" | sudo tee -a /etc/ssh/sshd_config > /dev/null
+fi
+
 # Test SSH config (try both sshd and ssh)
 SSH_SERVICE=""
 if systemctl list-units | grep -q "ssh.service"; then

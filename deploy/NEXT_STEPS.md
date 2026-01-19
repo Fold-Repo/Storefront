@@ -15,7 +15,7 @@
 
 ```bash
 # On your LOCAL PC
-export SERVER_IP=79.72.95.124
+export SERVER_IP=145.241.251.29
 ```
 
 ### Step 2: Set SSH Key (if using Oracle's key)
@@ -47,7 +47,7 @@ cd /Users/ogunwolesamuel/development/projects/fold-project/storeFront
 
 ## 📋 Before Deployment Checklist
 
-- [ ] Server IP is set: `export SERVER_IP=79.72.95.124`
+- [ ] Server IP is set: `export SERVER_IP=145.241.251.29`
 - [ ] SSH key is set (if using Oracle key): `export SSH_KEY=/path/to/key.pem`
 - [ ] You're in the project root directory
 - [ ] Oracle Cloud Security Lists are configured (ports 22, 80, 443 open)
@@ -59,9 +59,9 @@ cd /Users/ogunwolesamuel/development/projects/fold-project/storeFront
 
 ```bash
 # Test SSH connection
-ssh -i $SSH_KEY ubuntu@79.72.95.124
+ssh -i $SSH_KEY ubuntu@145.241.251.29
 # Or without key if using default
-ssh ubuntu@79.72.95.124
+ssh ubuntu@145.241.251.29
 ```
 
 ### Common Issues
@@ -85,7 +85,7 @@ ssh ubuntu@79.72.95.124
 
 ```bash
 # SSH into server
-ssh ubuntu@79.72.95.124
+ssh ubuntu@145.241.251.29
 
 # Check PM2 status
 pm2 status
@@ -100,7 +100,7 @@ curl http://localhost:3000
 ### 2. Test from Browser
 
 Visit your domain:
-- `http://79.72.95.124` (or your domain)
+- `http://145.241.251.29` (or your domain)
 - Should show your Next.js app
 
 ### 3. Check Nginx
@@ -127,14 +127,14 @@ Once manual deployment is successful, you can:
 
 **Deploy command:**
 ```bash
-export SERVER_IP=79.72.95.124
+export SERVER_IP=145.241.251.29
 export SSH_KEY=~/Downloads/oracle-key.pem  # If using Oracle key
 ./deploy/deploy-manual.sh
 ```
 
 **Check deployment:**
 ```bash
-ssh ubuntu@79.72.95.124 'pm2 status && pm2 logs storefront --lines 20'
+ssh ubuntu@145.241.251.29 'pm2 status && pm2 logs storefront --lines 20'
 ```
 
 ## ✅ Summary
