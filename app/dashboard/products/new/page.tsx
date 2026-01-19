@@ -51,11 +51,45 @@ export default function NewProductPage() {
                     ecommerceApi.getBrands(),
                     ecommerceApi.getUnits()
                 ]);
-                setCategories(Array.isArray(cats) ? cats : cats?.data || []);
-                setBrands(Array.isArray(brs) ? brs : brs?.data || []);
-                setUnits(Array.isArray(unts) ? unts : unts?.data || []);
-            } catch (error) {
+                
+                // Handle different response formats for categories
+                if (Array.isArray(cats)) {
+                    setCategories(cats);
+                } else if (cats?.data && Array.isArray(cats.data)) {
+                    setCategories(cats.data);
+                } else if (cats?.categories && Array.isArray(cats.categories)) {
+                    setCategories(cats.categories);
+                } else {
+                    setCategories([]);
+                }
+                
+                // Handle different response formats for brands
+                if (Array.isArray(brs)) {
+                    setBrands(brs);
+                } else if (brs?.data && Array.isArray(brs.data)) {
+                    setBrands(brs.data);
+                } else if (brs?.brands && Array.isArray(brs.brands)) {
+                    setBrands(brs.brands);
+                } else {
+                    setBrands([]);
+                }
+                
+                // Handle different response formats for units
+                if (Array.isArray(unts)) {
+                    setUnits(unts);
+                } else if (unts?.data && Array.isArray(unts.data)) {
+                    setUnits(unts.data);
+                } else if (unts?.units && Array.isArray(unts.units)) {
+                    setUnits(unts.units);
+                } else {
+                    setUnits([]);
+                }
+            } catch (error: any) {
                 console.error("Error fetching options:", error);
+                // Set empty arrays on error (API might not be implemented yet)
+                setCategories([]);
+                setBrands([]);
+                setUnits([]);
             }
         };
         fetchOptions();
@@ -151,8 +185,8 @@ export default function NewProductPage() {
                                 className="w-full rounded-2xl border border-neutral-100 bg-neutral-50/30 p-4 font-bold text-neutral-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all appearance-none cursor-pointer"
                             >
                                 <option value="">Select Category</option>
-                                {categories.map(cat => (
-                                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                                {categories.map((cat, index) => (
+                                    <option key={cat.id || `cat-${index}`} value={cat.id}>{cat.name}</option>
                                 ))}
                             </select>
                         </div>
@@ -165,8 +199,8 @@ export default function NewProductPage() {
                                 className="w-full rounded-2xl border border-neutral-100 bg-neutral-50/30 p-4 font-bold text-neutral-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all appearance-none cursor-pointer"
                             >
                                 <option value="">Select Brand</option>
-                                {brands.map(brand => (
-                                    <option key={brand.id} value={brand.id}>{brand.name}</option>
+                                {brands.map((brand, index) => (
+                                    <option key={brand.id || `brand-${index}`} value={brand.id}>{brand.name}</option>
                                 ))}
                             </select>
                         </div>
@@ -179,8 +213,8 @@ export default function NewProductPage() {
                                 className="w-full rounded-2xl border border-neutral-100 bg-neutral-50/30 p-4 font-bold text-neutral-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all appearance-none cursor-pointer"
                             >
                                 <option value="">Select Unit</option>
-                                {units.map(unit => (
-                                    <option key={unit.id} value={unit.id}>{unit.actual_name} ({unit.short_name})</option>
+                                {units.map((unit, index) => (
+                                    <option key={unit.id || `unit-${index}`} value={unit.id}>{unit.actual_name} ({unit.short_name})</option>
                                 ))}
                             </select>
                         </div>

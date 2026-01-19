@@ -17,6 +17,7 @@ import {
     QrCodeIcon,
     CloudArrowUpIcon,
     BellIcon,
+    ChatBubbleLeftRightIcon,
 } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui";
 import { NAV_CONSTANT } from "@/constants";
@@ -85,7 +86,7 @@ export const Sidebar = () => {
     ];
 
     return (
-        <aside className="w-72 bg-white border-r border-neutral-200 h-screen sticky top-0 flex flex-col p-6 overflow-y-auto no-scrollbar">
+        <aside className="hidden lg:flex w-72 bg-white border-r border-neutral-200 h-screen sticky top-0 flex-col p-6 overflow-y-auto no-scrollbar">
             <div className="mb-10 px-2">
                 <Link href="/dashboard">
                     <img src={NAV_CONSTANT.LOGOS.dark} alt="Logo" className="h-10 w-auto" />
@@ -130,6 +131,16 @@ export const Sidebar = () => {
                             ))}
                         </div>
                     )}
+                </div>
+
+                <div className="pt-4">
+                    <div className="text-[10px] font-black text-neutral-400 uppercase tracking-widest px-4 mb-2">Marketing</div>
+                    <NavItem
+                        href="/dashboard/whatsapp"
+                        icon={ChatBubbleLeftRightIcon}
+                        label="WhatsApp"
+                        active={pathname.startsWith("/dashboard/whatsapp")}
+                    />
                 </div>
 
                 <div className="pt-4">

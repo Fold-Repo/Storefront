@@ -32,10 +32,23 @@ export default function CategoriesPage() {
         try {
             setLoading(true);
             const data = await ecommerceApi.getCategories();
-            setCategories(Array.isArray(data) ? data : data?.data || []);
-        } catch (error) {
+            // Handle different response formats
+            if (Array.isArray(data)) {
+                setCategories(data);
+            } else if (data?.data && Array.isArray(data.data)) {
+                setCategories(data.data);
+            } else if (data?.categories && Array.isArray(data.categories)) {
+                setCategories(data.categories);
+            } else {
+                setCategories([]);
+            }
+        } catch (error: any) {
             console.error("Error fetching categories:", error);
-            showError("Failed to load categories");
+            // Only show error if it's not a 404 (endpoint not implemented)
+            if (error.response?.status !== 404) {
+                showError("Failed to load categories");
+            }
+            setCategories([]); // Set empty array on error
         } finally {
             setLoading(false);
         }
@@ -123,8 +136,8 @@ export default function CategoriesPage() {
                                     </TableRow>
                                 ))
                             ) : categories.length > 0 ? (
-                                categories.map((cat) => (
-                                    <TableRow key={cat.id} className="hover:bg-neutral-50/50 transition-colors group">
+                                categories.map((cat, index) => (
+                                    <TableRow key={cat.id || `cat-${index}`} className="hover:bg-neutral-50/50 transition-colors group">
                                         <TableCell>
                                             <div className="flex items-center gap-3">
                                                 <div className="p-2 bg-neutral-100 rounded-lg">

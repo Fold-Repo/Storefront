@@ -47,4 +47,50 @@ export const ENDPOINT = {
     SALES: '/sales',
     ADJUSTMENTS: '/adjustments',
 
+    ANALYTICS: {
+        TRENDS: (businessId: string | number) => `/analytics/business/${businessId}/trends`,
+        SUMMARY: (businessId: string | number) => `/analytics/business/${businessId}/summary`,
+    },
+
+    WHATSAPP: {
+        BASE: '/whatsapp',
+        OVERVIEW: (businessId: string | number) => `/whatsapp/business/${businessId}/overview`,
+        NUMBERS: {
+            LIST: (businessId: string | number) => `/whatsapp/business/${businessId}/numbers`,
+            CONNECT: (businessId: string | number) => `/whatsapp/business/${businessId}/numbers/connect`,
+            UPDATE_TOKEN: (businessId: string | number, id: number) => `/whatsapp/business/${businessId}/numbers/${id}/token`,
+            DELETE: (businessId: string | number, id: number) => `/whatsapp/business/${businessId}/numbers/${id}`,
+        },
+        SETTINGS: {
+            GET: (businessId: string | number) => `/whatsapp/business/${businessId}/settings`,
+            UPDATE: (businessId: string | number) => `/whatsapp/business/${businessId}/settings`,
+        },
+        SESSIONS: {
+            LIST: (businessId: string | number) => `/whatsapp/business/${businessId}/sessions`,
+            GET: (sessionId: string) => `/whatsapp/sessions/${sessionId}`,
+            CART: (sessionId: string) => `/whatsapp/sessions/${sessionId}/cart`,
+        },
+        MARKETING: {
+            SUBSCRIBERS: {
+                LIST: '/whatsapp/marketing/subscribers',
+                CREATE: '/whatsapp/marketing/subscribers',
+                UPDATE: (id: number) => `/whatsapp/marketing/subscribers/${id}`,
+                IMPORT: '/whatsapp/marketing/subscribers/import',
+            },
+            CAMPAIGNS: {
+                LIST: '/whatsapp/marketing/campaigns',
+                CREATE: '/whatsapp/marketing/campaigns',
+                GET: (id: number) => `/whatsapp/marketing/campaigns/${id}`,
+                RUN: (id: number) => `/whatsapp/marketing/campaigns/${id}/run`,
+            },
+        },
+        SERVICE_TOKENS: {
+            LIST: '/whatsapp/service-tokens',
+            CREATE: '/whatsapp/service-tokens',
+            SCOPES: '/whatsapp/service-tokens/scopes',
+            REVOKE: (id: number) => `/whatsapp/service-tokens/${id}/revoke`,
+            DELETE: (id: number) => `/whatsapp/service-tokens/${id}`,
+        },
+    },
+
 } as const;

@@ -28,12 +28,16 @@ import {
   ShieldCheckIcon,
   PlusIcon,
   ArrowUpIcon,
+  ChatBubbleLeftRightIcon,
+  MegaphoneIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import Image from "next/image";
 import { NAV_CONSTANT } from "@/constants";
 import { getMainDomain, getSubdomainUrl, getSubdomainWithDomain } from "@/utils/domain";
 import { UserProfileDropdown } from "@/components/nav/UserProfileDropdown";
+import { TrendsChart } from "@/components/dashboard/TrendsChart";
+import { getAnalytics } from "@/services/analytics";
 
 export const DashboardPage = () => {
   const router = useRouter();
@@ -58,12 +62,18 @@ export const DashboardPage = () => {
   const [generating, setGenerating] = useState(false);
 
   // Stats (placeholder - will come from API)
-  const [stats] = useState({
+  const [stats, setStats] = useState({
     totalVisits: 0,
     totalViews: 0,
     totalProducts: 0,
     totalOrders: 0,
   });
+
+  // Analytics data
+  const [salesData, setSalesData] = useState<any[]>([]);
+  const [marketingData, setMarketingData] = useState<any[]>([]);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  const [timePeriod, setTimePeriod] = useState<"daily" | "weekly" | "monthly">("daily");
 
   // Check authentication
   useEffect(() => {
@@ -122,6 +132,42 @@ export const DashboardPage = () => {
 
     loadSitesAndPlan();
   }, [user, isAuthenticated, showError]);
+
+  // Load analytics data
+  const loadAnalytics = async (period: "daily" | "weekly" | "monthly" = timePeriod) => {
+    if (!user?.business_id) return;
+
+    try {
+      setAnalyticsLoading(true);
+      const analytics = await getAnalytics(user.business_id, period);
+      setSalesData(analytics.sales);
+      setMarketingData(analytics.marketing);
+      setStats({
+        totalVisits: analytics.summary.totalVisits,
+        totalViews: analytics.summary.totalPageViews,
+        totalProducts: 0, // This would come from products API
+        totalOrders: analytics.summary.totalOrders,
+      });
+    } catch (error) {
+      console.error("Error loading analytics:", error);
+      // Don't show error to user, just use empty data
+      setSalesData([]);
+      setMarketingData([]);
+    } finally {
+      setAnalyticsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.business_id) {
+      loadAnalytics();
+    }
+  }, [user?.business_id]);
+
+  const handlePeriodChange = (period: "daily" | "weekly" | "monthly") => {
+    setTimePeriod(period);
+    loadAnalytics(period);
+  };
 
   // Handle custom domain save
   const handleSaveDomain = async () => {
@@ -269,6 +315,18 @@ export const DashboardPage = () => {
           </div>
         )}
 
+        {/* Trends Chart */}
+        {user?.business_id && (
+          <div className="mb-8">
+            <TrendsChart
+              salesData={salesData}
+              marketingData={marketingData}
+              loading={analyticsLoading}
+              onPeriodChange={handlePeriodChange}
+            />
+          </div>
+        )}
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {[
@@ -294,21 +352,86 @@ export const DashboardPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Website Editor Card */}
-            <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 overflow-hidden">
-              <div className="p-6 border-b border-neutral-50 flex items-center gap-4">
-                <div className="bg-blue-50 rounded-xl p-2.5">
-                  <GlobeAltIcon className="w-6 h-6 text-blue-600" />
+            {/* Marketing Strategy Card */}
+            <div className="relative bg-gradient-to-br from-blue-900 via-blue-700 to-blue-400 rounded-2xl shadow-xl border border-white/10 overflow-hidden text-white">
+              {/* Ripple Effects */}
+              <div className="absolute -top-20 -right-20 w-40 h-40 bg-blue-300/30 rounded-full blur-3xl animate-ripple"></div>
+              <div className="absolute -bottom-16 -left-16 w-32 h-32 bg-blue-500/40 rounded-full blur-2xl animate-ripple-delay-1"></div>
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-600/20 rounded-full blur-3xl animate-ripple-delay-2"></div>
+              <div className="absolute top-0 right-1/4 w-24 h-24 bg-blue-400/25 rounded-full blur-2xl animate-ripple"></div>
+              <div className="absolute bottom-0 left-1/3 w-36 h-36 bg-blue-500/30 rounded-full blur-3xl animate-ripple-delay-1"></div>
+              
+              {/* Deep Blue Depth at Bottom Right */}
+              <div className="absolute bottom-0 right-0 w-64 h-64 bg-blue-950/60 rounded-full blur-3xl"></div>
+              <div className="absolute -bottom-8 -right-8 w-48 h-48 bg-blue-900/70 rounded-full blur-2xl"></div>
+              <div className="absolute bottom-4 right-4 w-32 h-32 bg-blue-800/50 rounded-full blur-xl"></div>
+              
+              <div className="relative z-10">
+                <div className="p-6 border-b border-white/10 flex items-center gap-4">
+                  <div className="bg-white/20 rounded-xl p-2.5 backdrop-blur-sm">
+                    <SparklesIcon className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black text-white tracking-tighter">Marketing Strategy</h2>
+                    <p className="text-sm text-white/80 font-medium">Grow your business with smart marketing</p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-xl font-black text-neutral-900 tracking-tighter">Website Editor</h2>
-                  <p className="text-sm text-neutral-500 font-medium">Visual drag-and-drop editor</p>
+
+                <div className="p-6 space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Link href="/dashboard/whatsapp" className="bg-white/10 backdrop-blur-sm rounded-xl p-4 hover:bg-white/20 transition-all border border-white/10">
+                      <div className="flex items-center gap-3 mb-2">
+                        <ChatBubbleLeftRightIcon className="w-5 h-5 text-white" />
+                        <h3 className="font-bold text-white text-sm">WhatsApp Commerce</h3>
+                      </div>
+                      <p className="text-white/70 text-xs">Connect with customers via WhatsApp</p>
+                    </Link>
+                    
+                    <Link href="/dashboard/whatsapp/marketing" className="bg-white/10 backdrop-blur-sm rounded-xl p-4 hover:bg-white/20 transition-all border border-white/10">
+                      <div className="flex items-center gap-3 mb-2">
+                        <MegaphoneIcon className="w-5 h-5 text-white" />
+                        <h3 className="font-bold text-white text-sm">Marketing Campaigns</h3>
+                      </div>
+                      <p className="text-white/70 text-xs">Create and manage campaigns</p>
+                    </Link>
+                  </div>
+
+                  <div className="pt-4 border-t border-white/10">
+                    <p className="text-xs text-white/60 mb-3">Quick Tips:</p>
+                    <ul className="space-y-2 text-xs text-white/80">
+                      <li className="flex items-start gap-2">
+                        <span className="text-white/40 mt-0.5">•</span>
+                        <span>Use WhatsApp to engage customers directly and increase conversions</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-white/40 mt-0.5">•</span>
+                        <span>Build your subscriber list to send targeted marketing messages</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-white/40 mt-0.5">•</span>
+                        <span>Track campaign performance and optimize your marketing strategy</span>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              <div className="p-6">
-                {siteData ? (
-                  <div className="bg-neutral-50 rounded-2xl border border-neutral-100 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+            {/* Website Overview Card */}
+            {siteData && (
+              <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 overflow-hidden">
+                <div className="p-6 border-b border-neutral-50 flex items-center gap-4">
+                  <div className="bg-blue-50 rounded-xl p-2.5">
+                    <GlobeAltIcon className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black text-neutral-900 tracking-tighter">Website Overview</h2>
+                    <p className="text-sm text-neutral-500 font-medium">Your storefront information</p>
+                  </div>
+                </div>
+
+                <div className="p-6">
+                  <div className="bg-neutral-50 rounded-2xl border border-neutral-100 p-5 space-y-4">
                     <div>
                       <h3 className="text-lg font-black text-neutral-900 tracking-tight">{siteData.companyName}</h3>
                       <div className="flex items-center gap-2 mt-1">
@@ -316,75 +439,18 @@ export const DashboardPage = () => {
                         <p className="text-sm text-neutral-500 font-mono font-medium">{getSubdomainWithDomain(siteData.subdomain)}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3 w-full sm:w-auto">
-                      <Link href="/dashboard/domains" className="flex-1 sm:flex-none">
-                        <Button variant="bordered" className="w-full flex items-center justify-center gap-2 border-neutral-200 hover:border-blue-500 hover:bg-blue-50 transition-all font-bold">
-                          <GlobeAltIcon className="w-4 h-4" />
-                          Domains
-                        </Button>
-                      </Link>
-                      <Link href={`/editor?subdomain=${siteData.subdomain}`} className="flex-1 sm:flex-none">
+                    <div className="pt-4 border-t border-neutral-200">
+                      <Link href="/dashboard/domains">
                         <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2 font-black uppercase tracking-widest text-xs py-5 px-6 shadow-lg shadow-blue-100">
-                          <PencilIcon className="w-4 h-4" />
-                          Edit Site
+                          <GlobeAltIcon className="w-4 h-4" />
+                          Manage Domains & Editor
                         </Button>
                       </Link>
                     </div>
                   </div>
-                ) : (
-                  <div className="text-center py-10 border-2 border-dashed border-neutral-100 rounded-3xl">
-                    <p className="text-neutral-400 font-medium mb-6">No storefront found. Let's build one!</p>
-                    <Button
-                      onPress={() => setWizardOpen(true)}
-                      className="bg-blue-600 text-white font-black uppercase tracking-widest text-xs px-8 shadow-xl shadow-blue-100"
-                    >
-                      Launch Wizard
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Pages Management Card */}
-            <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 overflow-hidden">
-              <div className="p-6 border-b border-neutral-50 flex items-center gap-4">
-                <div className="bg-purple-50 rounded-xl p-2.5">
-                  <DocumentTextIcon className="w-6 h-6 text-purple-600" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-black text-neutral-900 tracking-tighter">Site Pages</h2>
-                  <p className="text-sm text-neutral-500 font-medium">Quickly jump to any page</p>
                 </div>
               </div>
-
-              <div className="p-6">
-                {siteData && pages.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {pages.map((pageName) => (
-                      <Link
-                        key={pageName}
-                        href={`/editor?subdomain=${siteData.subdomain}&page=${pageName}`}
-                        className="flex items-center justify-between p-4 border border-neutral-100 rounded-xl hover:border-purple-200 hover:bg-purple-50/30 transition-all group"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="bg-neutral-50 group-hover:bg-white p-2 rounded-lg transition-colors">
-                            <DocumentTextIcon className="w-5 h-5 text-neutral-400 group-hover:text-purple-500" />
-                          </div>
-                          <span className="font-bold text-neutral-700 capitalize text-sm tracking-tight">
-                            {pageName.replace(/-/g, " ")}
-                          </span>
-                        </div>
-                        <ArrowRightIcon className="w-4 h-4 text-neutral-300 group-hover:text-purple-400 translate-x-0 group-hover:translate-x-1 transition-transform" />
-                      </Link>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-10">
-                    <p className="text-neutral-400 font-medium italic">Create a site to manage pages.</p>
-                  </div>
-                )}
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Sidebar */}
@@ -425,49 +491,20 @@ export const DashboardPage = () => {
               <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-blue-600/20 blur-3xl rounded-full"></div>
             </div>
 
-            {/* Custom Domain Card */}
-            <div className="bg-white rounded-3xl shadow-sm border-2 border-dashed border-blue-100 p-6 bg-blue-50/20">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="bg-blue-100 rounded-xl p-2">
-                  <GlobeAltIcon className="w-5 h-5 text-blue-600" />
-                </div>
-                <h2 className="text-lg font-black text-neutral-900 tracking-tighter underline decoration-blue-200 underline-offset-4">Custom Domain</h2>
-              </div>
-
-              <div className="space-y-5">
-                <p className="text-sm text-neutral-600 font-medium leading-relaxed">
-                  Connect your own domain (e.g. <b>myshop.com</b>) to build a professional brand.
-                </p>
-
-                <Link href="/dashboard/domains" className="block">
-                  <Button
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-5 shadow-xl shadow-blue-100 uppercase tracking-widest text-[10px] rounded-2xl"
-                  >
-                    Set Up Domain
-                  </Button>
-                </Link>
-
-                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-neutral-400 bg-white/50 p-2 rounded-lg border border-white">
-                  <ShieldCheckIcon className="w-4 h-4 text-green-500" />
-                  Free SSL Security
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Actions Card */}
+            {/* Quick Links Card */}
             <div className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6">
-              <h2 className="text-sm font-black text-neutral-300 uppercase tracking-widest mb-4">Deep Links</h2>
+              <h2 className="text-sm font-black text-neutral-300 uppercase tracking-widest mb-4">Quick Links</h2>
               <div className="grid grid-cols-1 gap-2">
-                <Link href={siteData ? `/editor?subdomain=${siteData.subdomain}&page=homepage` : "/editor?page=homepage"}>
+                <Link href="/dashboard/domains">
                   <Button variant="bordered" className="w-full justify-start border-neutral-100 hover:border-neutral-200 gap-3 text-neutral-600 hover:text-blue-600 py-6 transition-all">
-                    <PencilIcon className="w-4 h-4" />
-                    Site Designer
+                    <GlobeAltIcon className="w-4 h-4" />
+                    Domains & Editor
                   </Button>
                 </Link>
-                <Link href="/editor">
+                <Link href="/dashboard/whatsapp">
                   <Button variant="bordered" className="w-full justify-start border-neutral-100 hover:border-neutral-200 gap-3 text-neutral-600 hover:text-blue-600 py-6 transition-all">
-                    <SparklesIcon className="w-4 h-4" />
-                    Create New
+                    <ChatBubbleLeftRightIcon className="w-4 h-4" />
+                    WhatsApp Commerce
                   </Button>
                 </Link>
               </div>

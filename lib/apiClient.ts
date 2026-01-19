@@ -72,17 +72,24 @@ client.interceptors.request.use(
 );
 
 const responseInterceptor = async (error: AxiosError) => {
-    // Log error in development
+    // Log error in development with more details
     if (process.env.NODE_ENV === "development") {
-        // eslint-disable-next-line no-console
-        console.error("[API Error]", {
+        const errorDetails: any = {
             status: error.response?.status,
             statusText: error.response?.statusText,
             url: error.config?.url ?? "unknown",
             baseURL: error.config?.baseURL ?? "unknown",
             message: error.message,
             code: error.code,
-        });
+        };
+        
+        // Add response data if available
+        if (error.response?.data) {
+            errorDetails.responseData = error.response.data;
+        }
+        
+        // eslint-disable-next-line no-console
+        console.error("[API Error]", errorDetails);
     }
 
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };

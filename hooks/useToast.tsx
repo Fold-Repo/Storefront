@@ -41,7 +41,7 @@ export const useToast = () => {
             variant: "flat",
             timeout: 5000,
             radius: "lg",
-            action: (
+            endContent: (
                 <Button
                     isIconOnly
                     size="sm"

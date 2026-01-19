@@ -82,7 +82,7 @@ const HomePage = () => {
           description: data.description,
           subdomain: data.subdomain,
           logoPreview: data.logoPreview,
-          layout: data.layout || 'multi-page',
+          layout: (data.layout || 'multi-page') as 'single-page' | 'multi-page',
           theme: data.theme || {
             primaryColor: "#3B82F6",
             fontFamily: "Inter",

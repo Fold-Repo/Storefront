@@ -4,11 +4,12 @@
 
 The application uses the following Firestore collections:
 
-1. **storefront_sites** - Stores generated storefront data
-2. **storefront_wizards** - Stores wizard form data (temporary)
-3. **user_plans** - Stores user plan assignments and usage tracking
-4. **page_settings** - Stores page configuration and settings
-5. **subscription_plans** - Stores default plan definitions
+1. **user_storefronts** - Stores generated storefront data (multi-site support, uses subdomain as document ID)
+2. **storefront_sites** - Legacy collection for backward compatibility (stores first storefront by userId)
+3. **storefront_wizards** - Stores wizard form data (temporary)
+4. **user_plans** - Stores user plan assignments and usage tracking
+5. **page_settings** - Stores page configuration and settings
+6. **subscription_plans** - Stores default plan definitions
 
 ## Recommended Security Rules
 
@@ -18,7 +19,12 @@ The application uses the following Firestore collections:
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Storefront data
+    // Multi-site storefront data (NEW - uses subdomain as document ID)
+    match /user_storefronts/{document=**} {
+      allow read, write: if true;
+    }
+    
+    // Legacy storefront data (backward compatibility)
     match /storefront_sites/{document=**} {
       allow read, write: if true;
     }
@@ -63,7 +69,13 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
     
-    // Storefront sites - users can only access their own storefronts
+    // Multi-site storefront data - users can only access their own storefronts
+    match /user_storefronts/{subdomain} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow write: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+    
+    // Legacy storefront sites - users can only access their own storefronts
     match /storefront_sites/{userId} {
       allow read, write: if isOwner(userId);
     }
@@ -98,6 +110,7 @@ service cloud.firestore {
 ## Current Issue
 
 Your current rules only cover:
+- ❌ `user_storefronts` - **MISSING** (This is causing the permission denied error!)
 - ✅ `storefront_wizards`
 - ✅ `storefront_sites`
 - ❌ `user_plans` - **MISSING**
@@ -106,9 +119,17 @@ Your current rules only cover:
 
 ## Quick Fix
 
+**IMPORTANT**: The `user_storefronts` collection is missing from your rules. This is causing the permission denied error you're seeing.
+
 Add these rules to your existing rules file:
 
 ```javascript
+// Add this FIRST - it's the new collection being used
+match /user_storefronts/{document=**} {
+  allow read, write: if true;
+}
+
+// Add these as well
 match /user_plans/{document=**} {
   allow read, write: if true;
 }

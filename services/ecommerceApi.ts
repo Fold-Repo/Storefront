@@ -56,8 +56,17 @@ export const ecommerceApi = {
 
     // Categories
     getCategories: async () => {
-        const response = await apiClient.get(ENDPOINT.CATEGORIES);
-        return response.data;
+        try {
+            const response = await apiClient.get(ENDPOINT.CATEGORIES);
+            return response.data;
+        } catch (error: any) {
+            // If endpoint doesn't exist (404), return empty array
+            if (error.response?.status === 404) {
+                console.warn("Categories endpoint not found. Returning empty array.");
+                return { data: [] };
+            }
+            throw error;
+        }
     },
     createCategory: async (payload: any) => {
         const response = await apiClient.post(ENDPOINT.CATEGORIES, payload);
@@ -66,8 +75,17 @@ export const ecommerceApi = {
 
     // Brands
     getBrands: async () => {
-        const response = await apiClient.get(ENDPOINT.BRANDS);
-        return response.data;
+        try {
+            const response = await apiClient.get(ENDPOINT.BRANDS);
+            return response.data;
+        } catch (error: any) {
+            // If endpoint doesn't exist (404), return empty array
+            if (error.response?.status === 404) {
+                console.warn("Brands endpoint not found. Returning empty array.");
+                return { data: [] };
+            }
+            throw error;
+        }
     },
     createBrand: async (payload: any) => {
         const response = await apiClient.post(ENDPOINT.BRANDS, payload);
@@ -76,8 +94,17 @@ export const ecommerceApi = {
 
     // Units
     getUnits: async () => {
-        const response = await apiClient.get(ENDPOINT.UNITS);
-        return response.data;
+        try {
+            const response = await apiClient.get(ENDPOINT.UNITS);
+            return response.data;
+        } catch (error: any) {
+            // If endpoint doesn't exist (404), return empty array
+            if (error.response?.status === 404) {
+                console.warn("Units endpoint not found. Returning empty array.");
+                return { data: [] };
+            }
+            throw error;
+        }
     },
     createUnit: async (payload: any) => {
         const response = await apiClient.post(ENDPOINT.UNITS, payload);

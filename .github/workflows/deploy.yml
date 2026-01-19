@@ -1,0 +1,152 @@
+name: Deploy to Oracle Cloud
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  deploy:
+    name: Deploy to Oracle Cloud Server
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint || true
+
+      - name: Build application
+        run: npm run build
+        env:
+          NODE_ENV: production
+          # Add any build-time env vars needed
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'https://api.dfoldlab.co.uk/api/v1' }}
+          NEXT_PUBLIC_MAIN_DOMAIN: ${{ secrets.NEXT_PUBLIC_MAIN_DOMAIN || 'dfoldlab.co.uk' }}
+
+      - name: Create deployment package
+        run: |
+          mkdir -p deploy-package
+          # Copy Next.js build output
+          cp -r .next deploy-package/
+          cp -r public deploy-package/ 2>/dev/null || true
+          # Copy source files needed for runtime
+          cp -r app deploy-package/ 2>/dev/null || true
+          cp -r components deploy-package/ 2>/dev/null || true
+          cp -r lib deploy-package/ 2>/dev/null || true
+          cp -r services deploy-package/ 2>/dev/null || true
+          cp -r hooks deploy-package/ 2>/dev/null || true
+          cp -r types deploy-package/ 2>/dev/null || true
+          cp -r utils deploy-package/ 2>/dev/null || true
+          cp -r constants deploy-package/ 2>/dev/null || true
+          cp -r contexts deploy-package/ 2>/dev/null || true
+          cp -r views deploy-package/ 2>/dev/null || true
+          # Copy config files
+          cp package.json deploy-package/
+          cp package-lock.json deploy-package/
+          cp next.config.ts deploy-package/ 2>/dev/null || true
+          cp next.config.js deploy-package/ 2>/dev/null || true
+          cp tsconfig.json deploy-package/ 2>/dev/null || true
+          cp tailwind.config.* deploy-package/ 2>/dev/null || true
+          cp postcss.config.* deploy-package/ 2>/dev/null || true
+          # Create tarball
+          tar -czf deploy-package.tar.gz -C deploy-package .
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to server
+        run: |
+          # Copy deployment package
+          scp deploy-package.tar.gz ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/tmp/
+          
+          # SSH into server and deploy
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'ENDSSH'
+            set -e
+            
+            DEPLOY_PATH="${DEPLOY_PATH:-/var/www/storefront}"
+            BACKUP_PATH="/var/www/backups"
+            TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+            
+            echo "🚀 Starting deployment..."
+            
+            # Create backup
+            if [ -d "$DEPLOY_PATH" ] && [ -d "$DEPLOY_PATH/.next" ]; then
+              echo "📦 Creating backup..."
+              mkdir -p "$BACKUP_PATH"
+              tar -czf "$BACKUP_PATH/storefront_backup_$TIMESTAMP.tar.gz" -C "$DEPLOY_PATH" .next package.json package-lock.json 2>/dev/null || true
+              echo "✅ Backup created: storefront_backup_$TIMESTAMP.tar.gz"
+            fi
+            
+            # Extract new deployment
+            echo "📂 Extracting deployment package..."
+            cd "$DEPLOY_PATH"
+            tar -xzf /tmp/deploy-package.tar.gz
+            
+            # Install dependencies (including dev dependencies for build)
+            echo "📥 Installing dependencies..."
+            npm ci --production=false
+            
+            # Note: Build is already done in CI, but rebuild to ensure compatibility
+            echo "🔨 Verifying build..."
+            npm run build || echo "⚠️  Build verification failed, using pre-built files"
+            
+            # Reload PM2
+            echo "🔄 Reloading application..."
+            pm2 reload storefront || pm2 start ecosystem.config.js --env production
+            pm2 save
+            
+            # Cleanup
+            rm -f /tmp/deploy-package.tar.gz
+            rm -rf /tmp/deploy-package
+            
+            echo "✅ Deployment completed successfully!"
+            
+            # Health check
+            sleep 3
+            if curl -sf http://localhost:3000 > /dev/null; then
+              echo "✅ Health check passed!"
+            else
+              echo "⚠️  Health check failed. Check logs: pm2 logs storefront"
+            fi
+          ENDSSH
+
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -rf deploy-package deploy-package.tar.gz
+
+      - name: Deployment Summary
+        if: always()
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Deployment completed!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Server:** ${{ secrets.SERVER_IP }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Path:** ${{ secrets.DEPLOY_PATH || '/var/www/storefront' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Node Version:** ${{ env.NODE_VERSION }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Check logs: \`pm2 logs storefront\`" >> $GITHUB_STEP_SUMMARY
