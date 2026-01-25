@@ -80,15 +80,67 @@ export async function loadStorefrontPage(
   }
 }
 
+// Helper function to safely convert Firestore timestamps to Date
+function toDate(value: any): Date {
+  if (!value) return new Date();
+  
+  // If it's already a Date object
+  if (value instanceof Date) return value;
+  
+  // If it's a Firestore Timestamp, call toDate()
+  if (value && typeof value.toDate === 'function') {
+    return value.toDate();
+  }
+  
+  // If it's a number (timestamp in milliseconds or seconds)
+  if (typeof value === 'number') {
+    // If it's in seconds, convert to milliseconds
+    return new Date(value > 1000000000000 ? value : value * 1000);
+  }
+  
+  // If it's a string, try to parse it
+  if (typeof value === 'string') {
+    const parsed = new Date(value);
+    if (!isNaN(parsed.getTime())) return parsed;
+  }
+  
+  // Fallback to current date
+  return new Date();
+}
+
 // Firebase implementations
 async function loadStorefrontConfigFromFirebase(
   identifier: string
 ): Promise<StorefrontConfig | null> {
   try {
     const { db } = await import('@/lib/firebaseConfig');
-    const { collection, query, where, getDocs, limit } = await import('firebase/firestore');
+    const { collection, query, where, getDocs, limit, doc, getDoc } = await import('firebase/firestore');
 
-    // Query by subdomain (identifier could be subdomain or userId)
+    // First, try to get from user_storefronts collection by document ID (subdomain)
+    // This is the new collection where storefronts are saved with subdomain as doc ID
+    const userStorefrontsRef = doc(db, 'user_storefronts', identifier);
+    const userStorefrontsDoc = await getDoc(userStorefrontsRef);
+
+    if (userStorefrontsDoc.exists()) {
+      const data = userStorefrontsDoc.data();
+      
+      return {
+        userId: data.userId,
+        userEmail: data.userEmail,
+        subdomain: data.subdomain || identifier,
+        customDomain: data.customDomain,
+        companyName: data.companyName,
+        businessNiche: data.businessNiche || data.businessNiche,
+        theme: data.theme,
+        layout: data.layout || 'multi-page',
+        logoUrl: data.logoUrl,
+        status: data.status || 'active',
+        createdAt: toDate(data.createdAt || data.generatedAt),
+        updatedAt: toDate(data.updatedAt),
+      };
+    }
+
+    // Query by subdomain in storefront_sites collection (legacy)
     const sitesRef = collection(db, 'storefront_sites');
 
     // Try to find by subdomain first
@@ -115,8 +167,8 @@ async function loadStorefrontConfigFromFirebase(
         layout: data.layout || 'multi-page',
         logoUrl: data.logoUrl,
         status: data.status || 'active',
-        createdAt: data.createdAt?.toDate() || new Date(),
-        updatedAt: data.updatedAt?.toDate() || new Date(),
+        createdAt: toDate(data.createdAt),
+        updatedAt: toDate(data.updatedAt),
       };
     }
 
@@ -144,8 +196,8 @@ async function loadStorefrontConfigFromFirebase(
         layout: data.layout || 'multi-page',
         logoUrl: data.logoUrl,
         status: data.status || 'active',
-        createdAt: data.createdAt?.toDate() || new Date(),
-        updatedAt: data.updatedAt?.toDate() || new Date(),
+        createdAt: toDate(data.createdAt),
+        updatedAt: toDate(data.updatedAt),
       };
     }
 
@@ -173,8 +225,8 @@ async function loadStorefrontConfigFromFirebase(
         layout: data.layout || 'multi-page',
         logoUrl: data.logoUrl,
         status: data.status || 'active',
-        createdAt: data.createdAt?.toDate() || new Date(),
-        updatedAt: data.updatedAt?.toDate() || new Date(),
+        createdAt: toDate(data.createdAt),
+        updatedAt: toDate(data.updatedAt),
       };
     }
 
@@ -193,32 +245,40 @@ async function loadStorefrontPageFromFirebase(
     const { db } = await import('@/lib/firebaseConfig');
     const { collection, query, where, getDocs, limit, doc, getDoc } = await import('firebase/firestore');
 
-    // First, find the storefront by subdomain or userId
-    const sitesRef = collection(db, 'storefront_sites');
+    // First, try to get from user_storefronts collection by document ID (subdomain)
+    const userStorefrontsRef = doc(db, 'user_storefronts', storefrontId);
+    const userStorefrontsDoc = await getDoc(userStorefrontsRef);
 
-    // Try by subdomain first
     let siteDoc = null;
-    const subdomainQuery = query(
-      sitesRef,
-      where('subdomain', '==', storefrontId),
-      limit(1)
-    );
-
-    const subdomainSnapshot = await getDocs(subdomainQuery);
-
-    if (!subdomainSnapshot.empty) {
-      siteDoc = subdomainSnapshot.docs[0].data();
+    if (userStorefrontsDoc.exists()) {
+      siteDoc = userStorefrontsDoc.data();
     } else {
-      // Try by userId
-      const userIdQuery = query(
+      // Fallback to storefront_sites collection (legacy)
+      const sitesRef = collection(db, 'storefront_sites');
+
+      // Try by subdomain first
+      const subdomainQuery = query(
         sitesRef,
-        where('userId', '==', storefrontId),
+        where('subdomain', '==', storefrontId),
         limit(1)
       );
 
-      const userIdSnapshot = await getDocs(userIdQuery);
-      if (!userIdSnapshot.empty) {
-        siteDoc = userIdSnapshot.docs[0].data();
+      const subdomainSnapshot = await getDocs(subdomainQuery);
+
+      if (!subdomainSnapshot.empty) {
+        siteDoc = subdomainSnapshot.docs[0].data();
+      } else {
+        // Try by userId
+        const userIdQuery = query(
+          sitesRef,
+          where('userId', '==', storefrontId),
+          limit(1)
+        );
+
+        const userIdSnapshot = await getDocs(userIdQuery);
+        if (!userIdSnapshot.empty) {
+          siteDoc = userIdSnapshot.docs[0].data();
+        }
       }
     }
 

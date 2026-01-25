@@ -1,4 +1,4 @@
-name: Deploy with Docker (Self-Hosted Runner)
+name: Deploy to Server
 
 on:
   push:
@@ -9,96 +9,69 @@ on:
 
 env:
   NODE_VERSION: '20'
-  DOCKER_IMAGE: 'storefront:latest'
-  CONTAINER_NAME: 'storefront-app'
+  DEPLOY_PATH: '/var/www/storefront'
 
 jobs:
-  build-and-deploy:
-    name: Build and Deploy Docker Container
-    runs-on: self-hosted  # Self-hosted runner on your server
+  deploy:
+    name: Deploy to Production Server
+    runs-on: ubuntu-latest
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Create .env.production
+      - name: Add server to known hosts
         run: |
-          cat > .env.production << EOF
-          NODE_ENV=production
-          PORT=3000
-          NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL || 'https://shorp-epos-backend.onrender.com/api/v1' }}
-          NEXT_PUBLIC_MAIN_DOMAIN=${{ secrets.NEXT_PUBLIC_MAIN_DOMAIN || 'dfoldlab.co.uk' }}
-          NEXT_PUBLIC_FIREBASE_API_KEY=${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
-          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
-          NEXT_PUBLIC_FIREBASE_PROJECT_ID=${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
-          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
-          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
-          NEXT_PUBLIC_FIREBASE_APP_ID=${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
-          NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=${{ secrets.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID }}
-          ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
-          CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ZONE_ID=${{ secrets.CLOUDFLARE_ZONE_ID }}
-          EOF
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      - name: Build Docker image
+      - name: Deploy to server
+        env:
+          HOST: ${{ secrets.SERVER_IP }}
+          USER: ${{ secrets.SERVER_USER }}
         run: |
-          docker build \
-            --build-arg NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL || 'https://shorp-epos-backend.onrender.com/api/v1' }} \
-            --build-arg NEXT_PUBLIC_MAIN_DOMAIN=${{ secrets.NEXT_PUBLIC_MAIN_DOMAIN || 'dfoldlab.co.uk' }} \
-            -t ${{ env.DOCKER_IMAGE }} .
+          ssh $USER@$HOST << 'ENDSSH'
+            set -e
+            echo "🚀 Starting deployment..."
+            
+            # Navigate to deployment directory
+            cd ${{ env.DEPLOY_PATH }}
+            
+            # Pull latest code
+            echo "📥 Pulling latest code..."
+            git fetch origin
+            git reset --hard origin/main || git reset --hard origin/master
+            
+            # Install/update dependencies
+            echo "📦 Installing dependencies..."
+            npm ci
+            
+            # Build the application
+            echo "🔨 Building application..."
+            npm run build
+            
+            # Restart PM2 application
+            echo "🔄 Restarting application..."
+            pm2 reload ecosystem.config.js || pm2 start ecosystem.config.js
+            
+            # Save PM2 configuration
+            pm2 save
+            
+            echo "✅ Deployment completed successfully!"
+          ENDSSH
 
-      - name: Stop existing container
+      - name: Verify deployment
+        env:
+          HOST: ${{ secrets.SERVER_IP }}
+          USER: ${{ secrets.SERVER_USER }}
         run: |
-          docker stop ${{ env.CONTAINER_NAME }} || true
-          docker rm ${{ env.CONTAINER_NAME }} || true
-
-      - name: Start new container
-        run: |
-          docker run -d \
-            --name ${{ env.CONTAINER_NAME }} \
-            --restart unless-stopped \
-            -p 3000:3000 \
-            --env-file .env.production \
-            --network storefront-network \
-            ${{ env.DOCKER_IMAGE }}
-
-      - name: Wait for health check
-        run: |
-          echo "Waiting for container to be healthy..."
-          timeout=60
-          elapsed=0
-          while [ $elapsed -lt $timeout ]; do
-            if curl -f http://localhost:3000 > /dev/null 2>&1; then
-              echo "✅ Container is healthy!"
-              exit 0
-            fi
-            echo "Waiting... ($elapsed/$timeout seconds)"
-            sleep 5
-            elapsed=$((elapsed + 5))
-          done
-          echo "⚠️  Health check timeout, but continuing..."
-          exit 0
-
-      - name: Cleanup old images
-        run: |
-          docker image prune -f
-          echo "✅ Cleanup complete"
-
-      - name: Deployment Summary
-        if: always()
-        run: |
-          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Docker deployment completed!" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Container:** ${{ env.CONTAINER_NAME }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Image:** ${{ env.DOCKER_IMAGE }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Port:** 3000" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Check logs: \`docker logs ${{ env.CONTAINER_NAME }}\`" >> $GITHUB_STEP_SUMMARY
+          ssh $USER@$HOST << 'ENDSSH'
+            echo "🔍 Verifying deployment..."
+            pm2 status
+            curl -f http://localhost:3000 > /dev/null && echo "✅ Application is responding" || echo "⚠️ Application may not be ready yet"
+          ENDSSH
