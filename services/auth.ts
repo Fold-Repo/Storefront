@@ -581,8 +581,7 @@ export interface RefreshTokenPayload {
 export const refreshToken = async (payload: RefreshTokenPayload): Promise<any> => {
   try {
     // Use a separate axios instance without interceptors to avoid infinite loops
-    // The user specified the URL: {{url}}/auth/refresh-token where url is api.dfoldlab.co.uk
-    // API_BASE_URL is 'https://api.dfoldlab.co.uk/api/v1' as per .env.local
+    // API_BASE_URL defaults to 'https://shorp-epos-backend.onrender.com/api/v1' or from NEXT_PUBLIC_API_URL env var
     const response = await axios.post(`${API_BASE_URL}${ENDPOINT.AUTH.REFRESH_TOKEN}`, payload);
 
     // Store new tokens

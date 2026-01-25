@@ -6,7 +6,7 @@ import { InformationCircleIcon } from "@heroicons/react/24/outline";
 export const WebhookInstructions: React.FC = () => {
   const webhookUrl = process.env.NEXT_PUBLIC_API_URL 
     ? `${process.env.NEXT_PUBLIC_API_URL}/whatsapp/webhook`
-    : "https://api.dfoldlab.co.uk/api/v1/whatsapp/webhook";
+    : "https://shorp-epos-backend.onrender.com/api/v1/whatsapp/webhook";
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">

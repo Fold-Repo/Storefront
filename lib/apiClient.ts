@@ -230,6 +230,121 @@ const responseInterceptor = async (error: AxiosError) => {
         return Promise.reject(customError);
     }
 
+    // Handle network errors (connection refused, DNS errors, etc.)
+    if (
+        error.code === 'ECONNREFUSED' ||
+        error.code === 'ENOTFOUND' ||
+        error.code === 'ERR_NETWORK' ||
+        error.message?.includes('Network Error') ||
+        error.message?.includes('getaddrinfo ENOTFOUND') ||
+        error.message?.includes('connect ECONNREFUSED')
+    ) {
+        const customError = new Error(
+            "Unable to connect to the server. Please check your internet connection and ensure the API server is running."
+        ) as any;
+        customError.isNetworkError = true;
+        customError.originalError = error;
+        return Promise.reject(customError);
+    }
+
+    // Helper function to safely extract error message from response data
+    const getErrorMessage = (data: unknown, defaultMessage: string): string => {
+        if (data && typeof data === 'object') {
+            const errorData = data as Record<string, unknown>;
+            if (typeof errorData.message === 'string') {
+                return errorData.message;
+            }
+            if (typeof errorData.error === 'string') {
+                return errorData.error;
+            }
+        }
+        return defaultMessage;
+    };
+
+    // Handle 500 Internal Server Error
+    if (error.response?.status === 500) {
+        const customError = new Error(
+            getErrorMessage(
+                error.response.data,
+                "Internal server error. Please try again later or contact support if the problem persists."
+            )
+        ) as any;
+        customError.is500 = true;
+        customError.originalError = error;
+        return Promise.reject(customError);
+    }
+
+    // Handle 404 Not Found
+    if (error.response?.status === 404) {
+        const customError = new Error(
+            getErrorMessage(
+                error.response.data,
+                "The requested resource was not found."
+            )
+        ) as any;
+        customError.is404 = true;
+        customError.originalError = error;
+        return Promise.reject(customError);
+    }
+
+    // Handle 400 Bad Request
+    if (error.response?.status === 400) {
+        const customError = new Error(
+            getErrorMessage(
+                error.response.data,
+                "Invalid request. Please check your input and try again."
+            )
+        ) as any;
+        customError.is400 = true;
+        customError.originalError = error;
+        return Promise.reject(customError);
+    }
+
+    // Handle 429 Too Many Requests (rate limiting)
+    if (error.response?.status === 429) {
+        const customError = new Error(
+            getErrorMessage(
+                error.response.data,
+                "Too many requests. Please wait a moment and try again."
+            )
+        ) as any;
+        customError.is429 = true;
+        customError.originalError = error;
+        return Promise.reject(customError);
+    }
+
+    // Handle 502 Bad Gateway
+    if (error.response?.status === 502) {
+        const customError = new Error(
+            "Bad gateway. The server received an invalid response. Please try again later."
+        ) as any;
+        customError.is502 = true;
+        customError.originalError = error;
+        return Promise.reject(customError);
+    }
+
+    // Handle 504 Gateway Timeout
+    if (error.response?.status === 504) {
+        const customError = new Error(
+            "Gateway timeout. The server took too long to respond. Please try again."
+        ) as any;
+        customError.is504 = true;
+        customError.originalError = error;
+        return Promise.reject(customError);
+    }
+
+    // For other errors, try to extract a meaningful message
+    if (error.response?.data) {
+        const errorMessage = getErrorMessage(
+            error.response.data,
+            error.message || "An unexpected error occurred. Please try again."
+        );
+        const customError = new Error(errorMessage) as any;
+        customError.originalError = error;
+        customError.status = error.response.status;
+        return Promise.reject(customError);
+    }
+
     return Promise.reject(error);
 };
 

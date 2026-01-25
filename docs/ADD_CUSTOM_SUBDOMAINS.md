@@ -28,8 +28,10 @@ This guide explains how to set up `app.dfoldlab.co.uk` and `api.dfoldlab.co.uk` 
 
 ---
 
-## 2. Setting up `api.dfoldlab.co.uk`
-(Intended to point to your Backend on Render)
+## 2. Setting up `api.dfoldlab.co.uk` (Optional)
+**Note**: The application now uses `https://shorp-epos-backend.onrender.com/api/v1` directly. The `api.dfoldlab.co.uk` subdomain is optional and only needed if you want a custom domain for your API.
+
+If you want to set up the custom API subdomain:
 
 ### Step A: Cloudflare (DNS)
 1. Log in to your **Cloudflare Dashboard**.
@@ -49,6 +51,8 @@ This guide explains how to set up `app.dfoldlab.co.uk` and `api.dfoldlab.co.uk` 
 4. Click **Add Custom Domain**.
 5. Enter `api.dfoldlab.co.uk` and click **Save**.
 
+**Important**: The app now uses `https://shorp-epos-backend.onrender.com/api/v1` by default. If you want to use `api.dfoldlab.co.uk` instead, you must set `NEXT_PUBLIC_API_URL=https://api.dfoldlab.co.uk/api/v1` in your environment variables.
+
 ---
 
 ## 3. How the App Handles This
@@ -61,4 +65,5 @@ I have already updated your `middleware.ts` to recognize these names.
 
 ## ✅ Verification
 1. Open [app.dfoldlab.co.uk](https://app.dfoldlab.co.uk). You should see your main Next.js site.
-2. Open [api.dfoldlab.co.uk/api/v1](https://api.dfoldlab.co.uk/api/v1). You should see a response from your backend.
+2. The API is available at: `https://shorp-epos-backend.onrender.com/api/v1`
+3. (Optional) If you set up `api.dfoldlab.co.uk`, test it at: [api.dfoldlab.co.uk/api/v1](https://api.dfoldlab.co.uk/api/v1)
