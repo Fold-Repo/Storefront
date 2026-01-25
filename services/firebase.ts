@@ -6,7 +6,8 @@ import {
   query,
   where,
   getDocs,
-  updateDoc
+  updateDoc,
+  deleteDoc
 } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 import { User } from "firebase/auth";
@@ -205,6 +206,31 @@ export const clearWizardLocally = (): void => {
 
   localStorage.removeItem("wizard_data_local");
   localStorage.removeItem("wizard_data_timestamp");
+  localStorage.removeItem("storefront_wizard_data");
+  localStorage.removeItem("storefront_wizard_data_step");
+};
+
+/**
+ * Clear wizard data from Firebase
+ */
+export const clearWizardFromFirebase = async (
+  user: User | { email: string; uid: string } | any
+): Promise<void> => {
+  const userId = extractUserId(user);
+  if (!userId) return;
+
+  try {
+    const wizardRef = doc(db, COLLECTION_NAME, userId);
+    const wizardDoc = await getDoc(wizardRef);
+
+    if (wizardDoc.exists()) {
+      await deleteDoc(wizardRef);
+      console.log("Wizard data cleared from Firebase");
+    }
+  } catch (error) {
+    console.error("Error clearing wizard from Firebase:", error);
+    // Don't throw - this is a cleanup operation
+  }
 };
 
 /**

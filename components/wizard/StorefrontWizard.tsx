@@ -14,6 +14,7 @@ import {
   saveWizardLocally,
   loadWizardLocally,
   clearWizardLocally,
+  clearWizardFromFirebase,
   hasLocalWizardData,
   WizardData
 } from "@/services/firebase";
@@ -286,7 +287,18 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    const newData = { ...formData, [name]: value };
+    
+    // Sanitize subdomain input: lowercase, remove spaces, only allow alphanumeric and hyphens
+    let sanitizedValue = value;
+    if (name === 'subdomain') {
+      sanitizedValue = value
+        .toLowerCase()
+        .replace(/\s+/g, '-') // Replace spaces with hyphens
+        .replace(/[^a-z0-9-]/g, '') // Remove invalid characters
+        .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+    }
+    
+    const newData = { ...formData, [name]: sanitizedValue };
     setFormData(newData);
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
@@ -553,6 +565,41 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
     }
   };
 
+  // Reset wizard completely
+  const resetWizard = async () => {
+    // Reset all form state
+    setCurrentStep(1);
+    setFormData(getDefaultData());
+    setErrors({});
+    setLoading(false);
+    setDataLoaded(false);
+    
+    // Clear AI description state
+    setShowAIDescriptionModal(false);
+    setAllQuestions([]);
+    setCurrentQuestionIndex(0);
+    setCurrentAnswer("");
+    setQuestionAnswers({});
+    setLoadingQuestions(false);
+    setGeneratingDescription(false);
+    
+    // Clear local storage
+    clearWizardLocally();
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(`${STORAGE_KEY}_step`);
+    }
+    
+    // Clear Firebase wizard data if user is authenticated
+    if (user) {
+      try {
+        await clearWizardFromFirebase(user);
+      } catch (error) {
+        console.error("Error clearing Firebase wizard data:", error);
+      }
+    }
+  };
+
   const handleSubmit = async () => {
     if (!validateStep(currentStep)) return;
 
@@ -568,11 +615,9 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
     onComplete?.(formData);
     onClose();
 
-    // Reset form after a short delay to allow transition
+    // Reset wizard after a short delay to allow transition
     setTimeout(() => {
-      setCurrentStep(1);
-      setFormData(getDefaultData());
-      setLoading(false);
+      resetWizard();
     }, 500);
   };
 
@@ -732,18 +777,40 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
                 error={errors.subdomain}
                 placeholder="your-store"
                 className="w-full pr-24"
+                autoComplete="off"
               />
-              <div className="absolute right-3 top-9 text-neutral-500 text-sm">
+              <div className="absolute right-3 top-9 text-neutral-500 text-sm font-medium">
                 .{mainDomain}
               </div>
             </div>
-            <div className="bg-neutral-50 p-4 rounded-lg">
-              <p className="text-sm text-neutral-600">
+            
+            {/* Real-time Preview */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border-2 border-blue-200">
+              <p className="text-xs text-neutral-600 mb-2 font-medium">
                 Your storefront will be available at:
               </p>
-              <p className="text-sm font-semibold text-primary-600 mt-1">
-                {formData.subdomain || "your-store"}.{mainDomain}
-              </p>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-neutral-500">https://</span>
+                <p className="text-lg font-bold text-blue-700 break-all min-h-[1.5rem]">
+                  {formData.subdomain ? (
+                    <span className="text-blue-700">
+                      {formData.subdomain}.{mainDomain}
+                    </span>
+                  ) : (
+                    <span className="text-neutral-400 italic font-normal">
+                      your-store.{mainDomain}
+                    </span>
+                  )}
+                </p>
+              </div>
+              {!formData.subdomain && (
+                <p className="text-xs text-neutral-500 mt-2 flex items-center gap-1">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Start typing above to see your custom URL update in real-time
+                </p>
+              )}
             </div>
           </div>
         );

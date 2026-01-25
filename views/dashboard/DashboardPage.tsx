@@ -603,6 +603,15 @@ export const DashboardPage = () => {
                 console.warn("Subdomain is empty, skipping page count increment");
               }
 
+              // Clear wizard progress from browser and Firebase
+              const { clearWizardLocally, clearWizardFromFirebase } = await import("@/services/firebase");
+              clearWizardLocally();
+              try {
+                await clearWizardFromFirebase(user);
+              } catch (error) {
+                console.error("Error clearing Firebase wizard:", error);
+              }
+
               // Reload site data to update the dashboard
               const updatedSite = await loadGeneratedSiteFromFirebase(user);
               if (updatedSite) {

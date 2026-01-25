@@ -136,8 +136,16 @@ const HomePage = () => {
         console.warn("Subdomain is empty, skipping page count increment");
       }
 
-      // Clear wizard progress from browser so it doesn't load again
+      // Clear wizard progress from browser and Firebase so it doesn't load again
       clearWizardLocally();
+      if (user) {
+        try {
+          const { clearWizardFromFirebase } = await import("@/services/firebase");
+          await clearWizardFromFirebase(user);
+        } catch (error) {
+          console.error("Error clearing Firebase wizard:", error);
+        }
+      }
 
       showSuccess("Storefront created successfully! Redirecting to dashboard...");
 
