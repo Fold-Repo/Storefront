@@ -287,7 +287,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    
+
     // Sanitize subdomain input: lowercase, remove spaces, only allow alphanumeric and hyphens
     let sanitizedValue = value;
     if (name === 'subdomain') {
@@ -297,7 +297,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
         .replace(/[^a-z0-9-]/g, '') // Remove invalid characters
         .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
     }
-    
+
     const newData = { ...formData, [name]: sanitizedValue };
     setFormData(newData);
     if (errors[name]) {
@@ -408,6 +408,15 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
       showError("Please complete the previous steps before generating AI recommendations");
       return;
     }
+
+    // Clear old content before generating new
+    setFormData(prev => ({
+      ...prev,
+      theme: {
+        ...prev.theme!,
+        aiDescription: '',
+      }
+    }));
 
     setAiGenerating(true);
     try {
@@ -573,7 +582,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
     setErrors({});
     setLoading(false);
     setDataLoaded(false);
-    
+
     // Clear AI description state
     setShowAIDescriptionModal(false);
     setAllQuestions([]);
@@ -582,14 +591,14 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
     setQuestionAnswers({});
     setLoadingQuestions(false);
     setGeneratingDescription(false);
-    
+
     // Clear local storage
     clearWizardLocally();
     if (typeof window !== "undefined") {
       localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(`${STORAGE_KEY}_step`);
     }
-    
+
     // Clear Firebase wizard data if user is authenticated
     if (user) {
       try {
@@ -783,7 +792,7 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
                 .{mainDomain}
               </div>
             </div>
-            
+
             {/* Real-time Preview */}
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border-2 border-blue-200">
               <p className="text-xs text-neutral-600 mb-2 font-medium">
@@ -1154,7 +1163,8 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
                 </div>
                 <Button
                   type="button"
-                  variant="light"
+                  variant="solid"
+                  color="primary"
                   onClick={generateAIDescription}
                   isLoading={aiGenerating}
                   className="mt-4"
