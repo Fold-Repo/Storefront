@@ -3,30 +3,46 @@
  * 
  * Configures GrapesJS to display dynamic content as non-editable preview sections.
  * Users can see how dynamic sections look but cannot modify them.
+ * However, they CAN delete and replace them with new designs from a config page.
  */
+
+import { getAllDummyTemplates } from './dummyDataTemplates';
 
 /**
  * Initialize GrapesJS with dynamic content locking
  */
-export function initGrapesJSWithLocking(editor: any) {
+export function initGrapesJSWithLocking(editor: any, companyName: string = "Your Store") {
   // Register custom component type for dynamic content
   editor.DomComponents.addType('dynamic-content', {
     model: {
       defaults: {
         name: 'Dynamic Content',
-        editable: false,
-        draggable: false,
-        droppable: false,
-        copyable: false,
-        removable: false,
+        editable: false, // Cannot edit content
+        draggable: false, // Cannot drag
+        droppable: false, // Cannot drop into
+        copyable: false, // Cannot copy
+        removable: true, // CAN DELETE - this is important!
         selectable: true, // Allow selection to show info
         hoverable: true,
-        stylable: false,
+        stylable: false, // Cannot style
         highlightable: false,
         layerable: true,
         tagName: 'div',
         traits: [],
-        toolbar: [], // Remove all toolbar options
+        toolbar: [
+          {
+            name: 'delete',
+            command: 'tlb-delete',
+            label: 'Delete',
+            attributes: { title: 'Delete this dynamic block' }
+          },
+          {
+            name: 'change-design',
+            command: 'tlb-change-design',
+            label: 'Change Design',
+            attributes: { title: 'Change design from config page' }
+          }
+        ],
       }
     },
     view: {
@@ -39,10 +55,29 @@ export function initGrapesJSWithLocking(editor: any) {
         // Show notification that this is dynamic content
         editor.Notifications?.add?.({
           type: 'info',
-          content: 'This section displays dynamic data and cannot be edited.',
-          timeout: 3000,
+          content: 'This section displays dynamic data. Edit it from the Dynamic Components config page.',
+          timeout: 4000,
         });
       },
+    }
+  });
+
+  // Register command to open config page
+  editor.Commands.add('tlb-change-design', {
+    run(editor: any, sender: any) {
+      const component = editor.getSelected();
+      if (component) {
+        const blockType = component.getAttributes()['data-block-type'];
+        if (blockType) {
+          // Open config page in new tab or trigger modal
+          window.open(`/dashboard/${editor.getConfig().subdomain || 'storefront'}/components?type=${blockType}`, '_blank');
+          editor.Notifications?.add?.({
+            type: 'info',
+            content: `Opening ${blockType} design config page...`,
+            timeout: 3000,
+          });
+        }
+      }
     }
   });
 
@@ -60,7 +95,7 @@ export function initGrapesJSWithLocking(editor: any) {
         draggable: false,
         droppable: false,
         copyable: false,
-        removable: false,
+        removable: true, // Allow deletion
         stylable: false,
       });
     }
@@ -74,6 +109,14 @@ export function initGrapesJSWithLocking(editor: any) {
       component.get('components')?.forEach((child: any) => {
         child.set('editable', false);
       });
+      
+      // Show info about the dynamic block
+      const blockType = el.getAttribute('data-block-type') || 'dynamic';
+      editor.Notifications?.add?.({
+        type: 'info',
+        content: `${blockType} block selected. This is dynamic content. Delete to remove or use "Change Design" to modify from config page.`,
+        timeout: 4000,
+      });
     }
   });
 
@@ -83,26 +126,63 @@ export function initGrapesJSWithLocking(editor: any) {
     editor.addStyle(`
       [data-dynamic-content] {
         position: relative;
+        min-height: 50px;
       }
       [data-dynamic-content]::before {
-        content: '🔒 Dynamic';
+        content: '🔒 Dynamic (Deletable)';
         position: absolute;
         top: 4px;
         right: 4px;
         background: rgba(59, 130, 246, 0.9);
         color: white;
         font-size: 10px;
-        padding: 2px 8px;
+        padding: 4px 8px;
         border-radius: 4px;
-        z-index: 100;
+        z-index: 1000;
         pointer-events: none;
+        font-weight: 600;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
       }
       [data-dynamic-content]:hover {
         outline: 2px dashed rgba(59, 130, 246, 0.5);
         outline-offset: -2px;
       }
+      [data-dynamic-content]::after {
+        content: 'Double-click to learn more';
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        font-size: 9px;
+        padding: 2px 6px;
+        border-radius: 3px;
+        z-index: 1000;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+      [data-dynamic-content]:hover::after {
+        opacity: 1;
+      }
     `);
   }
+
+  // Register all dummy template blocks
+  const templates = getAllDummyTemplates(companyName);
+  
+  templates.forEach(template => {
+    editor.BlockManager.add(template.id, {
+      label: template.name,
+      category: template.category,
+      content: template.html,
+      attributes: { 
+        class: 'gjs-block-dynamic',
+        'data-template-id': template.id
+      },
+      activate: true,
+    });
+  });
 
   // Register a custom block for product filter (locked)
   editor.BlockManager.add('product-filter', {
@@ -111,7 +191,17 @@ export function initGrapesJSWithLocking(editor: any) {
     content: {
       type: 'dynamic-content',
       content: `
-        <div data-dynamic-content="true" class="product-filter-preview bg-gray-50 p-4 rounded-xl border-2 border-dashed border-gray-200 text-center">
+        <div 
+          data-dynamic-content="product-filter" 
+          data-gjs-editable="false" 
+          data-gjs-droppable="false" 
+          data-gjs-selectable="true" 
+          data-gjs-removable="true" 
+          data-gjs-hoverable="true"
+          data-block-id="product-filter-001"
+          data-block-type="product-filter"
+          class="product-filter-preview bg-gray-50 p-4 rounded-xl border-2 border-dashed border-gray-200 text-center"
+        >
           <p class="text-gray-500 font-medium">🔍 Product Filter Section</p>
           <p class="text-gray-400 text-sm">Search, category, and sort filters will appear here</p>
         </div>
@@ -120,23 +210,8 @@ export function initGrapesJSWithLocking(editor: any) {
     attributes: { class: 'fa fa-filter' }
   });
 
-  // Register a custom block for products grid (locked)
-  editor.BlockManager.add('products-grid', {
-    label: 'Products Grid',
-    category: 'Dynamic',
-    content: {
-      type: 'dynamic-content',
-      content: `
-        <div data-dynamic-content="true" class="products-preview p-4 rounded-xl border-2 border-dashed border-gray-200 text-center">
-          <p class="text-gray-500 font-medium">📦 Products Grid</p>
-          <p class="text-gray-400 text-sm">Your products will be displayed here dynamically</p>
-        </div>
-      `,
-    },
-    attributes: { class: 'fa fa-th' }
-  });
-
   console.log('✅ GrapesJS dynamic content locking initialized');
+  console.log(`✅ Registered ${templates.length} dummy templates`);
 }
 
 /**

@@ -18,6 +18,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { registerCustomBlocks } from "./customBlocks";
 import { registerEcommerceBlocks } from "./ecommerceBlocks";
+import { initGrapesJSWithLocking } from "@/lib/grapesJSConfig";
+import { injectDynamicData } from "@/lib/dataInjector";
 import {
   deletePageSetting,
   getPageSettingsByStorefront,
@@ -403,11 +405,34 @@ export const PageEditor: React.FC<PageEditorProps> = ({ subdomain, initialPage =
           // Register custom blocks
           registerCustomBlocks(editorInstance);
           registerEcommerceBlocks(editorInstance);
+          
+          // Initialize dynamic content locking with dummy templates
+          const companyName = siteData?.companyName || "Your Store";
+          initGrapesJSWithLocking(editorInstance, companyName);
 
-          // Load initial page content
+          // Load initial page content with dummy data injection for preview
           if (siteData.pages[currentPage]) {
             const page = siteData.pages[currentPage];
-            editorInstance.setComponents(page.html);
+            
+            // Inject dummy data for preview in editor
+            const config = {
+              companyName: siteData.companyName || "Your Store",
+              subdomain: subdomain || "",
+              theme: {
+                primaryColor: "#3B82F6",
+                fontFamily: "Inter",
+                designFeel: "modern",
+              },
+            };
+            
+            const htmlWithDummyData = injectDynamicData(
+              page.html,
+              {}, // Empty data - will use dummy data in preview mode
+              config,
+              { previewMode: true } // Enable preview mode
+            );
+            
+            editorInstance.setComponents(htmlWithDummyData);
             editorInstance.setStyle(page.css);
           }
 
@@ -525,9 +550,28 @@ export const PageEditor: React.FC<PageEditorProps> = ({ subdomain, initialPage =
       });
     }
 
-    // Load new page
+    // Load new page with dummy data injection for preview
     const newPage = siteData.pages[pageName];
-    editor.setComponents(newPage.html);
+    
+    // Inject dummy data for preview in editor
+    const config = {
+      companyName: siteData.companyName || "Your Store",
+      subdomain: subdomain || "",
+      theme: {
+        primaryColor: "#3B82F6",
+        fontFamily: "Inter",
+        designFeel: "modern",
+      },
+    };
+    
+    const htmlWithDummyData = injectDynamicData(
+      newPage.html,
+      {}, // Empty data - will use dummy data in preview mode
+      config,
+      { previewMode: true } // Enable preview mode
+    );
+    
+    editor.setComponents(htmlWithDummyData);
     editor.setStyle(newPage.css);
     setCurrentPage(pageName);
 

@@ -85,10 +85,15 @@ const HomePage = () => {
           layout: (data.layout || 'multi-page') as 'single-page' | 'multi-page',
           theme: data.theme || {
             primaryColor: "#3B82F6",
+            secondaryColor: "#64748B",
+            accentColor: "#8B5CF6",
             fontFamily: "Inter",
             designFeel: "modern",
+            primaryCtaText: "Shop Now",
+            secondaryCtaText: "Learn More",
           },
         },
+        userId: userId,
       });
 
       console.log('✅ Storefront generation completed. Pages generated:', Object.keys(generatedPages).length);

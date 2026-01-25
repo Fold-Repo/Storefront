@@ -1,5 +1,5 @@
 /**
- * API Route for AI-powered page generation using Claude 3.5 Sonnet
+ * API Route for AI-powered page generation using Claude Haiku 4.5
  * 
  * This route handles server-side AI generation to keep API keys secure.
  */
@@ -19,138 +19,273 @@ interface GeneratePageRequest {
   description: string;
   theme: {
     primaryColor: string;
+    secondaryColor?: string;
+    accentColor?: string;
     fontFamily: string;
     designFeel: string;
+    primaryCtaText?: string;
+    secondaryCtaText?: string;
   };
   logoUrl?: string;
   layout?: 'single-page' | 'multi-page';
+  planTier?: 'Lite' | 'Pro' | 'Enterprise' | 'Free';
 }
 
 /**
- * Create a comprehensive prompt for Claude to generate a page
+ * Create a comprehensive prompt for Claude Haiku to generate a unique, controlled storefront page
  */
 function createDynamicPagePrompt(params: GeneratePageRequest): string {
-  const { pageType, businessNiche, companyName, description, theme, logoUrl, layout } = params;
+  const { pageType, businessNiche, companyName, description, theme, logoUrl, layout, planTier: requestedPlanTier } = params;
   const isSinglePage = layout === 'single-page';
+  const storeVersionId = `v${Date.now()}`;
+  const promptVersion = 'shorp-storefront-v2.0';
+  
+  // Use requested plan tier, or determine based on layout as fallback
+  const planTier = requestedPlanTier || (isSinglePage ? 'Lite' : 'Pro');
 
   console.log(`📋 Generating ${pageType} for ${companyName}${isSinglePage ? ' (Single Page Layout)' : ''}`);
 
-  let pageRequirements = getPageSpecificRequirements(pageType, businessNiche);
+  // Map page types to block types
+  const pageBlockMapping: Record<string, string[]> = {
+    'homepage': ['hero', 'cta', 'featured-products'],
+    'products': ['product-grid'],
+    'cart': ['cart-items', 'order-summary', 'empty-state'],
+    'account': ['auth', 'profile', 'order-history'],
+    'checkout': ['checkout-form', 'payment'],
+  };
 
-  // Enhance requirements for single page
-  if (isSinglePage && pageType === 'homepage') {
-    pageRequirements = `${pageRequirements}\n- Since this is a SINGLE PAGE layout, also include:\n  - A detailed product catalog section\n  - A clear "About Us" and "Contact Us" section\n  - A simplified shopping cart and checkout section that can be handled within this page (e.g., using modals or toggling visibility)\n  - Smooth scroll navigation to these sections`;
-  }
+  const requiredBlocks = pageBlockMapping[pageType] || ['content'];
 
-  return `You are an expert web developer specializing in modern, responsive e-commerce websites using Tailwind CSS. Generate a complete, production-ready ${pageType} page.
+  return `You are a senior frontend engineer and UI system architect building a CONTROLLED, AI-GENERATED STOREFRONT SYSTEM for Shorp.
 
-## Business Context
-- **Company Name**: ${companyName}
-- **Industry/Niche**: ${businessNiche}
-- **Description**: ${description}
-- **Tone**: Professional, inviting, and industry-appropriate
-${logoUrl ? `- **Logo URL**: ${logoUrl}` : ''}
+Your task is to generate a COMPLETE e-commerce UI using:
+- Semantic HTML5
+- Tailwind CSS utilities ONLY
+- Minimal vanilla JavaScript
+- NO frameworks, NO external libraries
 
-## Design Requirements (CRITICAL)
-- **Styling**: You MUST use Tailwind CSS utility classes for ALL styling. DO NOT generate separate CSS files or <style> blocks.
-- **Primary Color**: ${theme.primaryColor} (Use CSS custom properties: style="background-color: ${theme.primaryColor}" or create utility classes)
-- **Font Family**: ${theme.fontFamily}
-- **Design Style**: ${theme.designFeel}
-- **Include Tailwind CDN**: Add <script src="https://cdn.tailwindcss.com"></script> in the <head>
+This system MUST be compatible with GrapesJS.
 
-## Page-Specific Requirements
-${pageRequirements}
+--------------------------------------------------
+INPUT VARIABLES (FROM SHORP WIZARD)
+--------------------------------------------------
 
-## Technical Requirements
-1. **Fully Responsive**: Mobile-first design using Tailwind breakpoints (sm:, md:, lg:, xl:).
-2. **Modern Layout**: Use flexbox (flex) and grid (grid) utilities. Example: class="container mx-auto px-4"
-3. **Whitespace**: Use generous padding and margins (p-8, my-12, gap-6).
-4. **Typography**: Use text sizing (text-xl, text-3xl), font weights (font-bold, font-semibold).
-5. **Colors**: Use gray scale (bg-gray-50, text-gray-600) and the primary color for accents.
-6. **Interactive States**: Include hover effects (hover:bg-blue-600, hover:shadow-lg).
-7. **No Dummy Content**: Generate realistic, niche-specific content. NO "Lorem Ipsum".
-8. **SEO**: Proper heading hierarchy (single h1, h2 for sections).
+PROMPT VERSION:
+${promptVersion}
 
-## Dynamic Data Placeholders (MUST INCLUDE)
-Place these exact placeholders where dynamic data will be injected:
-- {{menu}} - Inside <header> or <nav>
-- {{footerLinks}} - Inside <footer>
-- {{products}} - For product grids (will be replaced by styled cards)
-- {{categories}} - For category listings
-- {{featuredProducts}} - For featured product section on homepage
-- {{breadcrumbs}} - Below header for navigation
-- {{companyName}} - For branding
+STORE VERSION ID:
+${storeVersionId}
 
-## Client-Side Data Fetching Script (MUST INCLUDE)
-Include this script before </body> to enable dynamic data loading:
-\`\`\`html
-<script>
-(function() {
-  const storefrontId = window.location.hostname.split('.')[0];
-  const API_BASE = '/api/storefront/' + storefrontId;
-  
-  async function fetchData(endpoint, containerId) {
-    try {
-      const container = document.getElementById(containerId);
-      if (!container) return;
-      const res = await fetch(API_BASE + '/' + endpoint);
-      if (res.ok) {
-        const data = await res.json();
-        console.log(endpoint + ' loaded:', data);
-      }
-    } catch (e) { console.error('Fetch error:', e); }
-  }
-  
-  document.addEventListener('DOMContentLoaded', function() {
-    fetchData('products', 'products-container');
-    fetchData('categories', 'categories-container');
-  });
-})();
-</script>
-\`\`\`
+SUBSCRIPTION PLAN:
+${planTier}
 
-## Output Format (STRICT JSON)
-Return ONLY valid JSON in this exact format, no markdown code blocks:
+BRAND TOKENS:
+${theme.primaryColor} (PRIMARY_COLOR)
+${theme.secondaryColor || theme.primaryColor} (SECONDARY_COLOR)
+${theme.accentColor || theme.primaryColor} (ACCENT_COLOR)
+
+CONTENT TOKENS:
+${companyName} (STORE_NAME)
+${description} (STORE_TAGLINE)
+${theme.primaryCtaText || 'Shop Now'} (PRIMARY_CTA_TEXT)
+${theme.secondaryCtaText || 'Learn More'} (SECONDARY_CTA_TEXT)
+
+BUSINESS CONTEXT:
+${businessNiche} (BUSINESS_TYPE)
+
+--------------------------------------------------
+CRITICAL LAYOUT CONTROL RULES
+--------------------------------------------------
+
+1. ALL dynamic data blocks MUST be:
+   - NON-EDITABLE in GrapesJS
+   - CONTENT-LOCKED
+   - STRUCTURE-LOCKED
+
+2. Users MUST be able to:
+   - DELETE an entire block
+   - DRAG a new block from the block library
+   - NOT edit internal structure or text of dynamic blocks
+
+3. This prevents users from breaking:
+   - Dynamic data bindings
+   - Layout logic
+   - Backend injections
+
+--------------------------------------------------
+GRAPESJS ENFORCEMENT RULES
+--------------------------------------------------
+
+Every dynamic block MUST include the following attributes:
+
+- data-gjs-editable="false"
+- data-gjs-droppable="false"
+- data-gjs-selectable="true"
+- data-gjs-removable="true"
+- data-gjs-hoverable="true"
+
+Static layout wrappers MAY be:
+- draggable
+- droppable
+
+Each block MUST include:
+- data-block-id="UNIQUE_ID"
+- data-block-type="${requiredBlocks.join(' | ')}"
+
+--------------------------------------------------
+TAILWIND RULES
+--------------------------------------------------
+
+- Tailwind utilities ONLY
+- Use brand tokens via arbitrary values:
+  bg-[${theme.primaryColor}]
+  text-[${theme.primaryColor}]
+- NO <style> tags
+- NO external fonts or images (use Tailwind CDN: <script src="https://cdn.tailwindcss.com"></script>)
+
+--------------------------------------------------
+SUBSCRIPTION PLAN UI RULES
+--------------------------------------------------
+
+${planTier}:
+${planTier === 'Lite' ? '- Fewer blocks\n- Simple spacing\n- Minimal transitions' : planTier === 'Pro' ? '- More block variations\n- Advanced grid layouts\n- Hover effects' : '- Rich layout composition\n- Advanced spacing rhythm\n- Micro-interactions (JS-light)'}
+
+--------------------------------------------------
+VERSIONING & ROLLBACK SYSTEM (MANDATORY)
+--------------------------------------------------
+
+You MUST generate:
+
+1️⃣ CURRENT VERSION UI
+2️⃣ PREVIOUS VERSION SNAPSHOTS (MAX 3)
+
+Rules:
+- Each version must have:
+  - version_id (v1, v2, v3…)
+  - created_at timestamp
+  - page + block map
+- Only 3 historical versions are kept
+- Oldest version is discarded on new save
+
+Version rollback MUST be possible by:
+- Replacing HTML_OUTPUT with previous snapshot
+- No regeneration required
+
+--------------------------------------------------
+OUTPUT FORMAT (STRICT)
+--------------------------------------------------
+
+Return ONLY these root objects as valid JSON:
+
+1️⃣ VERSION_HISTORY (JSON)
+2️⃣ LAYOUT_SCHEMA (JSON)
+3️⃣ HTML_OUTPUT (HTML + JS)
+
+NO explanations
+NO markdown code blocks
+ONLY valid JSON
+
+--------------------------------------------------
+VERSION_HISTORY FORMAT
+--------------------------------------------------
+
 {
-  "html": "<complete HTML document with <!DOCTYPE html>, <html>, <head>, <body>>",
-  "css": "",
-  "js": "",
-  "metadata": {
-    "title": "SEO optimized page title",
-    "description": "Meta description for SEO"
-  }
+  "current_version": "${storeVersionId}",
+  "history": [
+    { "version": "v1", "timestamp": "${new Date(Date.now() - 86400000).toISOString()}" },
+    { "version": "v2", "timestamp": "${new Date(Date.now() - 43200000).toISOString()}" },
+    { "version": "${storeVersionId}", "timestamp": "${new Date().toISOString()}" }
+  ]
 }
 
-## Example HTML Structure
-\`\`\`html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${companyName} - ${pageType}</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=${theme.fontFamily.replace(' ', '+')}:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>body { font-family: '${theme.fontFamily}', sans-serif; }</style>
-</head>
-<body class="bg-gray-50 text-gray-900">
-  <header class="bg-white shadow-sm sticky top-0 z-50">
-    <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
-      <a href="/" class="text-2xl font-bold" style="color: ${theme.primaryColor}">${companyName}</a>
-      {{menu}}
-    </nav>
-  </header>
-  <main>
-    <!-- Page content here with Tailwind classes -->
-  </main>
-  <footer class="bg-gray-900 text-white py-12">
-    <!-- Footer content -->
-  </footer>
-</body>
-</html>
-\`\`\`
+--------------------------------------------------
+LAYOUT_SCHEMA FORMAT
+--------------------------------------------------
 
-Generate the complete ${pageType} page now. Return ONLY the JSON object, no explanations.`;
+{
+  "page": "${pageType}",
+  "version": "${storeVersionId}",
+  "blocks": [
+    {
+      "block_id": "hero-001",
+      "block_type": "hero",
+      "editable": false,
+      "draggable": false,
+      "removable": true,
+      "injectables": ["STORE_NAME", "STORE_TAGLINE"]
+    }
+  ]
+}
+
+--------------------------------------------------
+HTML_OUTPUT RULES
+--------------------------------------------------
+
+- Each page wrapped in:
+  <section data-page="${pageType}" data-version="${storeVersionId}">
+- Each block MUST include:
+  data-block-id
+  data-block-type
+  GrapesJS control attributes
+- Dynamic content MUST be placeholders:
+  <!-- {{PLACEHOLDER}} -->
+- JS included ONCE at bottom
+- Use Tailwind CDN: <script src="https://cdn.tailwindcss.com"></script>
+- Generate UNIQUE, CREATIVE content specific to ${businessNiche} - NO generic templates
+- Create compelling, industry-specific copy that stands out
+- Use varied layouts and creative design patterns
+
+--------------------------------------------------
+PAGES TO GENERATE
+--------------------------------------------------
+
+${pageType === 'homepage' ? `1️⃣ HOMEPAGE
+- Locked hero block (non-editable) with unique ${businessNiche}-specific messaging
+- CTA block (locked) with compelling call-to-action
+- Featured products block (locked) with ${businessNiche} product showcase
+- Footer` : pageType === 'products' ? `2️⃣ PRODUCTS PAGE
+- Product grid block (locked) optimized for ${businessNiche}
+- Footer` : pageType === 'cart' ? `3️⃣ CART PAGE
+- Cart items block (locked)
+- Order summary block (locked)
+- Empty state block
+- Footer` : pageType === 'account' ? `4️⃣ ACCOUNT PAGE
+- Auth block (locked)
+- Profile block (locked)
+- Order history block (locked)
+- Footer` : pageType === 'checkout' ? `5️⃣ CHECKOUT & PAYMENT PAGE
+- Checkout form block (locked)
+- Payment block (locked)
+- Payment modals (locked): Success modal, Failure modal` : `CUSTOM PAGE: ${pageType}
+- Generate appropriate blocks for this page type`}
+
+--------------------------------------------------
+ACCESSIBILITY
+--------------------------------------------------
+
+- Labels
+- Focus states
+- Keyboard-safe modals
+- aria attributes
+
+--------------------------------------------------
+FINAL VALIDATION
+--------------------------------------------------
+
+- Dynamic blocks are NOT editable
+- Blocks can be deleted & replaced
+- Layout integrity preserved
+- 3-step rollback supported
+- Tailwind-only
+- Production-ready
+- UNIQUE content for ${businessNiche} - be creative and specific
+
+RETURN ONLY valid JSON with these three keys:
+{
+  "VERSION_HISTORY": {...},
+  "LAYOUT_SCHEMA": {...},
+  "HTML_OUTPUT": "<!DOCTYPE html>..."
+}`;
 }
 
 /**
@@ -330,7 +465,7 @@ function getNicheSpecificContent(businessNiche: string): string {
 }
 
 /**
- * Parse Claude's response to extract HTML, CSS, JS, and metadata
+ * Parse Claude's response to extract VERSION_HISTORY, LAYOUT_SCHEMA, and HTML_OUTPUT
  */
 function parseClaudeResponse(responseText: string): {
   html: string;
@@ -340,21 +475,63 @@ function parseClaudeResponse(responseText: string): {
     title: string;
     description: string;
   };
+  versionHistory?: any;
+  layoutSchema?: any;
 } {
   try {
-    // Try to parse as JSON first
+    // Try to parse as JSON first - new format with VERSION_HISTORY, LAYOUT_SCHEMA, HTML_OUTPUT
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       const parsed = JSON.parse(jsonMatch[0]);
-      return {
-        html: parsed.html || '',
-        css: parsed.css || '',
-        js: parsed.js || '',
-        metadata: parsed.metadata || {
-          title: 'Page',
-          description: '',
-        },
-      };
+      
+      // Check for new format
+      if (parsed.VERSION_HISTORY || parsed.LAYOUT_SCHEMA || parsed.HTML_OUTPUT) {
+        // Extract HTML from HTML_OUTPUT
+        const htmlOutput = parsed.HTML_OUTPUT || '';
+        
+        // Extract JS from HTML if present
+        const jsMatch = htmlOutput.match(/<script[^>]*>([\s\S]*?)<\/script>/gi);
+        let js = '';
+        if (jsMatch) {
+          js = jsMatch.map((m: string) => {
+            const content = m.match(/<script[^>]*>([\s\S]*?)<\/script>/i);
+            return content ? content[1] : '';
+          }).join('\n');
+        }
+        
+        // Extract title from HTML
+        const titleMatch = htmlOutput.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+        const title = titleMatch ? titleMatch[1] : 'Generated Page';
+        
+        // Extract meta description
+        const descMatch = htmlOutput.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']+)["']/i);
+        const description = descMatch ? descMatch[1] : 'AI-generated e-commerce page';
+        
+        return {
+          html: htmlOutput,
+          css: '', // No separate CSS in new format (Tailwind only)
+          js: js,
+          metadata: {
+            title,
+            description,
+          },
+          versionHistory: parsed.VERSION_HISTORY,
+          layoutSchema: parsed.LAYOUT_SCHEMA,
+        };
+      }
+      
+      // Fallback to old format for backward compatibility
+      if (parsed.html) {
+        return {
+          html: parsed.html || '',
+          css: parsed.css || '',
+          js: parsed.js || '',
+          metadata: parsed.metadata || {
+            title: 'Page',
+            description: '',
+          },
+        };
+      }
     }
   } catch (error) {
     console.warn('Failed to parse JSON response, extracting from text:', error);
@@ -389,7 +566,7 @@ export const runtime = 'nodejs'; // Use Node.js runtime
 
 /**
  * POST /api/ai/generate
- * Generate a single page using Claude 3.5 Sonnet
+ * Generate a single page using Claude Haiku 4.5
  */
 export async function POST(request: NextRequest) {
   try {
@@ -433,8 +610,8 @@ export async function POST(request: NextRequest) {
 
     // Call Claude API with timeout wrapper
     const claudePromise = anthropic.messages.create({
-      model: 'claude-sonnet-4-5',
-      max_tokens: 4000, // Enough for complete HTML/CSS/JS
+      model: 'claude-haiku-4-5', // Claude Haiku 4.5 (matches pattern used in other routes)
+      max_tokens: 8000, // Increased for structured output with version history and schema
       messages: [
         {
           role: 'user',

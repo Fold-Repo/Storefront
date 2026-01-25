@@ -14,12 +14,17 @@ export interface GeneratePageParams {
   description: string;
   theme: {
     primaryColor: string;
+    secondaryColor?: string;
+    accentColor?: string;
     fontFamily: string;
     designFeel: string;
+    primaryCtaText?: string;
+    secondaryCtaText?: string;
   };
   templateHtml?: string; // Optional existing HTML template
   logoUrl?: string;
   layout?: 'single-page' | 'multi-page';
+  planTier?: 'Lite' | 'Pro' | 'Enterprise' | 'Free';
 }
 
 
@@ -33,11 +38,16 @@ export interface GenerateSiteParams {
     layout: 'single-page' | 'multi-page';
     theme?: {
       primaryColor: string;
+      secondaryColor?: string;
+      accentColor?: string;
       fontFamily: string;
       designFeel: string;
+      primaryCtaText?: string;
+      secondaryCtaText?: string;
       aiDescription?: string;
     };
   };
+  userId?: string; // Optional userId to get plan tier
 }
 
 /**
@@ -83,7 +93,7 @@ export const generatePage = async (params: GeneratePageParams): Promise<Generate
  * Generate complete e-commerce site
  */
 export const generateCompleteSite = async (params: GenerateSiteParams): Promise<Record<string, GeneratedPage>> => {
-  const { wizardData } = params;
+  const { wizardData, userId } = params;
   const isSinglePage = wizardData.layout === 'single-page';
 
   // Strategy:
@@ -104,9 +114,38 @@ export const generateCompleteSite = async (params: GenerateSiteParams): Promise<
   const generatedPages: Record<string, GeneratedPage> = {};
   const theme = wizardData.theme || {
     primaryColor: '#3B82F6',
+    secondaryColor: '#64748B',
+    accentColor: '#8B5CF6',
     fontFamily: 'Inter',
     designFeel: 'modern',
+    primaryCtaText: 'Shop Now',
+    secondaryCtaText: 'Learn More',
   };
+
+  // Get user plan tier if userId is provided
+  let planTier: 'Lite' | 'Pro' | 'Enterprise' | 'Free' = isSinglePage ? 'Lite' : 'Pro';
+  if (userId) {
+    try {
+      const { getUserPlan } = await import('@/services/planLimits');
+      const userPlan = await getUserPlan(userId);
+      if (userPlan) {
+        // Map plan names to tiers
+        const planName = userPlan.planName.toLowerCase();
+        if (planName.includes('enterprise')) {
+          planTier = 'Enterprise';
+        } else if (planName.includes('professional') || planName.includes('pro')) {
+          planTier = 'Pro';
+        } else if (planName.includes('starter') || planName.includes('basic')) {
+          planTier = 'Lite';
+        } else {
+          planTier = 'Free';
+        }
+        console.log(`📋 Using plan tier: ${planTier} (from plan: ${userPlan.planName})`);
+      }
+    } catch (error) {
+      console.warn('⚠️ Could not fetch user plan, using default tier:', error);
+    }
+  }
 
   // Create essential pages in parallel to speed up generation
   console.log(`📄 Generating ${essentialPages.length} essential pages...`);
@@ -123,6 +162,7 @@ export const generateCompleteSite = async (params: GenerateSiteParams): Promise<
         logoUrl: wizardData.logoPreview || undefined,
         // Pass layout info to the underlying AI call
         layout: wizardData.layout,
+        planTier,
       });
       const duration = ((Date.now() - startTime) / 1000).toFixed(1);
       console.log(`✅ Successfully generated ${pageType} in ${duration}s`);
@@ -210,6 +250,7 @@ async function generatePageWithAI(params: GeneratePageParams): Promise<Generated
           theme: params.theme,
           logoUrl: params.logoUrl,
           layout: params.layout,
+          planTier: params.planTier,
         }),
         signal: controller.signal,
       });

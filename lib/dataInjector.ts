@@ -2,7 +2,18 @@
  * Data Injector for Dynamic Content
  * 
  * Replaces placeholders in HTML with actual data from API calls
+ * In preview mode, uses dummy data templates
  */
+
+import {
+  getDummyMenuHTML,
+  getDummyFooterHTML,
+  getDummyCategoriesHTML,
+  getDummyProductsHTML,
+  getDummyFeaturedProductsHTML,
+  getDummyBreadcrumbsHTML,
+  getDummyTestimonialsHTML,
+} from './dummyDataTemplates';
 
 interface SiteConfig {
   companyName: string;
@@ -26,7 +37,12 @@ interface DynamicData {
   featuredProducts?: any[];
   relatedProducts?: any[];
   breadcrumbs?: any[];
+  testimonials?: any[];
   [key: string]: any;
+}
+
+interface InjectOptions {
+  previewMode?: boolean; // Use dummy data instead of real data
 }
 
 /**
@@ -35,50 +51,85 @@ interface DynamicData {
 export function injectDynamicData(
   html: string,
   data: DynamicData,
-  config: SiteConfig
+  config: SiteConfig,
+  options: InjectOptions = {}
 ): string {
   let injected = html;
+  const { previewMode = false } = options;
 
   // Inject site-wide data
   injected = injectSiteData(injected, config);
 
-  // Inject menu
-  if (data.menu) {
+  // Inject menu (use dummy in preview mode)
+  if (previewMode || !data.menu || data.menu.length === 0) {
+    const dummyMenu = getDummyMenuHTML(config.companyName);
+    injected = injected.replace(/\{\{\s*(menu|menuItems)\s*\}\}/g, dummyMenu);
+    // Also inject at top of body if no placeholder
+    if (!injected.includes('{{menu}}') && !injected.includes('{{menuItems}}')) {
+      injected = injected.replace(/(<body[^>]*>)/i, `$1${dummyMenu}`);
+    }
+  } else if (data.menu) {
     injected = injectMenu(injected, data.menu);
   }
 
-  // Inject footer links
-  if (data.footerLinks) {
+  // Inject footer links (use dummy in preview mode)
+  if (previewMode || !data.footerLinks || data.footerLinks.length === 0) {
+    const dummyFooter = getDummyFooterHTML(config.companyName);
+    injected = injected.replace(/\{\{\s*footerLinks\s*\}\}/g, dummyFooter);
+  } else if (data.footerLinks) {
     injected = injectFooterLinks(injected, data.footerLinks);
   }
 
-  // Inject products
-  injected = injectProducts(injected, data.products || []);
+  // Inject products (use dummy in preview mode)
+  if (previewMode || !data.products || data.products.length === 0) {
+    const dummyProducts = getDummyProductsHTML();
+    injected = injected.replace(/\{\{\s*products\s*\}\}/g, dummyProducts);
+  } else {
+    injected = injectProducts(injected, data.products || []);
+  }
 
   // Inject single product
   if (data.product) {
     injected = injectProduct(injected, data.product);
   }
 
-  // Inject categories
-  injected = injectCategories(injected, data.categories || []);
+  // Inject categories (use dummy in preview mode)
+  if (previewMode || !data.categories || data.categories.length === 0) {
+    const dummyCategories = getDummyCategoriesHTML();
+    injected = injected.replace(/\{\{\s*categories\s*\}\}/g, dummyCategories);
+  } else {
+    injected = injectCategories(injected, data.categories || []);
+  }
 
   // Inject category
   if (data.category) {
     injected = injectCategory(injected, data.category);
   }
 
-  // Inject featured products
-  injected = injectFeaturedProducts(injected, data.featuredProducts || []);
+  // Inject featured products (use dummy in preview mode)
+  if (previewMode || !data.featuredProducts || data.featuredProducts.length === 0) {
+    const dummyFeatured = getDummyFeaturedProductsHTML();
+    injected = injected.replace(/\{\{\s*featuredProducts\s*\}\}/g, dummyFeatured);
+  } else {
+    injected = injectFeaturedProducts(injected, data.featuredProducts || []);
+  }
 
   // Inject related products
   injected = injectRelatedProducts(injected, data.relatedProducts || []);
 
-  // Inject breadcrumbs
-  injected = injectBreadcrumbs(injected, data.breadcrumbs);
+  // Inject breadcrumbs (use dummy in preview mode)
+  if (previewMode || !data.breadcrumbs || data.breadcrumbs.length === 0) {
+    const dummyBreadcrumbs = getDummyBreadcrumbsHTML();
+    injected = injected.replace(/\{\{\s*breadcrumbs\s*\}\}/g, dummyBreadcrumbs);
+  } else {
+    injected = injectBreadcrumbs(injected, data.breadcrumbs);
+  }
 
-  // Inject testimonials
-  if (data.testimonials) {
+  // Inject testimonials (use dummy in preview mode)
+  if (previewMode || !data.testimonials || data.testimonials.length === 0) {
+    const dummyTestimonials = getDummyTestimonialsHTML();
+    injected = injected.replace(/\{\{\s*testimonials\s*\}\}/g, dummyTestimonials);
+  } else if (data.testimonials) {
     injected = injectTestimonials(injected, data.testimonials);
   }
 

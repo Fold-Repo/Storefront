@@ -555,10 +555,15 @@ export const DashboardPage = () => {
                   layout: data.layout,
                   theme: data.theme || {
                     primaryColor: "#3B82F6",
+                    secondaryColor: "#64748B",
+                    accentColor: "#8B5CF6",
                     fontFamily: "Inter",
                     designFeel: "modern",
+                    primaryCtaText: "Shop Now",
+                    secondaryCtaText: "Learn More",
                   },
                 },
+                userId: userId,
               });
 
               // Create GeneratedSite object

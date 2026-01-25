@@ -28,8 +28,12 @@ interface StorefrontWizardProps {
 
 export interface ThemeSettings {
   primaryColor: string;
+  secondaryColor?: string;
+  accentColor?: string;
   fontFamily: string;
   designFeel: string;
+  primaryCtaText?: string;
+  secondaryCtaText?: string;
   aiDescription?: string;
 }
 
@@ -172,8 +176,12 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
 
   const getDefaultTheme = (): ThemeSettings => ({
     primaryColor: "#3B82F6",
+    secondaryColor: "#64748B",
+    accentColor: "#8B5CF6",
     fontFamily: "Inter",
     designFeel: "modern",
+    primaryCtaText: "Shop Now",
+    secondaryCtaText: "Learn More",
   });
 
   const [formData, setFormData] = useState<StorefrontData>(getDefaultData());
@@ -849,6 +857,86 @@ const StorefrontWizard: React.FC<StorefrontWizardProps> = ({
             {errors.primaryColor && (
               <p className="text-sm text-error mt-1">{errors.primaryColor}</p>
             )}
+
+            {/* Secondary Color */}
+            <ColorPicker
+              value={formData.theme?.secondaryColor || "#64748B"}
+              onChange={(color) => {
+                setFormData(prev => ({
+                  ...prev,
+                  theme: {
+                    ...prev.theme!,
+                    secondaryColor: color,
+                  }
+                }));
+              }}
+              label="Secondary Color"
+            />
+
+            {/* Accent Color */}
+            <ColorPicker
+              value={formData.theme?.accentColor || "#8B5CF6"}
+              onChange={(color) => {
+                setFormData(prev => ({
+                  ...prev,
+                  theme: {
+                    ...prev.theme!,
+                    accentColor: color,
+                  }
+                }));
+              }}
+              label="Accent Color"
+            />
+
+            {/* Primary CTA Text */}
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">
+                Primary Call-to-Action Text
+              </label>
+              <input
+                type="text"
+                value={formData.theme?.primaryCtaText || "Shop Now"}
+                onChange={(e) => {
+                  setFormData(prev => ({
+                    ...prev,
+                    theme: {
+                      ...prev.theme!,
+                      primaryCtaText: e.target.value,
+                    }
+                  }));
+                }}
+                placeholder="e.g., Shop Now, Buy Now, Get Started"
+                className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <p className="text-xs text-neutral-500 mt-1">
+                This text appears on your main action buttons
+              </p>
+            </div>
+
+            {/* Secondary CTA Text */}
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-2">
+                Secondary Call-to-Action Text
+              </label>
+              <input
+                type="text"
+                value={formData.theme?.secondaryCtaText || "Learn More"}
+                onChange={(e) => {
+                  setFormData(prev => ({
+                    ...prev,
+                    theme: {
+                      ...prev.theme!,
+                      secondaryCtaText: e.target.value,
+                    }
+                  }));
+                }}
+                placeholder="e.g., Learn More, View Details, Explore"
+                className="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <p className="text-xs text-neutral-500 mt-1">
+                This text appears on secondary action buttons
+              </p>
+            </div>
 
             {/* Font Family */}
             <div>
