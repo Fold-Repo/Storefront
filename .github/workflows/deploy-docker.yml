@@ -66,9 +66,47 @@ jobs:
             echo "🔨 Building application..."
             npm run build
             
+            # Create logs directory if it doesn't exist
+            mkdir -p logs
+            
             # Restart PM2 application
             echo "🔄 Restarting application with PM2..."
-            pm2 reload ecosystem.config.js || pm2 start ecosystem.config.js
+            
+            # Check if ecosystem.config.js exists
+            if [ -f "ecosystem.config.js" ]; then
+              echo "📋 Using ecosystem.config.js..."
+              # Check if app is already running
+              if pm2 list | grep -q "storefront"; then
+                echo "🔄 Reloading existing PM2 process..."
+                pm2 reload ecosystem.config.js
+              else
+                echo "🚀 Starting new PM2 process..."
+                pm2 start ecosystem.config.js
+              fi
+            else
+              echo "⚠️ ecosystem.config.js not found, checking for server.js..."
+              # Check if server.js exists (from standalone build)
+              if [ -f ".next/standalone/server.js" ]; then
+                echo "📋 Using standalone server.js..."
+                cd .next/standalone
+                if pm2 list | grep -q "storefront"; then
+                  pm2 reload storefront || pm2 restart storefront
+                else
+                  pm2 start server.js --name storefront --env production
+                fi
+                cd ../..
+              elif [ -f "server.js" ]; then
+                echo "📋 Using root server.js..."
+                if pm2 list | grep -q "storefront"; then
+                  pm2 reload storefront || pm2 restart storefront
+                else
+                  pm2 start server.js --name storefront --env production
+                fi
+              else
+                echo "❌ No server.js found. Build may have failed."
+                exit 1
+              fi
+            fi
             
             # Save PM2 configuration
             pm2 save
