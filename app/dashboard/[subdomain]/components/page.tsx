@@ -216,7 +216,7 @@ export default function DynamicComponentsConfigPage() {
                       </div>
                       <Button
                         onClick={handleApplyTemplate}
-                        disabled={loading}
+                        isDisabled={loading}
                         className="px-6"
                       >
                         {loading ? "Applying..." : "Apply Template"}
